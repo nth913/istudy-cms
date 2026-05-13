@@ -24,32 +24,34 @@
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create"
   },
   "dependencies": {
-    "next": "^15.5.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "payload": "^3.84.1",
+    "@aws-sdk/s3-request-presigner": "^3.1045.0",
     "@payloadcms/db-mongodb": "^3.84.1",
-    "@payloadcms/storage-s3": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",
+    "@payloadcms/storage-s3": "^3.84.1",
     "@payloadcms/ui": "^3.84.1",
     "@sentry/nextjs": "^8.0.0",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
-    "sharp": "0.32.6"
+    "next": "^15.5.0",
+    "payload": "^3.84.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "0.32.6",
+    "slugify": "^1.6.9"
   },
   "devDependencies": {
     "@types/node": "20.14.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "5.5.3",
-    "tsx": "^4.19.0",
-    "vitest": "^2.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "eslint": "^9.16.0",
     "eslint-config-next": "^15.0.0",
     "jsdom": "^25.0.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.0",
+    "typescript": "5.5.3",
+    "vitest": "^2.0.0"
   }
 }
