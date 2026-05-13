@@ -28,7 +28,7 @@ Generate Payload collection TypeScript files (`src/collections/*.ts`), hooks, AC
 
 - User request reference collection name (`exams`, `posts`, etc.) hoặc paste schema yêu cầu
 - Project state: `payload.config.ts` đã exist (sau P0 Task 1)
-- Schema docs: `docs/architecture/02` + `08`
+- Schema docs: `docs/architecture/02-collections-schema.md` + `docs/architecture/08-menu-and-content-collections.md`
 
 ## Outputs
 
@@ -64,7 +64,7 @@ Generate Payload collection TypeScript files (`src/collections/*.ts`), hooks, AC
 - `docs/architecture/05-hooks-acl.md` — hooks + ACL patterns
 - `docs/architecture/08-menu-and-content-collections.md` — extended collections
 - Memory `project_review_workflow_2026_05_13.md` — status workflow
-- Memory `project_backend_decisions_2026_05_12.md` — stack + 6 nguyên tắc
+- Memory `project_backend_decisions_2026_05_12.md` — 9 quyết định kiến trúc istudy-cms
 
 ## When NOT to use this agent
 
