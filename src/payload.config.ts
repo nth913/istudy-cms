@@ -23,6 +23,15 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Exams],
+  cors: [
+    'http://localhost:3000',
+    'https://aistudy.com.vn',
+  ],
+  csrf: [
+    'http://localhost:3000',
+    'https://aistudy.com.vn',
+  ],
+  cookiePrefix: 'istudy',
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
