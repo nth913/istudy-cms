@@ -130,7 +130,7 @@ export interface UserAuthOperations {
 export interface User {
   id: string;
   name: string;
-  role: 'admin' | 'editor' | 'reviewer';
+  role: 'admin' | 'editor' | 'reviewer' | 'student';
   avatar?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -157,7 +157,7 @@ export interface User {
  */
 export interface Media {
   id: string;
-  alt: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
