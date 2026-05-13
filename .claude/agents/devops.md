@@ -67,7 +67,7 @@ Write + maintain Dockerfile, docker-compose configs, Nginx reverse proxy configs
 
 - `docs/architecture/06-deploy-ops.md` — full deployment spec
 - `docs/architecture/01-stack-decisions.md#deploy-target` — VPS DO Singapore decision
-- Memory `project_backend_decisions_2026_05_12.md#update-4` — cost $13.5/tháng breakdown
+- Memory `project_backend_decisions_2026_05_12.md` — Update lần 4 (cost $13.5/tháng VPS+R2 breakdown)
 
 ## When NOT to use this agent
 

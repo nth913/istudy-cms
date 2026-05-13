@@ -65,8 +65,7 @@ Config `@payloadcms/storage-s3` adapter cho 3 R2 buckets. Implement sharp image 
 ## Related Docs
 
 - `docs/architecture/09-pdf-image-storage-display.md` — full pipeline spec
-- Memory `project_backend_decisions_2026_05_12.md#update-3` — watermark policy decisions
-- Memory `project_backend_decisions_2026_05_12.md#update-4` — R2 bucket layout
+- Memory `project_backend_decisions_2026_05_12.md` — Update lần 3 (PDF/image storage policy) + Update lần 4 (R2 bucket layout)
 
 ## When NOT to use this agent
 
