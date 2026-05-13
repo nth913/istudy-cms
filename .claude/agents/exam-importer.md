@@ -50,7 +50,8 @@ Parse local folder following convention, validate file formats, compute checksum
 
 ## Inputs Expected (post-unblock)
 
-- CLI: `pnpm tsx scripts/import-exams/index.ts <folder> [--dry-run] [--force-recreate] [--resolve=<strategy>]`
+- CLI: `pnpm tsx scripts/import-exams/index.ts <folder> [--dry-run | --apply] [--force-recreate] [--resolve=<strategy>]`
+- Mode: `--dry-run` scans + outputs log without writing; `--apply` (default if neither flag) writes records. `--force-recreate` ignores Layer-1 slug dedup, always creates new slug
 - Agent dispatch: "Import folder `<path>` dry-run" hoặc "Apply import folder `<path>`"
 
 ## Outputs (post-unblock)
