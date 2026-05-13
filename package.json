@@ -8,10 +8,10 @@
     "pnpm": "9.x"
   },
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3000",
-    "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev -p 3000",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3131",
+    "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev -p 3131",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 3000",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 3131",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --config ./vitest.config.mts",

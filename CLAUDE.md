@@ -17,7 +17,7 @@ Scaffold Payload 3.84 + Next 15 + React 19 initial baseline committed trên bran
 ## Commands (sau P0 Task 1)
 
 ```bash
-pnpm dev                          # Payload admin + API @ localhost:3000
+pnpm dev                          # Payload admin + API @ localhost:3131
 pnpm build                        # production build
 pnpm payload generate:types       # regen src/payload-types.ts
 pnpm tsx scripts/seed/index.ts    # seed dev data
