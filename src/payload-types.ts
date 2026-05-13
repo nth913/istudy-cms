@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    subjects: Subject;
+    provinces: Province;
+    exams: Exam;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +81,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    subjects: SubjectsSelect<false> | SubjectsSelect<true>;
+    provinces: ProvincesSelect<false> | ProvincesSelect<true>;
+    exams: ExamsSelect<false> | ExamsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -123,6 +129,9 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  name: string;
+  role: 'admin' | 'editor' | 'reviewer';
+  avatar?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -163,6 +172,73 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects".
+ */
+export interface Subject {
+  id: string;
+  name: string;
+  slug: string;
+  /**
+   * Emoji hoặc URL
+   */
+  icon?: string | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "provinces".
+ */
+export interface Province {
+  id: string;
+  name: string;
+  slug: string;
+  type: 'tinh' | 'thanh-pho';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exams".
+ */
+export interface Exam {
+  id: string;
+  title: string;
+  slug: string;
+  category: 'vao-10' | 'vao-dai-hoc';
+  examType: 'chinh-thuc' | 'thi-thu' | 'minh-hoa';
+  year: '2020' | '2021' | '2022' | '2023' | '2024' | '2025' | '2026';
+  /**
+   * Tên trường THCS (autocomplete từ giá trị đã có)
+   */
+  school?: string | null;
+  province?: (string | null) | Province;
+  /**
+   * File đề PDF gốc
+   */
+  pdfFile: string | Media;
+  /**
+   * File đáp án (PDF hoặc image)
+   */
+  answerFile?: (string | null) | Media;
+  tags?: {
+    hot?: {
+      enabled?: boolean | null;
+      /**
+       * Auto-clear hot sau ngày này. Default: 7 ngày sau khi tick enabled.
+       */
+      expiresAt?: string | null;
+    };
+    hay?: boolean | null;
+  };
+  searchKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -192,6 +268,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'subjects';
+        value: string | Subject;
+      } | null)
+    | ({
+        relationTo: 'provinces';
+        value: string | Province;
+      } | null)
+    | ({
+        relationTo: 'exams';
+        value: string | Exam;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -240,6 +328,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  avatar?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +365,59 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subjects_select".
+ */
+export interface SubjectsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  icon?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "provinces_select".
+ */
+export interface ProvincesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  type?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exams_select".
+ */
+export interface ExamsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  category?: T;
+  examType?: T;
+  year?: T;
+  school?: T;
+  province?: T;
+  pdfFile?: T;
+  answerFile?: T;
+  tags?:
+    | T
+    | {
+        hot?:
+          | T
+          | {
+              enabled?: T;
+              expiresAt?: T;
+            };
+        hay?: T;
+      };
+  searchKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
