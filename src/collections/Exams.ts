@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
+import { searchExamsEndpoint } from '../endpoints/search-exams'
 
 const YEAR_OPTIONS = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'].map(y => ({
   label: y, value: y,
@@ -17,6 +18,7 @@ export const Exams: CollectionConfig = {
     beforeValidate: [normalizeSlug],
     beforeChange: [computeSearchKey],
   },
+  endpoints: [searchExamsEndpoint],
   access: {
     read: ({ req: { user } }) => {
       if (user?.role === 'admin' || user?.role === 'editor' || user?.role === 'reviewer') {

@@ -11,7 +11,6 @@ import { Media } from './collections/Media'
 import { Subjects } from './collections/Subjects'
 import { Provinces } from './collections/Provinces'
 import { Exams } from './collections/Exams'
-import { searchExamsEndpoint } from './endpoints/search-exams'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -58,5 +57,4 @@ export default buildConfig({
         })]
       : []),
   ],
-  endpoints: [searchExamsEndpoint],
 })

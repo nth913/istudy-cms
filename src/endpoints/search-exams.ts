@@ -17,7 +17,10 @@ type SearchBody = {
 }
 
 export const searchExamsEndpoint: Endpoint = {
-  path: '/exams/search',
+  // Mounted on the `exams` collection — resolved as /api/exams/search.
+  // Payload routes top-level endpoints under collection slugs through
+  // `collection.config.endpoints`, so this must live on the Exams collection.
+  path: '/search',
   method: 'post',
   handler: async (req: PayloadRequest) => {
     const body = (await req.json?.()) as SearchBody
