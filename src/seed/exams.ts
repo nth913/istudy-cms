@@ -1,0 +1,41 @@
+export const EXAMS_SEED = [
+  {
+    title: 'Đề thi thử vào lớp 10 môn Tiếng Anh 2024 — Hà Nội',
+    slug: 'de-thi-thu-vao-10-tieng-anh-2024-ha-noi',
+    category: 'vao-10' as const,
+    examType: 'thi-thu' as const,
+    year: '2024',
+    school: 'THCS Trần Phú',
+    provinceSlug: 'ha-noi',
+  },
+  {
+    title: 'Đề chính thức tuyển sinh lớp 10 môn Tiếng Anh 2024 — Hồ Chí Minh',
+    slug: 'de-chinh-thuc-vao-10-tieng-anh-2024-hcm',
+    category: 'vao-10' as const,
+    examType: 'chinh-thuc' as const,
+    year: '2024',
+    school: 'THCS Lê Quý Đôn',
+    provinceSlug: 'tp-ho-chi-minh',
+  },
+  {
+    title: 'Đề minh hoạ THPT Quốc gia môn Tiếng Anh 2025 — Bộ Giáo dục',
+    slug: 'de-minh-hoa-thpt-tieng-anh-2025-bo',
+    category: 'vao-dai-hoc' as const,
+    examType: 'minh-hoa' as const,
+    year: '2025',
+  },
+  {
+    title: 'Đề thi thử THPT Quốc gia môn Tiếng Anh 2026 — Lần 1',
+    slug: 'de-thi-thu-thpt-tieng-anh-2026-lan-1',
+    category: 'vao-dai-hoc' as const,
+    examType: 'thi-thu' as const,
+    year: '2026',
+  },
+  {
+    title: 'Đề chính thức kỳ thi tốt nghiệp THPT môn Tiếng Anh 2025',
+    slug: 'de-chinh-thuc-thpt-tieng-anh-2025',
+    category: 'vao-dai-hoc' as const,
+    examType: 'chinh-thuc' as const,
+    year: '2025',
+  },
+] as const
