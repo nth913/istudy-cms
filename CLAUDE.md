@@ -4,7 +4,7 @@ Payload CMS 3 backend cho iStudy931. Repo `istudy-cms/` thuộc monorepo `/Users
 
 ## Stack
 
-- Payload 3.x (Next 14 admin built-in)
+- Payload 3.84+ trên Next 15 + React 19 (admin built-in)
 - MongoDB Atlas M0 free tier (cluster Singapore)
 - Cloudflare R2 storage qua `@payloadcms/storage-s3` adapter (3 bucket: `istudy-media-public`, `istudy-media-private`, `istudy-backups`)
 - Deploy: VPS DigitalOcean Singapore (Docker + Nginx + Let's Encrypt)
@@ -12,7 +12,7 @@ Payload CMS 3 backend cho iStudy931. Repo `istudy-cms/` thuộc monorepo `/Users
 
 ## Status
 
-Repo currently empty (chỉ có `.claude/agents/` scaffold + `scripts/check-deferred-agents.sh`). Payload chưa init. P0 Task 1 (`docs/superpowers/plans/2026-05-13-istudy-cms-p0-foundation.md`) scaffold project.
+Scaffold Payload 3.84 + Next 15 + React 19 initial baseline committed trên branch `feat/p0-t1-scaffold-next15` (T1 P0 partial done: deps + scaffold + git baseline). T2+ defer session execute tiếp theo. Stack update rationale: `docs/superpowers/specs/2026-05-13-next15-react19-upgrade-design.md`.
 
 ## Commands (sau P0 Task 1)
 
