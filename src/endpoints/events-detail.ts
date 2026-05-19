@@ -10,7 +10,6 @@ export const eventsDetailEndpoint: Endpoint = {
     }
 
     const result = await req.payload.find({
-      // @ts-expect-error 'events' added to Config.collections after wrap-up agent wires payload.config.ts + regenerates types
       collection: 'events',
       where: {
         and: [

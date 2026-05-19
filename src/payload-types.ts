@@ -72,7 +72,13 @@ export interface Config {
     subjects: Subject;
     provinces: Province;
     exams: Exam;
+    posts: Post;
+    events: Event;
+    subscribers: Subscriber;
+    notify_intents: NotifyIntent;
+    interactions: Interaction;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -84,7 +90,13 @@ export interface Config {
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
     provinces: ProvincesSelect<false> | ProvincesSelect<true>;
     exams: ExamsSelect<false> | ExamsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
+    notify_intents: NotifyIntentsSelect<false> | NotifyIntentsSelect<true>;
+    interactions: InteractionsSelect<false> | InteractionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -101,7 +113,13 @@ export interface Config {
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -239,6 +257,135 @@ export interface Exam {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  title: string;
+  /**
+   * Auto từ title nếu trống
+   */
+  slug?: string | null;
+  excerpt?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  cover?: (string | null) | Media;
+  author?: (string | null) | User;
+  tags?: string[] | null;
+  category: 'tu-vung' | 'ngu-phap' | 'meo' | 'tin-tuc';
+  publishedAt?: string | null;
+  isFeatured?: boolean | null;
+  viewCount?: number | null;
+  likeCount?: number | null;
+  relatedPosts?: (string | Post)[] | null;
+  relatedExams?: (string | Exam)[] | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  ogImage?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  title: string;
+  slug?: string | null;
+  kind: 'live-exam' | 'announcement' | 'launch' | 'promo';
+  startAt: string;
+  endAt: string;
+  cover?: (string | null) | Media;
+  surfaces: ('header-mega' | 'homepage-hero' | 'cho-de')[];
+  cta?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  registeredCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: string;
+  email: string;
+  status: 'pending' | 'verified' | 'unsubscribed';
+  verifyToken?: string | null;
+  verifyTokenExpiresAt?: string | null;
+  verifiedAt?: string | null;
+  source?: ('newsletter' | 'notify-exam' | 'notify-event' | 'notify-feature' | 'notify-dap-an') | null;
+  anonId?: string | null;
+  resendContactId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notify_intents".
+ */
+export interface NotifyIntent {
+  id: string;
+  type: 'exam' | 'dap-an' | 'feature' | 'event';
+  refSlug: string;
+  email: string;
+  anonId?: string | null;
+  ua?: string | null;
+  referer?: string | null;
+  ip?: string | null;
+  fulfilled?: boolean | null;
+  fulfilledAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interactions".
+ */
+export interface Interaction {
+  id: string;
+  anonId: string;
+  refType: 'post' | 'exam';
+  refId: string;
+  kind: 'like' | 'bookmark';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -253,6 +400,98 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -280,6 +519,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'exams';
         value: string | Exam;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
+        relationTo: 'subscribers';
+        value: string | Subscriber;
+      } | null)
+    | ({
+        relationTo: 'notify_intents';
+        value: string | NotifyIntent;
+      } | null)
+    | ({
+        relationTo: 'interactions';
+        value: string | Interaction;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -421,11 +680,137 @@ export interface ExamsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  body?: T;
+  cover?: T;
+  author?: T;
+  tags?: T;
+  category?: T;
+  publishedAt?: T;
+  isFeatured?: T;
+  viewCount?: T;
+  likeCount?: T;
+  relatedPosts?: T;
+  relatedExams?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  ogImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  kind?: T;
+  startAt?: T;
+  endAt?: T;
+  cover?: T;
+  surfaces?: T;
+  cta?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  body?: T;
+  registeredCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  email?: T;
+  status?: T;
+  verifyToken?: T;
+  verifyTokenExpiresAt?: T;
+  verifiedAt?: T;
+  source?: T;
+  anonId?: T;
+  resendContactId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notify_intents_select".
+ */
+export interface NotifyIntentsSelect<T extends boolean = true> {
+  type?: T;
+  refSlug?: T;
+  email?: T;
+  anonId?: T;
+  ua?: T;
+  referer?: T;
+  ip?: T;
+  fulfilled?: T;
+  fulfilledAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interactions_select".
+ */
+export interface InteractionsSelect<T extends boolean = true> {
+  anonId?: T;
+  refType?: T;
+  refId?: T;
+  kind?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -468,6 +853,23 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?: {
+      relationTo: 'posts';
+      value: string | Post;
+    } | null;
+    global?: string | null;
+    user?: (string | null) | User;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

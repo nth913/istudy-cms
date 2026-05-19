@@ -11,6 +11,18 @@ import { Media } from './collections/Media'
 import { Subjects } from './collections/Subjects'
 import { Provinces } from './collections/Provinces'
 import { Exams } from './collections/Exams'
+import { Posts } from './collections/Posts'
+import { Events } from './collections/Events'
+import { Subscribers } from './collections/Subscribers'
+import { NotifyIntents } from './collections/NotifyIntents'
+import { Interactions } from './collections/Interactions'
+
+import { notifyEndpoint } from './endpoints/notify'
+import { newsletterSubscribeEndpoint } from './endpoints/newsletter-subscribe'
+import { newsletterVerifyEndpoint } from './endpoints/newsletter-verify'
+import { postsLike, examsLike } from './endpoints/like-toggle'
+import { postsBookmark, examsBookmark } from './endpoints/bookmark-toggle'
+import { meBookmarks } from './endpoints/me-bookmarks'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +34,17 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Subjects, Provinces, Exams],
+  collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions],
+  endpoints: [
+    notifyEndpoint,
+    newsletterSubscribeEndpoint,
+    newsletterVerifyEndpoint,
+    postsLike,
+    examsLike,
+    postsBookmark,
+    examsBookmark,
+    meBookmarks,
+  ],
   cors: [
     'http://localhost:3000',
     'https://aistudy.com.vn',
