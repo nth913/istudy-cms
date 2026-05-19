@@ -37,7 +37,7 @@ src/
   lib/                # utilities (vietnamese-slugify, checksum, etc.)
   payload.config.ts   # entry, register collections + plugins
 scripts/
-  import-exams/       # exam-importer (deferred sau T16+M-A)
+  import-exams/       # exam-importer + endpoints (MB4 shipped)
   media-process/      # r2-media-handler (sharp watermark, pdftoppm)
   seed/               # payload-builder generated
   generate-types.ts   # type-sdk-syncer wrapper
