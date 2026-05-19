@@ -10,7 +10,7 @@
 | [`devops`](devops.md) | ready | Docker, Nginx, certbot, GitHub Actions, VPS provision |
 | [`r2-media-handler`](r2-media-handler.md) | partial | R2 storage, sharp watermark, PDF thumbnail (test cần T6+T16) |
 | [`type-sdk-syncer`](type-sdk-syncer.md) | partial | Sync Payload types → `@istudy/types` (test cần T18) |
-| [`exam-importer`](exam-importer.md) | script_deferred | Import folder đề PDF/image/DOCX → exams (defer sau T16+M-A) |
+| [`exam-importer`](exam-importer.md) | ready | Bulk import CSV + filename-regex PDF + folder watcher (MB4 shipped) |
 
 ## Audit deferred work
 
