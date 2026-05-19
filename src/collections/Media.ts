@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { mediaBeforeValidate } from '../hooks/mediaBeforeValidate'
+import { mediaAfterChange } from '../hooks/mediaAfterChange'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -11,6 +12,7 @@ export const Media: CollectionConfig = {
   access: { read: () => true },
   hooks: {
     beforeValidate: [mediaBeforeValidate],
+    afterChange: [mediaAfterChange],
   },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
