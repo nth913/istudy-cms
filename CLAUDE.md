@@ -57,7 +57,7 @@ Decision tree (dispatch via `Agent` tool, `subagent_type=<name>`):
 | "deploy", "Docker", "Nginx", "CI", "VPS", "DNS" | `devops` |
 | "upload R2", "watermark", "PDF thumb", "image dedupe" | `r2-media-handler` |
 | "generate types", "sync @istudy/types", "bump types version" | `type-sdk-syncer` |
-| "import đề", "nhập kho đề", paste folder path đề | `exam-importer` (sẽ fail error message nếu chưa unblock T16+M-A) |
+| "import đề", "nhập kho đề", paste folder path đề | `exam-importer` (ready, MB4 shipped) |
 
 Definitions: `.claude/agents/<name>.md`. Catalog: `.claude/agents/README.md`.
 

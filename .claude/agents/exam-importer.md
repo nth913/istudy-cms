@@ -3,30 +3,23 @@ name: exam-importer
 description: Use when importing exam files (PDF/image/DOCX/text-answer) from local folder into istudy-cms `exams` collection. Folder must follow `<level>/<subject>/<year>/<type>/<slug>/` convention with optional `meta.yml` override. Triggers on requests like "nhập đề", "import đề", "import kho đề", "upload folder đề", or user paste local folder path.
 tools: Read, Write, Glob, Bash
 model: inherit
-status: script_deferred
-blocker: T16 (R2 storage adapter + Media collection) + M-A exams schema defined
+status: ready
+blocker: none
 ---
 
 # exam-importer
 
 Specialist for importing exam files into istudy-cms.
 
-## ⚠️ STATUS: SCRIPT DEFERRED
+## Status: Ready
 
-**Script `scripts/import-exams/index.ts` chưa viết. Blocker:**
-- T16 (P0 plan): R2 storage adapter + Media collection
-- M-A milestone: `exams` collection schema defined
+Bulk import operational via CSV + filename-regex endpoints + folder watcher. Shipped MB4 (2026-05-19). Modules at `scripts/import-exams/`, endpoints at `src/endpoints/import-exams-*.ts`, watcher at `scripts/folder-watch/index.ts`.
 
-**Khi dispatched lần đầu trước khi unblock:** return error message:
-> "Script not implemented yet. Blocked by T16 (R2 + Media) and M-A exams schema. Cannot proceed with import. Suggest: complete blockers first via dispatching `payload-builder` for exams schema + `r2-media-handler` for storage adapter."
-
-**Sau khi unblock:** dispatch this agent sẽ scaffold `scripts/import-exams/` + lib files theo spec dưới.
-
-## Role (post-unblock)
+## Role
 
 Parse local folder following convention, validate file formats, compute checksums, detect duplicates (4-layer), upload media via Payload Local API + R2, upsert `exams` record với `_status='draft'`, output import log.
 
-## Scope (post-unblock)
+## Scope
 
 1. **Folder convention validation:** parse path `<level>/<subject>/<year>/<type>/<slug>/` → derive metadata. Reject path không match.
 2. **meta.yml override:** read optional `<slug>/meta.yml` → override fields (title, school, difficulty, answerText, customWatermarkText, etc.)
@@ -48,13 +41,13 @@ Parse local folder following convention, validate file formats, compute checksum
 9. **Exam upsert:** `payload.upsert` style — find by slug, update if exists (in-place per `project_review_workflow_2026_05_13` memory), create if not. Always `_status='draft'`, `mode='pdf_only'`.
 10. **Output log:** write `<folder>/import_log.json`: `[{slug, status: 'created'|'updated'|'skipped'|'error', errors: []}]`
 
-## Inputs Expected (post-unblock)
+## Inputs Expected
 
 - CLI: `pnpm tsx scripts/import-exams/index.ts <folder> [--dry-run | --apply] [--force-recreate] [--resolve=<strategy>]`
 - Mode: `--dry-run` scans + outputs log without writing; `--apply` (default if neither flag) writes records. `--force-recreate` ignores Layer-1 slug dedup, always creates new slug
 - Agent dispatch: "Import folder `<path>` dry-run" hoặc "Apply import folder `<path>`"
 
-## Outputs (post-unblock)
+## Outputs
 
 - Stdout summary: `X created, Y updated, Z skipped, N errors`
 - File: `<folder>/import_log.json`
@@ -70,7 +63,7 @@ Parse local folder following convention, validate file formats, compute checksum
 - KHÔNG upload tới `istudy-media-public` cho premium content (P4 defer, hiện free đẩy public OK)
 - KHÔNG hardcode metadata trong code — luôn từ folder path + meta.yml
 
-## Examples (post-unblock)
+## Examples
 
 **Example 1:** User: "Import folder `import/thpt-qg/toan/2024/chinh-thuc/` dry-run"
 → Bash: `pnpm tsx scripts/import-exams/index.ts import/thpt-qg/toan/2024/chinh-thuc --dry-run`
