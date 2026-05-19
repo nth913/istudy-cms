@@ -14,5 +14,57 @@ export const Media: CollectionConfig = {
   },
   fields: [
     { name: 'alt', type: 'text' },
+    {
+      name: 'purpose',
+      type: 'select',
+      options: [
+        { label: 'Đề thi (file đề)', value: 'exam_content' },
+        { label: 'Đáp án', value: 'exam_answer' },
+        { label: 'Giải chi tiết', value: 'exam_solution' },
+        { label: 'Cover bài viết', value: 'post_cover' },
+        { label: 'OG image', value: 'og_image' },
+        { label: 'Khác', value: 'other' },
+      ],
+      defaultValue: 'other',
+    },
+    {
+      name: 'visibility',
+      type: 'select',
+      options: [
+        { label: 'Public CDN', value: 'public' },
+        { label: 'Private signed-URL', value: 'private' },
+      ],
+      defaultValue: 'public',
+    },
+    {
+      name: 'checksum',
+      type: 'text',
+      index: true,
+      admin: { readOnly: true },
+    },
+    {
+      name: 'derivedMeta',
+      type: 'group',
+      admin: { readOnly: true },
+      fields: [
+        { name: 'pageCount', type: 'number' },
+        { name: 'width', type: 'number' },
+        { name: 'height', type: 'number' },
+        { name: 'avgColor', type: 'text' },
+        { name: 'firstPageThumbUrl', type: 'text' },
+        { name: 'webpVariants', type: 'json' },
+      ],
+    },
+    {
+      name: 'watermarkedAt',
+      type: 'date',
+      admin: { readOnly: true },
+    },
+    {
+      name: 'watermarkVersion',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true },
+    },
   ],
 }

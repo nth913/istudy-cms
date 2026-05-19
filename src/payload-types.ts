@@ -176,6 +176,27 @@ export interface User {
 export interface Media {
   id: string;
   alt?: string | null;
+  purpose?: ('exam_content' | 'exam_answer' | 'exam_solution' | 'post_cover' | 'og_image' | 'other') | null;
+  visibility?: ('public' | 'private') | null;
+  checksum?: string | null;
+  derivedMeta?: {
+    pageCount?: number | null;
+    width?: number | null;
+    height?: number | null;
+    avgColor?: string | null;
+    firstPageThumbUrl?: string | null;
+    webpVariants?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  watermarkedAt?: string | null;
+  watermarkVersion?: number | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -613,6 +634,21 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  purpose?: T;
+  visibility?: T;
+  checksum?: T;
+  derivedMeta?:
+    | T
+    | {
+        pageCount?: T;
+        width?: T;
+        height?: T;
+        avgColor?: T;
+        firstPageThumbUrl?: T;
+        webpVariants?: T;
+      };
+  watermarkedAt?: T;
+  watermarkVersion?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
