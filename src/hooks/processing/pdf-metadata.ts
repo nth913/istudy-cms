@@ -1,9 +1,11 @@
-import { PDFParse } from 'pdf-parse'
+type Parser = { destroy: () => Promise<void>; getInfo: () => Promise<{ total: number }> }
 
 export async function extractPdfMetadata(buffer: Buffer): Promise<{ pageCount: number }> {
-  let parser: PDFParse | null = null
+  let parser: Parser | null = null
   try {
-    parser = new PDFParse({ data: new Uint8Array(buffer) })
+    const mod = await import('pdf-parse')
+    const PDFParseCtor = mod.PDFParse as unknown as new (opts: { data: Uint8Array }) => Parser
+    parser = new PDFParseCtor({ data: new Uint8Array(buffer) })
     const info = await parser.getInfo()
     return { pageCount: info.total ?? 0 }
   } catch (err) {
