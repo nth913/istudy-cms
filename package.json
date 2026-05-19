@@ -21,7 +21,8 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "seed": "tsx scripts/seed/index.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create"
+    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "watch:imports": "tsx scripts/folder-watch/index.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
