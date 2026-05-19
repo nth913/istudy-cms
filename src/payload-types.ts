@@ -266,7 +266,7 @@ export interface Exam {
    */
   assignedReviewer?: (string | null) | User;
   /**
-   * Ghi chú cho reviewer (chỉ admin/editor thấy)
+   * Ghi chú cho reviewer (chỉ staff nội bộ: admin/editor/reviewer)
    */
   notesForReviewer?: string | null;
   /**

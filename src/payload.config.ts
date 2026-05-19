@@ -32,6 +32,8 @@ import {
   yearHubEndpoint,
 } from './endpoints/hubs'
 import { sitemapDataEndpoint } from './endpoints/sitemap-data'
+import { importExamsCsvEndpoint } from './endpoints/import-exams-csv'
+import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -58,6 +60,8 @@ export default buildConfig({
     subjectHubEndpoint,
     yearHubEndpoint,
     sitemapDataEndpoint,
+    importExamsCsvEndpoint,
+    importExamsBulkPdfEndpoint,
   ],
   cors: [
     'http://localhost:3000',
