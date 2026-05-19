@@ -117,18 +117,13 @@ export const subjectHubEndpoint: Endpoint = {
       depth: 0,
     })
     const subject = subjectResult.docs[0] as { id: string | number; name?: string } | undefined
-    if (!subject) {
-      return Response.json({ hub: { type: 'subject', slug, name: slug }, items: [], page: 1, totalPages: 0, totalDocs: 0 })
-    }
+    if (!subject) return Response.json({ error: 'Không tìm thấy môn học' }, { status: 404 })
 
-    // Exams collection currently has no subject relation. Return empty until MB4+ adds it.
-    return Response.json({
-      hub: { type: 'subject', slug, name: subject.name, id: subject.id },
-      items: [],
-      page: 1,
-      totalPages: 0,
-      totalDocs: 0,
-      note: 'Subject relation chưa add vào Exams (MB4 sẽ wire)',
+    return findExamsByWhere(req, { subject: { equals: subject.id } }, page, limit, {
+      type: 'subject',
+      slug,
+      name: subject.name,
+      id: subject.id,
     })
   },
 }
