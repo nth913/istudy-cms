@@ -17,7 +17,7 @@ const STATIC_URLS: Array<{ loc: string; priority?: number }> = [
 ]
 
 export const sitemapDataEndpoint: Endpoint = {
-  path: '/sitemap-data',
+  path: '/v1/sitemap-data',
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const base = (process.env.FE_URL || 'https://aistudy.com.vn').replace(/\/$/, '')

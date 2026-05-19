@@ -1,5 +1,8 @@
 import type { CollectionConfig, CollectionSlug } from 'payload'
 import { booksBeforeValidate } from '../hooks/booksBeforeValidate'
+import { booksListEndpoint } from '../endpoints/books-list'
+import { booksDetailEndpoint } from '../endpoints/books-detail'
+import { bookClickEndpoint } from '../endpoints/book-click'
 
 export const Books: CollectionConfig = {
   slug: 'books',
@@ -21,6 +24,7 @@ export const Books: CollectionConfig = {
   hooks: {
     beforeValidate: [booksBeforeValidate],
   },
+  endpoints: [booksListEndpoint, booksDetailEndpoint, bookClickEndpoint],
   fields: [
     { name: 'title', type: 'text', required: true, maxLength: 200 },
     {

@@ -16,6 +16,8 @@ import { Events } from './collections/Events'
 import { Subscribers } from './collections/Subscribers'
 import { NotifyIntents } from './collections/NotifyIntents'
 import { Interactions } from './collections/Interactions'
+import { Books } from './collections/Books'
+import { AffiliateClicks } from './collections/AffiliateClicks'
 
 import { notifyEndpoint } from './endpoints/notify'
 import { newsletterSubscribeEndpoint } from './endpoints/newsletter-subscribe'
@@ -23,6 +25,13 @@ import { newsletterVerifyEndpoint } from './endpoints/newsletter-verify'
 import { postsLike, examsLike } from './endpoints/like-toggle'
 import { postsBookmark, examsBookmark } from './endpoints/bookmark-toggle'
 import { meBookmarks } from './endpoints/me-bookmarks'
+import {
+  provinceHubEndpoint,
+  schoolHubEndpoint,
+  subjectHubEndpoint,
+  yearHubEndpoint,
+} from './endpoints/hubs'
+import { sitemapDataEndpoint } from './endpoints/sitemap-data'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -34,7 +43,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions],
+  collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
   endpoints: [
     notifyEndpoint,
     newsletterSubscribeEndpoint,
@@ -44,6 +53,11 @@ export default buildConfig({
     postsBookmark,
     examsBookmark,
     meBookmarks,
+    provinceHubEndpoint,
+    schoolHubEndpoint,
+    subjectHubEndpoint,
+    yearHubEndpoint,
+    sitemapDataEndpoint,
   ],
   cors: [
     'http://localhost:3000',

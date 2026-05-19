@@ -45,7 +45,7 @@ async function findExamsByWhere(req: PayloadRequest, where: Where, page: number,
 }
 
 export const provinceHubEndpoint: Endpoint = {
-  path: '/by-slug/:slug/exams',
+  path: '/v1/provinces/:slug/exams',
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const slug = req.routeParams?.slug as string | undefined
@@ -72,7 +72,7 @@ export const provinceHubEndpoint: Endpoint = {
 }
 
 export const schoolHubEndpoint: Endpoint = {
-  path: '/by-slug/:slug/exams',
+  path: '/v1/schools/:slug/exams',
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const slug = req.routeParams?.slug as string | undefined
@@ -102,7 +102,7 @@ export const schoolHubEndpoint: Endpoint = {
 }
 
 export const subjectHubEndpoint: Endpoint = {
-  path: '/by-slug/:slug/exams',
+  path: '/v1/subjects/:slug/exams',
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const slug = req.routeParams?.slug as string | undefined
@@ -134,7 +134,7 @@ export const subjectHubEndpoint: Endpoint = {
 }
 
 export const yearHubEndpoint: Endpoint = {
-  path: '/by-year/:year/exams',
+  path: '/v1/years/:year/exams',
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const year = req.routeParams?.year as string | undefined

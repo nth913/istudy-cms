@@ -77,6 +77,8 @@ export interface Config {
     subscribers: Subscriber;
     notify_intents: NotifyIntent;
     interactions: Interaction;
+    books: Book;
+    affiliate_clicks: AffiliateClick;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -95,6 +97,8 @@ export interface Config {
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     notify_intents: NotifyIntentsSelect<false> | NotifyIntentsSelect<true>;
     interactions: InteractionsSelect<false> | InteractionsSelect<true>;
+    books: BooksSelect<false> | BooksSelect<true>;
+    affiliate_clicks: AffiliateClicksSelect<false> | AffiliateClicksSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -407,6 +411,70 @@ export interface Interaction {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books".
+ */
+export interface Book {
+  id: string;
+  title: string;
+  /**
+   * Auto từ title nếu trống
+   */
+  slug?: string | null;
+  author?: string | null;
+  cover?: (string | null) | Media;
+  shortDescription?: string | null;
+  fullDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * URL affiliate tới Shopee/Tiki/Fahasa
+   */
+  externalUrl: string;
+  partner: 'shopee' | 'tiki' | 'fahasa' | 'self';
+  price?: number | null;
+  discountPrice?: number | null;
+  category?: ('van-hoc' | 'giao-trinh' | 'tham-khao' | 'on-thi' | 'khac') | null;
+  level?: ('tieu-hoc' | 'thcs' | 'thpt' | 'cao-dang-dai-hoc' | 'khac') | null;
+  relatedExams?: (string | Exam)[] | null;
+  relatedPosts?: (string | Post)[] | null;
+  clickCount?: number | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Tracking 10% sample click affiliate sang Shopee/Tiki/Fahasa
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "affiliate_clicks".
+ */
+export interface AffiliateClick {
+  id: string;
+  book: string | Book;
+  anonId?: string | null;
+  clickedAt?: string | null;
+  referer?: string | null;
+  ua?: string | null;
+  partner?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -560,6 +628,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'interactions';
         value: string | Interaction;
+      } | null)
+    | ({
+        relationTo: 'books';
+        value: string | Book;
+      } | null)
+    | ({
+        relationTo: 'affiliate_clicks';
+        value: string | AffiliateClick;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -811,6 +887,46 @@ export interface InteractionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books_select".
+ */
+export interface BooksSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  author?: T;
+  cover?: T;
+  shortDescription?: T;
+  fullDescription?: T;
+  externalUrl?: T;
+  partner?: T;
+  price?: T;
+  discountPrice?: T;
+  category?: T;
+  level?: T;
+  relatedExams?: T;
+  relatedPosts?: T;
+  clickCount?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "affiliate_clicks_select".
+ */
+export interface AffiliateClicksSelect<T extends boolean = true> {
+  book?: T;
+  anonId?: T;
+  clickedAt?: T;
+  referer?: T;
+  ua?: T;
+  partner?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -898,10 +1014,15 @@ export interface TaskSchedulePublish {
   input: {
     type?: ('publish' | 'unpublish') | null;
     locale?: string | null;
-    doc?: {
-      relationTo: 'posts';
-      value: string | Post;
-    } | null;
+    doc?:
+      | ({
+          relationTo: 'posts';
+          value: string | Post;
+        } | null)
+      | ({
+          relationTo: 'books';
+          value: string | Book;
+        } | null);
     global?: string | null;
     user?: (string | null) | User;
   };
