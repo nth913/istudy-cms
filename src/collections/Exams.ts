@@ -66,6 +66,36 @@ export const Exams: CollectionConfig = {
       admin: { condition: (data: any) => data?.category === 'vao-10' },
     },
     {
+      name: 'subject', type: 'relationship', relationTo: 'subjects',
+      admin: { description: 'Môn học (tuỳ chọn, dùng cho hub /mon-hoc/<slug>)' },
+      index: true,
+    },
+    {
+      name: 'assignedReviewer', type: 'relationship', relationTo: 'users',
+      admin: {
+        description: 'Reviewer được giao kiểm duyệt (admin/editor pick)',
+        position: 'sidebar',
+      },
+      access: {
+        read: ({ req: { user } }: any) =>
+          Boolean(user && (user.role === 'admin' || user.role === 'editor' || user.role === 'reviewer')),
+        update: ({ req: { user } }: any) =>
+          Boolean(user && (user.role === 'admin' || user.role === 'editor')),
+      },
+    },
+    {
+      name: 'notesForReviewer', type: 'textarea',
+      admin: {
+        description: 'Ghi chú cho reviewer (chỉ admin/editor thấy)',
+      },
+      access: {
+        read: ({ req: { user } }: any) =>
+          Boolean(user && (user.role === 'admin' || user.role === 'editor' || user.role === 'reviewer')),
+        update: ({ req: { user } }: any) =>
+          Boolean(user && (user.role === 'admin' || user.role === 'editor')),
+      },
+    },
+    {
       name: 'pdfFile', type: 'upload', relationTo: 'media', required: true,
       admin: { description: 'File đề PDF gốc' },
     },

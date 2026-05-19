@@ -258,6 +258,18 @@ export interface Exam {
   school?: string | null;
   province?: (string | null) | Province;
   /**
+   * Môn học (tuỳ chọn, dùng cho hub /mon-hoc/<slug>)
+   */
+  subject?: (string | null) | Subject;
+  /**
+   * Reviewer được giao kiểm duyệt (admin/editor pick)
+   */
+  assignedReviewer?: (string | null) | User;
+  /**
+   * Ghi chú cho reviewer (chỉ admin/editor thấy)
+   */
+  notesForReviewer?: string | null;
+  /**
    * File đề PDF gốc
    */
   pdfFile: string | Media;
@@ -772,6 +784,9 @@ export interface ExamsSelect<T extends boolean = true> {
   year?: T;
   school?: T;
   province?: T;
+  subject?: T;
+  assignedReviewer?: T;
+  notesForReviewer?: T;
   pdfFile?: T;
   answerFile?: T;
   tags?:
