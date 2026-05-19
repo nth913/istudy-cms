@@ -86,7 +86,7 @@ export const Exams: CollectionConfig = {
     {
       name: 'notesForReviewer', type: 'textarea',
       admin: {
-        description: 'Ghi chú cho reviewer (chỉ admin/editor thấy)',
+        description: 'Ghi chú cho reviewer (chỉ staff nội bộ: admin/editor/reviewer)',
       },
       access: {
         read: ({ req: { user } }: any) =>
