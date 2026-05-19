@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
+import { examsAfterChange } from '../hooks/examsAfterChange'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -19,6 +20,7 @@ export const Exams: CollectionConfig = {
   hooks: {
     beforeValidate: [normalizeSlug],
     beforeChange: [computeSearchKey],
+    afterChange: [examsAfterChange],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint],
   access: {
