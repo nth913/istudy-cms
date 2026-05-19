@@ -37,6 +37,7 @@
     "graphql": "^16.8.1",
     "next": "^15.5.0",
     "payload": "^3.84.1",
+    "pdf-parse": "^2.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^6.12.3",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "20.14.0",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
