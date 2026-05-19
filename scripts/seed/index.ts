@@ -47,6 +47,12 @@ async function seed() {
   console.log(`Pending exam records: ${EXAMS_SEED.length}`)
   console.log('NOTE: Upload PDF placeholder via admin Media collection, then create Exam records referencing them.')
 
+  const { seedPosts } = await import('../../src/seed/posts')
+  await seedPosts(payload)
+
+  const { seedEvents } = await import('../../src/seed/events')
+  await seedEvents(payload)
+
   console.log('Seed complete.')
   process.exit(0)
 }
