@@ -1,0 +1,80 @@
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Image SHA tag to deploy (default: latest commit on main)"
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://cms.aistudy.com.vn
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve SHA
+        id: sha
+        run: |
+          if [ -n "${{ inputs.sha }}" ]; then
+            echo "tag=sha-${{ inputs.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=sha-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy + healthcheck
+        env:
+          VERSION: ${{ steps.sha.outputs.tag }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh ${VPS_USER}@${VPS_HOST} bash -s <<EOF
+          set -euo pipefail
+          cd /opt/istudy-cms
+          PREV_IMAGE=\$(docker compose ps -q cms | xargs -r docker inspect -f '{{.Config.Image}}' || echo "")
+          echo "Previous image: \$PREV_IMAGE"
+          export VERSION=${VERSION}
+          docker compose pull cms
+          docker compose up -d cms --wait --wait-timeout 60
+          sleep 10
+          if ! curl -fsS https://cms.aistudy.com.vn/api/health > /dev/null; then
+            echo "Healthcheck FAILED, rolling back"
+            if [ -n "\$PREV_IMAGE" ]; then
+              PREV_TAG=\$(echo "\$PREV_IMAGE" | cut -d: -f2)
+              VERSION=\$PREV_TAG docker compose up -d cms --wait --wait-timeout 60
+            fi
+            exit 1
+          fi
+          echo "Deploy success: \$VERSION"
+          EOF
+
+      - name: Deploy summary
+        if: always()
+        run: |
+          echo "### Deploy ${{ steps.sha.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: https://cms.aistudy.com.vn" >> $GITHUB_STEP_SUMMARY
