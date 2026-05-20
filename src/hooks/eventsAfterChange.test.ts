@@ -118,17 +118,53 @@ describe('eventsAfterChange — dispatch log', () => {
     const doc = { id: '1', _status: 'published', deReady: true, slug: 'thpt-qg-2026' }
     const previousDoc = { id: '1', _status: 'published', deReady: false }
     await eventsAfterChange({ doc, previousDoc, req, operation: 'update' } as any)
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/kind=event-de.*eventId=1/))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/kind=event-de.*eventId=1.*slug=thpt-qg-2026/),
+    )
     consoleSpy.mockRestore()
   })
 
   it('logs event-dapan when dapAnReady 0→1', async () => {
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
     const req = makeReq()
-    const doc = { id: '1', _status: 'published', deReady: true, dapAnReady: true, slug: 'x' }
+    const doc = {
+      id: '1',
+      _status: 'published',
+      deReady: true,
+      dapAnReady: true,
+      slug: 'thpt-qg-2026',
+    }
     const previousDoc = { id: '1', _status: 'published', deReady: true, dapAnReady: false }
     await eventsAfterChange({ doc, previousDoc, req, operation: 'update' } as any)
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/kind=event-dapan/))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/kind=event-dapan.*eventId=1.*slug=thpt-qg-2026/),
+    )
     consoleSpy.mockRestore()
+  })
+
+  it('uses req.payload.logger.info when available', async () => {
+    const loggerSpy = vi.fn()
+    const req = makeReq({
+      payload: { update: vi.fn().mockResolvedValue({}), logger: { info: loggerSpy } },
+    })
+    const doc = { id: '1', _status: 'published', deReady: true, slug: 'foo' }
+    const previousDoc = { id: '1', _status: 'published', deReady: false }
+    await eventsAfterChange({ doc, previousDoc, req, operation: 'update' } as any)
+    expect(loggerSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'event-de', eventId: '1', slug: 'foo' }),
+      expect.stringContaining('event-publish'),
+    )
+  })
+
+  it('does NOT log when payload.update rejects', async () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const req = makeReq({ payload: { update: vi.fn().mockRejectedValue(new Error('boom')) } })
+    const doc = { id: '1', _status: 'published', deReady: true, slug: 'x' }
+    const previousDoc = { id: '1', _status: 'published', deReady: false }
+    await eventsAfterChange({ doc, previousDoc, req, operation: 'update' } as any)
+    expect(consoleSpy).not.toHaveBeenCalled()
+    consoleSpy.mockRestore()
+    consoleWarn.mockRestore()
   })
 })

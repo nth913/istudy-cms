@@ -15,39 +15,35 @@ export const eventsAfterChange: CollectionAfterChangeHook = async ({
     const wasDapAnReady = previousDoc?.dapAnReady === true
     const isDapAnReady = doc?.dapAnReady === true
 
-    // Auto-set dePostedAt on 0→1 transition
-    if (!wasDeReady && isDeReady && !doc.dePostedAt) {
+    const autoSetPostedAt = async (
+      field: 'dePostedAt' | 'dapAnPostedAt',
+      logKind: 'event-de' | 'event-dapan',
+    ) => {
+      if (doc[field]) return
       const now = new Date().toISOString()
       try {
         await req.payload.update({
           collection: 'events',
           id: doc.id,
-          data: { dePostedAt: now },
+          data: { [field]: now },
           context: { skipHooks: true },
         })
-        doc.dePostedAt = now
+        doc[field] = now
+        // Dispatch log placeholder — real Resend integration defer Sprint D.
+        // Use payload logger (pino) when available, fall back to console.log for test mocks.
+        const logFn = req.payload?.logger?.info?.bind(req.payload.logger) ?? null
+        if (logFn) {
+          logFn({ kind: logKind, eventId: doc.id, slug: doc.slug }, 'event-publish dispatch')
+        } else {
+          console.log(`[event-publish] kind=${logKind} eventId=${doc.id} slug=${doc.slug}`)
+        }
       } catch (err) {
-        console.warn('[eventsAfterChange] failed to set dePostedAt', err)
+        console.warn(`[eventsAfterChange] failed to set ${field}`, err)
       }
-      console.log(`[event-publish] kind=event-de eventId=${doc.id} slug=${doc.slug}`)
     }
 
-    // Auto-set dapAnPostedAt on 0→1 transition
-    if (!wasDapAnReady && isDapAnReady && !doc.dapAnPostedAt) {
-      const now = new Date().toISOString()
-      try {
-        await req.payload.update({
-          collection: 'events',
-          id: doc.id,
-          data: { dapAnPostedAt: now },
-          context: { skipHooks: true },
-        })
-        doc.dapAnPostedAt = now
-      } catch (err) {
-        console.warn('[eventsAfterChange] failed to set dapAnPostedAt', err)
-      }
-      console.log(`[event-publish] kind=event-dapan eventId=${doc.id} slug=${doc.slug}`)
-    }
+    if (!wasDeReady && isDeReady) await autoSetPostedAt('dePostedAt', 'event-de')
+    if (!wasDapAnReady && isDapAnReady) await autoSetPostedAt('dapAnPostedAt', 'event-dapan')
   }
 
   // PRESERVE existing FE revalidate trigger (unchanged from previous behaviour)
