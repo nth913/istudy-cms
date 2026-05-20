@@ -20,18 +20,34 @@ type PublicEvent = {
   waitingUrl: string
 }
 
+const VN_TZ = 'Asia/Ho_Chi_Minh'
+
+const dateFormatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: VN_TZ,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
+const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: VN_TZ,
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
+
 function formatYmd(iso: string | null | undefined): string {
   if (!iso) return ''
-  const d = new Date(iso)
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-    d.getDate(),
-  ).padStart(2, '0')}`
+  return dateFormatter.format(new Date(iso)) // en-CA → "YYYY-MM-DD"
 }
 
 function formatHm(iso: string | null | undefined): string {
   if (!iso) return ''
-  const d = new Date(iso)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  const parts = timeFormatter.formatToParts(new Date(iso))
+  const h = parts.find((p) => p.type === 'hour')?.value ?? '00'
+  const m = parts.find((p) => p.type === 'minute')?.value ?? '00'
+  // Some Node versions return "24" for midnight — normalize to "00"
+  return `${h === '24' ? '00' : h}:${m}`
 }
 
 function deriveUrls(e: Event): {
@@ -81,7 +97,7 @@ export const eventsV1Endpoint: Endpoint = {
     const result = await req.payload.find({
       collection: 'events',
       where: { _status: { equals: 'published' } },
-      limit: 100,
+      limit: 0, // 0 = unlimited; slot algo needs full set
       depth: 1,
     })
 

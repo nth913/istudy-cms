@@ -140,4 +140,35 @@ describe('eventsV1Endpoint', () => {
     expect(body.events[0].date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     expect(body.events[0].time).toMatch(/^\d{2}:\d{2}$/)
   })
+
+  it('formats examEndTime as HH:mm in Vietnam timezone', async () => {
+    const e = { ...baseEvent, examEndTime: '2026-06-27T09:30:00+07:00' }
+    const req = makeReq({
+      payload: { find: vi.fn().mockResolvedValue({ docs: [e] }) },
+    })
+    const res = (await eventsV1Endpoint.handler!(req as any)) as Response
+    const body = await res.json()
+    expect(body.events[0].examEndTime).toBe('09:30')
+  })
+
+  it('returns null examEndTime when not set', async () => {
+    const e = { ...baseEvent, examEndTime: null }
+    const req = makeReq({
+      payload: { find: vi.fn().mockResolvedValue({ docs: [e] }) },
+    })
+    const res = (await eventsV1Endpoint.handler!(req as any)) as Response
+    const body = await res.json()
+    expect(body.events[0].examEndTime).toBeNull()
+  })
+
+  it('formats date 2026-06-27 in Vietnam TZ regardless of server', async () => {
+    const e = { ...baseEvent, startAt: '2026-06-27T07:30:00+07:00' }
+    const req = makeReq({
+      payload: { find: vi.fn().mockResolvedValue({ docs: [e] }) },
+    })
+    const res = (await eventsV1Endpoint.handler!(req as any)) as Response
+    const body = await res.json()
+    expect(body.events[0].date).toBe('2026-06-27')
+    expect(body.events[0].time).toBe('07:30')
+  })
 })
