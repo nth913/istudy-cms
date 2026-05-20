@@ -20,6 +20,7 @@ import { Books } from './collections/Books'
 import { AffiliateClicks } from './collections/AffiliateClicks'
 
 import { notifyEndpoint } from './endpoints/notify'
+import { eventsV1Endpoint } from './endpoints/events-v1'
 import { newsletterSubscribeEndpoint } from './endpoints/newsletter-subscribe'
 import { newsletterVerifyEndpoint } from './endpoints/newsletter-verify'
 import { postsLike, examsLike } from './endpoints/like-toggle'
@@ -48,6 +49,7 @@ export default buildConfig({
   collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
   endpoints: [
     notifyEndpoint,
+    eventsV1Endpoint,
     newsletterSubscribeEndpoint,
     newsletterVerifyEndpoint,
     postsLike,
