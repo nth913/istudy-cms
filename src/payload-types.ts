@@ -348,6 +348,9 @@ export interface Event {
   startAt: string;
   endAt: string;
   cover?: (string | null) | Media;
+  /**
+   * [DEPRECATED] Surfaces array — giữ cho backward compat. Logic mới dùng submenu + BE algo (T1 3-state).
+   */
   surfaces: ('header-mega' | 'homepage-hero' | 'cho-de')[];
   cta?: {
     label?: string | null;
@@ -369,6 +372,81 @@ export interface Event {
     [k: string]: unknown;
   } | null;
   registeredCount?: number | null;
+  /**
+   * Tên ngắn cho slot hẹp (mega-menu, chips). Default = title.
+   */
+  short?: string | null;
+  /**
+   * Caption in hoa phía trên title hero card (vd "Mùa thi 2026", "Tuyển sinh Hà Nội")
+   */
+  heroEyebrow?: string | null;
+  /**
+   * Giờ kỳ thi chính thức kết thúc (vd 09:30 sáng 27/06). Nhập tay. Required khi kind=live-exam.
+   */
+  examEndTime?: string | null;
+  /**
+   * Submenu mega-menu mặc định gắn với event
+   */
+  submenu:
+    | 'vao-10'
+    | 'thpt-qg'
+    | 'dgnl'
+    | 'quoc-te-de'
+    | 'vao-10-thu'
+    | 'thpt-qg-thu'
+    | 'dgnl-thu'
+    | 'quoc-te-thu'
+    | 'thcs'
+    | 'thpt'
+    | 'quoc-te'
+    | 'giao-tiep'
+    | 'np-co-ban'
+    | 'np-nang-cao'
+    | 'tu-vung'
+    | 'phat-am'
+    | 'sgk'
+    | 'bai-giang'
+    | 'sach'
+    | 'cong-cu';
+  /**
+   * Đề đã đăng. Khi true → state "de" (banner "Đề đã lên").
+   */
+  deReady?: boolean | null;
+  /**
+   * Đáp án đã có. Khi true → state "dap-an". Ưu tiên cao hơn deReady. Auto-tick deReady.
+   */
+  dapAnReady?: boolean | null;
+  /**
+   * Auto-set khi deReady chuyển 0→1
+   */
+  dePostedAt?: string | null;
+  /**
+   * Auto-set khi dapAnReady chuyển 0→1
+   */
+  dapAnPostedAt?: string | null;
+  /**
+   * Đề thi tương ứng — auto-derive examUrl/answerUrl
+   */
+  examRef?: (string | null) | Exam;
+  /**
+   * BE-internal: 1 = ưu tiên cao nhất. KHÔNG trả về FE.
+   */
+  priority?: number | null;
+  /**
+   * BE-internal: số ngày trước "date" mà event active. KHÔNG trả về FE.
+   */
+  leadDays?: number | null;
+  /**
+   * Multi-subject tương lai. Hiện cứng "Tiếng Anh".
+   */
+  subject?: string | null;
+  /**
+   * Force pin event vào slot cụ thể (override BE algo)
+   */
+  manualPin?: {
+    hero?: boolean | null;
+    popup?: boolean | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -851,6 +929,24 @@ export interface EventsSelect<T extends boolean = true> {
       };
   body?: T;
   registeredCount?: T;
+  short?: T;
+  heroEyebrow?: T;
+  examEndTime?: T;
+  submenu?: T;
+  deReady?: T;
+  dapAnReady?: T;
+  dePostedAt?: T;
+  dapAnPostedAt?: T;
+  examRef?: T;
+  priority?: T;
+  leadDays?: T;
+  subject?: T;
+  manualPin?:
+    | T
+    | {
+        hero?: T;
+        popup?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
