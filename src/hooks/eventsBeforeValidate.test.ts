@@ -37,6 +37,19 @@ describe('eventsBeforeValidate — default short', () => {
     const result = eventsBeforeValidate({ data } as any)
     expect(result.short).toBe('Custom')
   })
+  it('preserves title at exact 40 chars (no truncate)', () => {
+    const title40 = 'A'.repeat(40)
+    const data = { title: title40 }
+    const result = eventsBeforeValidate({ data } as any)
+    expect(result.short).toBe(title40)
+  })
+  it('truncates title at 41 chars (boundary)', () => {
+    const title41 = 'A'.repeat(41)
+    const data = { title: title41 }
+    const result = eventsBeforeValidate({ data } as any)
+    expect(result.short).toBe('A'.repeat(37) + '...')
+    expect(result.short.length).toBe(40)
+  })
 })
 
 describe('eventsBeforeValidate — examEndTime validation', () => {
@@ -56,6 +69,14 @@ describe('eventsBeforeValidate — examEndTime validation', () => {
     }
     expect(() => eventsBeforeValidate({ data } as any)).not.toThrow()
   })
+  it('passes when examEndTime === startAt (equal allowed)', () => {
+    const data = {
+      title: 'X',
+      startAt: '2026-06-27T07:30:00+07:00',
+      examEndTime: '2026-06-27T07:30:00+07:00',
+    }
+    expect(() => eventsBeforeValidate({ data } as any)).not.toThrow()
+  })
 })
 
 describe('eventsBeforeValidate — priority range', () => {
@@ -69,6 +90,14 @@ describe('eventsBeforeValidate — priority range', () => {
   })
   it('passes when priority = 50', () => {
     const data = { title: 'X', priority: 50 }
+    expect(() => eventsBeforeValidate({ data } as any)).not.toThrow()
+  })
+  it('passes when priority = 1 (lower bound inclusive)', () => {
+    const data = { title: 'X', priority: 1 }
+    expect(() => eventsBeforeValidate({ data } as any)).not.toThrow()
+  })
+  it('passes when priority = 99 (upper bound inclusive)', () => {
+    const data = { title: 'X', priority: 99 }
     expect(() => eventsBeforeValidate({ data } as any)).not.toThrow()
   })
 })

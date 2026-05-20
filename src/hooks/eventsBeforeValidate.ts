@@ -29,6 +29,7 @@ export const eventsBeforeValidate: CollectionBeforeValidateHook = ({ data }) => 
   }
 
   // Validate examEndTime ≥ startAt
+  // Cho phép examEndTime === startAt (giờ thi 0 phút edge case, hiếm nhưng không sai)
   if (data.examEndTime && data.startAt) {
     const start = new Date(data.startAt as string | number | Date)
     const end = new Date(data.examEndTime as string | number | Date)
