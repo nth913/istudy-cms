@@ -15,7 +15,7 @@ export const Events: CollectionConfig = {
       edit: {
         beforeDocumentControls: [
           '/components/admin/EventPublishButtons.tsx#EventPublishButtons',
-          '/components/admin/EventStateBadge.tsx#EventStateBadge',
+          '/components/admin/EventPinConflictWarning.tsx#EventPinConflictWarning',
         ],
       },
     },
@@ -42,6 +42,16 @@ export const Events: CollectionConfig = {
   ],
   timestamps: true,
   fields: [
+    {
+      name: 'stateBadge',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '/components/admin/EventStateBadge.tsx#EventStateBadge',
+        },
+      },
+    },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', unique: true, index: true },
     {

@@ -21,8 +21,9 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { EventPublishButtons as EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646 } from '../../../components/admin/EventPublishButtons.tsx'
 import { EventStateBadge as EventStateBadge_edf93fb9d3ad9ff6ae751f615654afbd } from '../../../components/admin/EventStateBadge.tsx'
+import { EventPublishButtons as EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646 } from '../../../components/admin/EventPublishButtons.tsx'
+import { EventPinConflictWarning as EventPinConflictWarning_0bf7dd20557ea5f5aae9d1db82dbecc9 } from '../../../components/admin/EventPinConflictWarning.tsx'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -51,8 +52,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "/components/admin/EventPublishButtons.tsx#EventPublishButtons": EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646,
   "/components/admin/EventStateBadge.tsx#EventStateBadge": EventStateBadge_edf93fb9d3ad9ff6ae751f615654afbd,
+  "/components/admin/EventPublishButtons.tsx#EventPublishButtons": EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646,
+  "/components/admin/EventPinConflictWarning.tsx#EventPinConflictWarning": EventPinConflictWarning_0bf7dd20557ea5f5aae9d1db82dbecc9,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
