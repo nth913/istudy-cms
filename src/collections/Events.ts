@@ -3,12 +3,22 @@ import { eventsBeforeValidate } from '../hooks/eventsBeforeValidate'
 import { eventsAfterChange } from '../hooks/eventsAfterChange'
 import { eventsActiveEndpoint } from '../endpoints/events-active'
 import { eventsDetailEndpoint } from '../endpoints/events-detail'
+import { eventPublishDeEndpoint } from '../endpoints/event-publish-de'
+import { eventPublishDapAnEndpoint } from '../endpoints/event-publish-dapan'
 
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'submenu', 'startAt', '_status', 'deReady', 'dapAnReady'],
+    components: {
+      edit: {
+        beforeDocumentControls: [
+          '/components/admin/EventPublishButtons.tsx#EventPublishButtons',
+          '/components/admin/EventStateBadge.tsx#EventStateBadge',
+        ],
+      },
+    },
   },
   versions: {
     drafts: { autosave: true },
@@ -24,7 +34,12 @@ export const Events: CollectionConfig = {
     beforeValidate: [eventsBeforeValidate],
     afterChange: [eventsAfterChange],
   },
-  endpoints: [eventsActiveEndpoint, eventsDetailEndpoint],
+  endpoints: [
+    eventsActiveEndpoint,
+    eventsDetailEndpoint,
+    eventPublishDeEndpoint,
+    eventPublishDapAnEndpoint,
+  ],
   timestamps: true,
   fields: [
     { name: 'title', type: 'text', required: true },
