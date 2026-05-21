@@ -7,6 +7,10 @@ on:
         description: "Image SHA tag to deploy (default: latest commit on main)"
         required: false
         default: ""
+  workflow_run:
+    workflows: ["Build + Push GHCR"]
+    types: [completed]
+    branches: [main]
 
 concurrency:
   group: deploy-production
@@ -19,9 +23,10 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     environment:
       name: production
-      url: https://cms.aistudy.com.vn
+      url: https://h913.aistudy.com.vn
 
     steps:
       - name: Checkout
@@ -44,15 +49,16 @@ jobs:
       - name: Add VPS to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ secrets.VPS_PORT }} -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy + healthcheck
         env:
           VERSION: ${{ steps.sha.outputs.tag }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          ssh ${VPS_USER}@${VPS_HOST} bash -s <<EOF
+          ssh -p ${VPS_PORT} ${VPS_USER}@${VPS_HOST} bash -s <<EOF
           set -euo pipefail
           cd /opt/istudy-cms
           PREV_IMAGE=\$(docker compose ps -q cms | xargs -r docker inspect -f '{{.Config.Image}}' || echo "")
@@ -61,7 +67,7 @@ jobs:
           docker compose pull cms
           docker compose up -d cms --wait --wait-timeout 60
           sleep 10
-          if ! curl -fsS https://cms.aistudy.com.vn/api/health > /dev/null; then
+          if ! curl -fsS https://h913.aistudy.com.vn/api/health > /dev/null; then
             echo "Healthcheck FAILED, rolling back"
             if [ -n "\$PREV_IMAGE" ]; then
               PREV_TAG=\$(echo "\$PREV_IMAGE" | cut -d: -f2)
@@ -77,4 +83,4 @@ jobs:
         run: |
           echo "### Deploy ${{ steps.sha.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
           echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- URL: https://cms.aistudy.com.vn" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: https://h913.aistudy.com.vn" >> $GITHUB_STEP_SUMMARY
