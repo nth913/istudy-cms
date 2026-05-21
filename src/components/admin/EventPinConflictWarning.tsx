@@ -84,7 +84,7 @@ export const EventPinConflictWarning: React.FC<Props> = ({ doc }) => {
       <div style={{ fontWeight: 700, marginBottom: 6 }}>⚠️ Pin conflict</div>
       {conflicts.map(c => (
         <div key={c.slot} style={{ marginBottom: 4 }}>
-          Slot <b>{c.slot}</b>: Event "<b>{c.winnerTitle}</b>" (priority={c.winnerPriority}) đang chiếm. Event hiện tại pin nhưng bị thua do priority cao hơn.
+          Slot <b>{c.slot}</b>: Event &ldquo;<b>{c.winnerTitle}</b>&rdquo; (priority={c.winnerPriority}) đang chiếm. Event hiện tại pin nhưng bị thua do priority cao hơn.
         </div>
       ))}
       <div style={{ fontSize: 11, marginTop: 6, opacity: 0.8 }}>

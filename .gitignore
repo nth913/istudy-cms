@@ -58,3 +58,7 @@ node_modules/
 
 # worktrees
 .worktrees/
+
+# Deploy
+deploy/.env
+.env.production

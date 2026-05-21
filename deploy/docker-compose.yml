@@ -1,0 +1,42 @@
+services:
+  cms:
+    image: ghcr.io/nth913/istudy-cms:${VERSION:-latest}
+    container_name: istudy-cms
+    env_file: .env
+    expose:
+      - "3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - istudy
+
+  nginx:
+    image: nginx:alpine
+    container_name: istudy-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      cms:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - istudy
+
+networks:
+  istudy:
+    driver: bridge
