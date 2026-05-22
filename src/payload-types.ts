@@ -291,6 +291,10 @@ export interface Exam {
     };
     hay?: boolean | null;
   };
+  /**
+   * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
+   */
+  views?: number | null;
   searchKey?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -882,6 +886,7 @@ export interface ExamsSelect<T extends boolean = true> {
             };
         hay?: T;
       };
+  views?: T;
   searchKey?: T;
   updatedAt?: T;
   createdAt?: T;
