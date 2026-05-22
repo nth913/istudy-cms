@@ -19,6 +19,8 @@ import { Interactions } from './collections/Interactions'
 import { Books } from './collections/Books'
 import { AffiliateClicks } from './collections/AffiliateClicks'
 
+import { KhoDeSidebarConfig } from './globals/KhoDeSidebarConfig'
+
 import { notifyEndpoint } from './endpoints/notify'
 import { eventsV1Endpoint } from './endpoints/events-v1'
 import { newsletterSubscribeEndpoint } from './endpoints/newsletter-subscribe'
@@ -50,6 +52,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
+  globals: [KhoDeSidebarConfig],
   endpoints: [
     notifyEndpoint,
     eventsV1Endpoint,
