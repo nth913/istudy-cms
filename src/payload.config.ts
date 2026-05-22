@@ -38,7 +38,6 @@ import { sitemapDataEndpoint } from './endpoints/sitemap-data'
 import { importExamsCsvEndpoint } from './endpoints/import-exams-csv'
 import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 import { searchExamsGetEndpoint } from './endpoints/search-exams'
-import { examsSidebarFacetsEndpoint } from './endpoints/exams-sidebar-facets'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -73,7 +72,6 @@ export default buildConfig({
     importExamsCsvEndpoint,
     importExamsBulkPdfEndpoint,
     searchExamsGetEndpoint,
-    examsSidebarFacetsEndpoint,
   ],
   cors: [
     'http://localhost:3000',

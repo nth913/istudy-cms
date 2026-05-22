@@ -6,6 +6,7 @@ import { examsPdfRequiredWhenPublished } from '../hooks/examsPdfRequiredWhenPubl
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
+import { examsSidebarFacetsEndpoint } from '../endpoints/exams-sidebar-facets'
 
 const YEAR_OPTIONS = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'].map(y => ({
   label: y, value: y,
@@ -23,7 +24,7 @@ export const Exams: CollectionConfig = {
     beforeChange: [computeSearchKey],
     afterChange: [examsAfterChange],
   },
-  endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint],
+  endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
   access: {
     read: ({ req: { user } }) => {
       if (user?.role === 'admin' || user?.role === 'editor' || user?.role === 'reviewer') {

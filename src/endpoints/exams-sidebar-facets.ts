@@ -24,7 +24,7 @@ async function parseFilterQueryToWhere(filterQuery: string, payload: any): Promi
 }
 
 export const examsSidebarFacetsEndpoint: Endpoint = {
-  path: '/exams/sidebar-facets',
+  path: '/sidebar-facets',
   method: 'get',
   handler: async (req: any) => {
     const config = (await req.payload
