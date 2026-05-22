@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
+import { examsPdfRequiredWhenPublished } from '../hooks/examsPdfRequiredWhenPublished'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -18,7 +19,7 @@ export const Exams: CollectionConfig = {
     defaultColumns: ['title', 'category', 'examType', 'year', '_status'],
   },
   hooks: {
-    beforeValidate: [normalizeSlug],
+    beforeValidate: [normalizeSlug, examsPdfRequiredWhenPublished],
     beforeChange: [computeSearchKey],
     afterChange: [examsAfterChange],
   },
@@ -98,8 +99,8 @@ export const Exams: CollectionConfig = {
       },
     },
     {
-      name: 'pdfFile', type: 'upload', relationTo: 'media', required: true,
-      admin: { description: 'File đề PDF gốc' },
+      name: 'pdfFile', type: 'upload', relationTo: 'media',
+      admin: { description: 'File đề PDF gốc (required khi publish)' },
     },
     {
       name: 'answerFile', type: 'upload', relationTo: 'media',
