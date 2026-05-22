@@ -109,8 +109,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    kho_de_sidebar_config: KhoDeSidebarConfig;
+  };
+  globalsSelect: {
+    kho_de_sidebar_config: KhoDeSidebarConfigSelect<false> | KhoDeSidebarConfigSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -270,9 +274,9 @@ export interface Exam {
    */
   notesForReviewer?: string | null;
   /**
-   * File đề PDF gốc
+   * File đề PDF gốc (required khi publish)
    */
-  pdfFile: string | Media;
+  pdfFile?: (string | null) | Media;
   /**
    * File đáp án (PDF hoặc image)
    */
@@ -287,6 +291,10 @@ export interface Exam {
     };
     hay?: boolean | null;
   };
+  /**
+   * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
+   */
+  views?: number | null;
   searchKey?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -878,6 +886,7 @@ export interface ExamsSelect<T extends boolean = true> {
             };
         hay?: T;
       };
+  views?: T;
   searchKey?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1106,6 +1115,60 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Cấu hình sidebar filter trang /kho-de-thi (groups + items)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "kho_de_sidebar_config".
+ */
+export interface KhoDeSidebarConfig {
+  id: string;
+  groups?:
+    | {
+        title: string;
+        items?:
+          | {
+              label: string;
+              /**
+               * Vd ?cat=vao-10&province=ha-noi
+               */
+              filterQuery: string;
+              /**
+               * Để trống = tự đếm từ DB. Có = override.
+               */
+              countOverride?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "kho_de_sidebar_config_select".
+ */
+export interface KhoDeSidebarConfigSelect<T extends boolean = true> {
+  groups?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              filterQuery?: T;
+              countOverride?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

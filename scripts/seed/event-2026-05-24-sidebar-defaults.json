@@ -1,0 +1,34 @@
+{
+  "groups": [
+    {
+      "title": "Đề thi vào lớp 10",
+      "items": [
+        { "label": "Tất cả đề lớp 10", "filterQuery": "?cat=vao-10", "countOverride": 245 },
+        { "label": "Đề thi thử", "filterQuery": "?cat=vao-10&type=thi-thu", "countOverride": 180 },
+        { "label": "Đề thi thật", "filterQuery": "?cat=vao-10&type=chinh-thuc", "countOverride": 65 },
+        { "label": "Hà Nội", "filterQuery": "?cat=vao-10&province=ha-noi", "countOverride": 42 },
+        { "label": "TP.HCM", "filterQuery": "?cat=vao-10&province=tphcm", "countOverride": 38 },
+        { "label": "Đà Nẵng", "filterQuery": "?cat=vao-10&province=da-nang", "countOverride": 15 },
+        { "label": "Ninh Bình", "filterQuery": "?cat=vao-10&province=ninh-binh", "countOverride": 13 }
+      ]
+    },
+    {
+      "title": "Đề thi THPT QG",
+      "items": [
+        { "label": "Tất cả đề THPT", "filterQuery": "?cat=vao-dai-hoc", "countOverride": 320 },
+        { "label": "Đề chính thức", "filterQuery": "?cat=vao-dai-hoc&type=chinh-thuc", "countOverride": 45 },
+        { "label": "Đề minh hoạ", "filterQuery": "?cat=vao-dai-hoc&type=minh-hoa", "countOverride": 12 },
+        { "label": "Đề thi thử", "filterQuery": "?cat=vao-dai-hoc&type=thi-thu", "countOverride": 263 }
+      ]
+    },
+    {
+      "title": "Theo năm",
+      "items": [
+        { "label": "2026", "filterQuery": "?year=2026", "countOverride": 120 },
+        { "label": "2025", "filterQuery": "?year=2025", "countOverride": 210 },
+        { "label": "2024", "filterQuery": "?year=2024", "countOverride": 180 },
+        { "label": "2023", "filterQuery": "?year=2023", "countOverride": 95 }
+      ]
+    }
+  ]
+}
