@@ -287,4 +287,20 @@ describe('search-exams extended (GET /api/search-exams)', () => {
     const body = await res.json()
     expect(body.error).toContain('không hợp lệ')
   })
+
+  it('GET reject examType invalid', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&examType=foo')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('không hợp lệ')
+  })
+
+  it('GET reject year + yearMax combined', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&year=2024&yearMax=2022')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Không thể dùng đồng thời')
+  })
 })

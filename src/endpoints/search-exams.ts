@@ -6,6 +6,8 @@ const MOI_THRESHOLD_DAYS = Number(process.env.MOI_THRESHOLD_DAYS) || 30
 // ---------- Extended GET endpoint shared constants ----------
 
 const YEAR_RE = /^20[2-9][0-9]$/
+const EXAM_TYPES = ['chinh-thuc', 'thi-thu', 'minh-hoa'] as const
+type ExamType = typeof EXAM_TYPES[number]
 const SORT_MAP: Record<string, string> = {
   latest: '-createdAt',
   popular: '-viewsThisWeek',
@@ -15,7 +17,7 @@ const SORT_MAP: Record<string, string> = {
 type SearchBody = {
   q?: string
   category: 'vao-10' | 'vao-dai-hoc'
-  examType?: 'chinh-thuc' | 'thi-thu' | 'minh-hoa'
+  examType?: ExamType
   year?: string
   schoolMatch?: string
   provinceSlug?: string
@@ -129,7 +131,13 @@ export const searchExamsGetEndpoint: Endpoint = {
     if (yearMax && !YEAR_RE.test(yearMax)) {
       return Response.json({ error: 'Tham số yearMax không hợp lệ' }, { status: 400 })
     }
-    if (examType && !['chinh-thuc', 'thi-thu', 'minh-hoa'].includes(examType)) {
+    if (year && yearMax) {
+      return Response.json(
+        { error: 'Không thể dùng đồng thời year và yearMax' },
+        { status: 400 },
+      )
+    }
+    if (examType && !(EXAM_TYPES as readonly string[]).includes(examType)) {
       return Response.json({ error: 'Tham số examType không hợp lệ' }, { status: 400 })
     }
 
