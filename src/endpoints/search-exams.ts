@@ -125,7 +125,9 @@ export const searchExamsGetEndpoint: Endpoint = {
       return Response.json({ error: 'Tham số year không hợp lệ' }, { status: 400 })
     }
 
-    const where: any = { _status: { equals: 'published' } }
+    // List includes both draft + published — public ACL allows read for waiting
+    // state UI. pdfFile + answerFile fields hidden when draft (field-level ACL).
+    const where: any = {}
     if (cat) where.category = { equals: cat }
     if (year) where.year = { equals: year }
 
