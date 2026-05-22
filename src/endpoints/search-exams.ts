@@ -114,6 +114,8 @@ export const searchExamsGetEndpoint: Endpoint = {
     const cat = q.get('cat') || q.get('category') || undefined
     const provinceSlug = q.get('province') || undefined
     const year = q.get('year') || undefined
+    const examType = q.get('examType') || undefined
+    const yearMax = q.get('yearMax') || undefined
     const sortKey = q.get('sort') || 'latest'
 
     const rawLimit = Number(q.get('limit') ?? 20)
@@ -124,12 +126,20 @@ export const searchExamsGetEndpoint: Endpoint = {
     if (year && !YEAR_RE.test(year)) {
       return Response.json({ error: 'Tham số year không hợp lệ' }, { status: 400 })
     }
+    if (yearMax && !YEAR_RE.test(yearMax)) {
+      return Response.json({ error: 'Tham số yearMax không hợp lệ' }, { status: 400 })
+    }
+    if (examType && !['chinh-thuc', 'thi-thu', 'minh-hoa'].includes(examType)) {
+      return Response.json({ error: 'Tham số examType không hợp lệ' }, { status: 400 })
+    }
 
     // List includes both draft + published — public ACL allows read for waiting
     // state UI. pdfFile + answerFile fields hidden when draft (field-level ACL).
     const where: any = {}
     if (cat) where.category = { equals: cat }
     if (year) where.year = { equals: year }
+    if (examType) where.examType = { equals: examType }
+    if (yearMax) where.year = { ...(where.year || {}), less_than_equal: yearMax }
 
     if (provinceSlug) {
       const provRes = await req.payload.find({
