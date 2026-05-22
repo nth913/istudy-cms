@@ -98,13 +98,24 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
 
 // Standalone runner (ESM-compatible)
 import { pathToFileURL } from 'url'
+import path from 'path'
+import { fileURLToPath } from 'url'
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   ;(async () => {
+    const dotenv = (await import('dotenv')).default
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    dotenv.config({ path: path.resolve(__dirname, '../../.env.local') })
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+
     const { getPayload } = await import('payload')
     const config = (await import('../../src/payload.config')).default
     const payload = await getPayload({ config })
     await seedEvent20260524(payload)
     console.log('✅ Seeded 2 events + 2 exam drafts + sidebar config')
     process.exit(0)
-  })()
+  })().catch((err) => {
+    console.error('Seed failed:', err)
+    process.exit(1)
+  })
 }
