@@ -26,12 +26,7 @@ export const Exams: CollectionConfig = {
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
   access: {
-    read: ({ req: { user } }) => {
-      if (user?.role === 'admin' || user?.role === 'editor' || user?.role === 'reviewer') {
-        return true
-      }
-      return { _status: { equals: 'published' } }
-    },
+    read: () => true,
     create: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'editor',
     update: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'editor',
     delete: ({ req: { user } }) => user?.role === 'admin',
@@ -102,10 +97,22 @@ export const Exams: CollectionConfig = {
     {
       name: 'pdfFile', type: 'upload', relationTo: 'media',
       admin: { description: 'File đề PDF gốc (required khi publish)' },
+      access: {
+        read: ({ req: { user }, doc }: any) => {
+          if (user?.role === 'admin' || user?.role === 'editor' || user?.role === 'reviewer') return true
+          return doc?._status === 'published'
+        },
+      },
     },
     {
       name: 'answerFile', type: 'upload', relationTo: 'media',
       admin: { description: 'File đáp án (PDF hoặc image)' },
+      access: {
+        read: ({ req: { user }, doc }: any) => {
+          if (user?.role === 'admin' || user?.role === 'editor' || user?.role === 'reviewer') return true
+          return doc?._status === 'published'
+        },
+      },
     },
     {
       name: 'tags', type: 'group',
