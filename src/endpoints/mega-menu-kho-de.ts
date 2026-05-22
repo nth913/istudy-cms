@@ -1,4 +1,4 @@
-import type { Endpoint, PayloadRequest } from 'payload'
+import type { Endpoint, Payload, PayloadRequest } from 'payload'
 
 type ExamItem = { slug: string; title: string; year: string; isHot: boolean }
 type TabSlots = {
@@ -7,8 +7,13 @@ type TabSlots = {
   minhHoa: { hot: ExamItem[]; new: ExamItem[] }
 }
 
+export type MegaMenuKhoDeResponse = {
+  vao10: TabSlots
+  thptQg: TabSlots
+}
+
 const CACHE_TTL_MS = 60_000
-let cache: { at: number; data: any } | null = null
+let cache: { at: number; data: MegaMenuKhoDeResponse } | null = null
 
 const emptyTab = (): TabSlots => ({
   chinhThuc: { years: [] },
@@ -17,7 +22,7 @@ const emptyTab = (): TabSlots => ({
 })
 
 async function resolveLatestYears(
-  payload: any,
+  payload: Payload,
   category: string,
 ): Promise<Array<{ year: string; count: number }>> {
   const res = await payload.find({
@@ -37,13 +42,13 @@ async function resolveLatestYears(
     counts.set(y, (counts.get(y) ?? 0) + 1)
   }
   return [...counts.entries()]
-    .sort((a, b) => b[0].localeCompare(a[0]))
+    .sort((a, b) => Number(b[0]) - Number(a[0]))
     .slice(0, 3)
     .map(([year, count]) => ({ year, count }))
 }
 
 async function resolveHotNewMix(
-  payload: any,
+  payload: Payload,
   category: string,
   examType: string,
 ): Promise<{ hot: ExamItem[]; new: ExamItem[] }> {
@@ -55,7 +60,7 @@ async function resolveHotNewMix(
       examType: { equals: examType },
       _status: { equals: 'published' },
       'tags.hot.enabled': { equals: true },
-    },
+    } as any,
     sort: '-views',
     limit: 3,
   })
@@ -93,7 +98,7 @@ async function resolveHotNewMix(
   return { hot, new: newer }
 }
 
-async function buildResponse(payload: any) {
+async function buildResponse(payload: Payload): Promise<MegaMenuKhoDeResponse> {
   const [v10Years, v10TT, v10MH, thptYears, thptTT, thptMH] = await Promise.all([
     resolveLatestYears(payload, 'vao-10'),
     resolveHotNewMix(payload, 'vao-10', 'thi-thu'),
@@ -121,7 +126,7 @@ export const megaMenuKhoDeEndpoint: Endpoint = {
       cache = { at: now, data }
       return Response.json(data)
     } catch (err) {
-      ;(req as any).payload?.logger?.error?.({ err }, 'mega-menu-kho-de endpoint failed')
+      req.payload.logger.error({ err }, 'mega-menu-kho-de endpoint failed')
       return Response.json({ vao10: emptyTab(), thptQg: emptyTab() })
     }
   },
