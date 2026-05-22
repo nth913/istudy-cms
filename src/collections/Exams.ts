@@ -131,6 +131,13 @@ export const Exams: CollectionConfig = {
       ],
     },
     {
+      name: 'views', type: 'number', defaultValue: 0, min: 0,
+      admin: {
+        position: 'sidebar',
+        description: 'Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.',
+      },
+    },
+    {
       name: 'searchKey', type: 'text', index: true,
       admin: { hidden: true, readOnly: true },
     },

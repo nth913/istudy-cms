@@ -46,6 +46,7 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
     examType: 'chinh-thuc',
     year: '2026',
     province: (provNB.docs[0] as any).id,
+    views: 31,
     _status: 'draft',
   })
   const examDN = await findOrCreate<{ id: string }>(payload, 'exams', 'exam-vao-10-da-nang-2026', {
@@ -54,6 +55,7 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
     examType: 'chinh-thuc',
     year: '2026',
     province: (provDN.docs[0] as any).id,
+    views: 94,
     _status: 'draft',
   })
 
