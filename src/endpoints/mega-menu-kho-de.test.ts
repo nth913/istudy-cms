@@ -1,0 +1,242 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { megaMenuKhoDeEndpoint, __resetMegaMenuCache } from './mega-menu-kho-de'
+
+/**
+ * Fixtures: simulate Payload `find` against an in-memory exam table.
+ * Filter fields supported: category, examType, _status, 'tags.hot.enabled', slug.not_in
+ * Sort supported: '-views', '-createdAt'
+ */
+type ExamFixture = {
+  id: string
+  slug: string
+  title: string
+  year: string
+  category: string
+  examType: string
+  views?: number
+  _status: string
+  createdAt?: string
+  tags?: {
+    hot?: { enabled?: boolean; expiresAt?: string | null }
+  }
+}
+
+const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+
+const makeExams = (): ExamFixture[] => [
+  // vao-10 chinh-thuc: 3 years (2026, 2025, 2024) — 1 doc each (+1 extra 2026 to test counts>1)
+  {
+    id: 'v10-ct-2026-a',
+    slug: 'v10-ct-2026-a',
+    title: 'Vào 10 Hà Nội 2026',
+    year: '2026',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'published',
+    createdAt: '2026-06-01T00:00:00Z',
+  },
+  {
+    id: 'v10-ct-2026-b',
+    slug: 'v10-ct-2026-b',
+    title: 'Vào 10 TP.HCM 2026',
+    year: '2026',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'published',
+    createdAt: '2026-06-02T00:00:00Z',
+  },
+  {
+    id: 'v10-ct-2025-a',
+    slug: 'v10-ct-2025-a',
+    title: 'Vào 10 Hà Nội 2025',
+    year: '2025',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'published',
+    createdAt: '2025-06-01T00:00:00Z',
+  },
+  {
+    id: 'v10-ct-2024-a',
+    slug: 'v10-ct-2024-a',
+    title: 'Vào 10 Hà Nội 2024',
+    year: '2024',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'published',
+    createdAt: '2024-06-01T00:00:00Z',
+  },
+  {
+    id: 'v10-ct-2023-a',
+    slug: 'v10-ct-2023-a',
+    title: 'Vào 10 Hà Nội 2023 (older, should not appear in top 3)',
+    year: '2023',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'published',
+    createdAt: '2023-06-01T00:00:00Z',
+  },
+  // Draft — should NOT be counted
+  {
+    id: 'v10-ct-2027-draft',
+    slug: 'v10-ct-2027-draft',
+    title: 'Vào 10 2027 DRAFT',
+    year: '2027',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    _status: 'draft',
+    createdAt: '2027-06-01T00:00:00Z',
+  },
+  // vao-10 thi-thu: 1 HOT (views=500, hot.enabled, expiresAt future), 1 NEW (no hot tag)
+  {
+    id: 'v10-tt-hot',
+    slug: 'v10-tt-hot',
+    title: 'Thi thử HOT',
+    year: '2026',
+    category: 'vao-10',
+    examType: 'thi-thu',
+    views: 500,
+    _status: 'published',
+    createdAt: '2026-05-01T00:00:00Z',
+    tags: { hot: { enabled: true, expiresAt: futureDate } },
+  },
+  {
+    id: 'v10-tt-new',
+    slug: 'v10-tt-new',
+    title: 'Thi thử mới',
+    year: '2026',
+    category: 'vao-10',
+    examType: 'thi-thu',
+    views: 50,
+    _status: 'published',
+    createdAt: '2026-05-15T00:00:00Z',
+  },
+]
+
+const makePayload = (exams: ExamFixture[] = makeExams()) => {
+  const find = vi.fn(async (args: any) => {
+    if (args.collection !== 'exams') return { docs: [], totalDocs: 0 }
+    let rows = [...exams]
+    const w = args.where || {}
+    if (w._status?.equals) rows = rows.filter((e) => e._status === w._status.equals)
+    if (w.category?.equals) rows = rows.filter((e) => e.category === w.category.equals)
+    if (w.examType?.equals) rows = rows.filter((e) => e.examType === w.examType.equals)
+    if (w['tags.hot.enabled']?.equals !== undefined) {
+      rows = rows.filter(
+        (e) => Boolean(e.tags?.hot?.enabled) === Boolean(w['tags.hot.enabled'].equals),
+      )
+    }
+    if (Array.isArray(w.slug?.not_in)) {
+      const excl = new Set<string>(w.slug.not_in)
+      rows = rows.filter((e) => !excl.has(e.slug))
+    }
+    const sort: string = args.sort || '-createdAt'
+    if (sort === '-views') {
+      rows.sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
+    } else if (sort === '-createdAt') {
+      rows.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+    }
+    const limit = args.limit ?? 20
+    const docs = rows.slice(0, limit)
+    return { docs, totalDocs: rows.length }
+  })
+  return { find, logger: { error: vi.fn() } }
+}
+
+const callEndpoint = async (payload: any) => {
+  const handler = (megaMenuKhoDeEndpoint as any).handler
+  const res = (await handler({ payload } as any)) as Response
+  const body = await res.json()
+  return { status: res.status ?? 200, body }
+}
+
+describe('mega-menu-kho-de endpoint', () => {
+  beforeEach(() => {
+    __resetMegaMenuCache()
+  })
+
+  it('returns top 3 latest years for vao-10 chinh-thuc, descending', async () => {
+    const payload = makePayload()
+    const { status, body } = await callEndpoint(payload)
+    expect(status).toBe(200)
+    const years = body.vao10.chinhThuc.years
+    expect(years.map((y: any) => y.year)).toEqual(['2026', '2025', '2024'])
+    // 2026 has 2 docs, 2025 has 1, 2024 has 1
+    expect(years[0]).toEqual({ year: '2026', count: 2 })
+    expect(years[1]).toEqual({ year: '2025', count: 1 })
+    expect(years[2]).toEqual({ year: '2024', count: 1 })
+  })
+
+  it('returns hot+new with dedupe (hot slugs not in new array)', async () => {
+    const payload = makePayload()
+    const { body } = await callEndpoint(payload)
+    const tt = body.vao10.thiThu
+    expect(tt.hot).toHaveLength(1)
+    expect(tt.hot[0]).toMatchObject({ slug: 'v10-tt-hot', isHot: true })
+    // NEW must not include the hot slug
+    expect(tt.new.map((e: any) => e.slug)).not.toContain('v10-tt-hot')
+    expect(tt.new).toHaveLength(1)
+    expect(tt.new[0]).toMatchObject({ slug: 'v10-tt-new', isHot: false })
+  })
+
+  it('returns empty arrays when category has no data (thpt-qg / vao-dai-hoc)', async () => {
+    const payload = makePayload()
+    const { body } = await callEndpoint(payload)
+    expect(body.thptQg.chinhThuc.years).toEqual([])
+    expect(body.thptQg.thiThu.hot).toEqual([])
+    expect(body.thptQg.thiThu.new).toEqual([])
+    expect(body.thptQg.minhHoa.hot).toEqual([])
+    expect(body.thptQg.minhHoa.new).toEqual([])
+  })
+
+  it('returns 200 with empty fallback when payload.find throws', async () => {
+    const payload = {
+      find: vi.fn(async () => {
+        throw new Error('mongo down')
+      }),
+      logger: { error: vi.fn() },
+    }
+    const { status, body } = await callEndpoint(payload)
+    expect(status).toBe(200)
+    expect(body.vao10).toEqual({
+      chinhThuc: { years: [] },
+      thiThu: { hot: [], new: [] },
+      minhHoa: { hot: [], new: [] },
+    })
+    expect(body.thptQg).toEqual({
+      chinhThuc: { years: [] },
+      thiThu: { hot: [], new: [] },
+      minhHoa: { hot: [], new: [] },
+    })
+  })
+
+  it('caches response: second call within 60s does not invoke payload.find again', async () => {
+    const payload = makePayload()
+    await callEndpoint(payload)
+    const callsAfterFirst = (payload.find as any).mock.calls.length
+    expect(callsAfterFirst).toBeGreaterThan(0)
+    await callEndpoint(payload)
+    const callsAfterSecond = (payload.find as any).mock.calls.length
+    expect(callsAfterSecond).toBe(callsAfterFirst)
+  })
+
+  it('filters out expired hot exams', async () => {
+    const exams: ExamFixture[] = [
+      {
+        id: 'expired-hot',
+        slug: 'expired-hot',
+        title: 'Hot đã hết hạn',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'thi-thu',
+        views: 999,
+        _status: 'published',
+        createdAt: '2026-05-01T00:00:00Z',
+        tags: { hot: { enabled: true, expiresAt: pastDate } },
+      },
+    ]
+    const payload = makePayload(exams)
+    const { body } = await callEndpoint(payload)
+    expect(body.vao10.thiThu.hot).toHaveLength(0)
+  })
+})
