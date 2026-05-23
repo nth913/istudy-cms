@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
-import { examsPdfRequiredWhenPublished } from '../hooks/examsPdfRequiredWhenPublished'
+import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -20,8 +20,8 @@ export const Exams: CollectionConfig = {
     defaultColumns: ['title', 'category', 'examType', 'year', '_status'],
   },
   hooks: {
-    beforeValidate: [normalizeSlug, examsPdfRequiredWhenPublished],
-    beforeChange: [computeSearchKey],
+    beforeValidate: [normalizeSlug],
+    beforeChange: [examsAutoReadyFlags, computeSearchKey],
     afterChange: [examsAfterChange],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
@@ -115,6 +115,13 @@ export const Exams: CollectionConfig = {
       },
     },
     {
+      name: 'testOnline', type: 'checkbox', defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Cho phép làm bài online. Tick → hiện pill "Làm online" + nút "Làm bài" trên FE.',
+      },
+    },
+    {
       name: 'tags', type: 'group',
       fields: [
         {
@@ -129,6 +136,24 @@ export const Exams: CollectionConfig = {
         },
         { name: 'hay', type: 'checkbox', defaultValue: false },
       ],
+    },
+    {
+      name: 'deReady', type: 'checkbox', defaultValue: false,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Đề đã có file PDF. Tự động set từ pdfFile (read-only).',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'dapAnReady', type: 'checkbox', defaultValue: false,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Đáp án đã có file. Tự động set từ answerFile (read-only).',
+        readOnly: true,
+      },
     },
     {
       name: 'views', type: 'number', defaultValue: 0, min: 0,

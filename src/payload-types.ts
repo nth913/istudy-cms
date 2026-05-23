@@ -281,6 +281,10 @@ export interface Exam {
    * File đáp án (PDF hoặc image)
    */
   answerFile?: (string | null) | Media;
+  /**
+   * Cho phép làm bài online. Tick → hiện pill "Làm online" + nút "Làm bài" trên FE.
+   */
+  testOnline?: boolean | null;
   tags?: {
     hot?: {
       enabled?: boolean | null;
@@ -291,6 +295,14 @@ export interface Exam {
     };
     hay?: boolean | null;
   };
+  /**
+   * Đề đã có file PDF. Tự động set từ pdfFile (read-only).
+   */
+  deReady?: boolean | null;
+  /**
+   * Đáp án đã có file. Tự động set từ answerFile (read-only).
+   */
+  dapAnReady?: boolean | null;
   /**
    * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
    */
@@ -875,6 +887,7 @@ export interface ExamsSelect<T extends boolean = true> {
   notesForReviewer?: T;
   pdfFile?: T;
   answerFile?: T;
+  testOnline?: T;
   tags?:
     | T
     | {
@@ -886,6 +899,8 @@ export interface ExamsSelect<T extends boolean = true> {
             };
         hay?: T;
       };
+  deReady?: T;
+  dapAnReady?: T;
   views?: T;
   searchKey?: T;
   updatedAt?: T;

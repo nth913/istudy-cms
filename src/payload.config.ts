@@ -38,6 +38,7 @@ import { sitemapDataEndpoint } from './endpoints/sitemap-data'
 import { importExamsCsvEndpoint } from './endpoints/import-exams-csv'
 import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 import { searchExamsGetEndpoint } from './endpoints/search-exams'
+import { megaMenuKhoDeEndpoint } from './endpoints/mega-menu-kho-de'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -72,14 +73,19 @@ export default buildConfig({
     importExamsCsvEndpoint,
     importExamsBulkPdfEndpoint,
     searchExamsGetEndpoint,
+    megaMenuKhoDeEndpoint,
   ],
   cors: [
     'http://localhost:3000',
+    'https://www.aistudy.com.vn',
     'https://aistudy.com.vn',
   ],
   csrf: [
     'http://localhost:3000',
+    'http://localhost:3131',
+    'https://www.aistudy.com.vn',
     'https://aistudy.com.vn',
+    'https://h913.aistudy.com.vn',
   ],
   cookiePrefix: 'istudy',
   editor: lexicalEditor(),

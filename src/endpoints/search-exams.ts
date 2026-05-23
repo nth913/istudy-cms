@@ -6,6 +6,8 @@ const MOI_THRESHOLD_DAYS = Number(process.env.MOI_THRESHOLD_DAYS) || 30
 // ---------- Extended GET endpoint shared constants ----------
 
 const YEAR_RE = /^20[2-9][0-9]$/
+const EXAM_TYPES = ['chinh-thuc', 'thi-thu', 'minh-hoa'] as const
+type ExamType = typeof EXAM_TYPES[number]
 const SORT_MAP: Record<string, string> = {
   latest: '-createdAt',
   popular: '-viewsThisWeek',
@@ -15,7 +17,7 @@ const SORT_MAP: Record<string, string> = {
 type SearchBody = {
   q?: string
   category: 'vao-10' | 'vao-dai-hoc'
-  examType?: 'chinh-thuc' | 'thi-thu' | 'minh-hoa'
+  examType?: ExamType
   year?: string
   schoolMatch?: string
   provinceSlug?: string
@@ -114,6 +116,9 @@ export const searchExamsGetEndpoint: Endpoint = {
     const cat = q.get('cat') || q.get('category') || undefined
     const provinceSlug = q.get('province') || undefined
     const year = q.get('year') || undefined
+    const examType = q.get('examType') || undefined
+    const yearMax = q.get('yearMax') || undefined
+    const deReadyParam = q.get('deReady')
     const sortKey = q.get('sort') || 'latest'
 
     const rawLimit = Number(q.get('limit') ?? 20)
@@ -124,12 +129,26 @@ export const searchExamsGetEndpoint: Endpoint = {
     if (year && !YEAR_RE.test(year)) {
       return Response.json({ error: 'Tham số year không hợp lệ' }, { status: 400 })
     }
+    if (yearMax && !YEAR_RE.test(yearMax)) {
+      return Response.json({ error: 'Tham số yearMax không hợp lệ' }, { status: 400 })
+    }
+    if (year && yearMax) {
+      return Response.json(
+        { error: 'Không thể dùng đồng thời year và yearMax' },
+        { status: 400 },
+      )
+    }
+    if (examType && !(EXAM_TYPES as readonly string[]).includes(examType)) {
+      return Response.json({ error: 'Tham số examType không hợp lệ' }, { status: 400 })
+    }
 
     // List includes both draft + published — public ACL allows read for waiting
     // state UI. pdfFile + answerFile fields hidden when draft (field-level ACL).
     const where: any = {}
     if (cat) where.category = { equals: cat }
     if (year) where.year = { equals: year }
+    if (examType) where.examType = { equals: examType }
+    if (yearMax) where.year = { ...(where.year || {}), less_than_equal: yearMax }
 
     if (provinceSlug) {
       const provRes = await req.payload.find({
@@ -142,6 +161,13 @@ export const searchExamsGetEndpoint: Endpoint = {
         where.province = { equals: provId }
       }
       // province slug not found → silent no-filter (per spec)
+    }
+
+    // deReady filter: true → ready only, false → waiting only, undefined → no filter
+    if (deReadyParam === 'true') {
+      where.deReady = { equals: true }
+    } else if (deReadyParam === 'false') {
+      where.deReady = { equals: false }
     }
 
     const sort = SORT_MAP[sortKey] || SORT_MAP.latest

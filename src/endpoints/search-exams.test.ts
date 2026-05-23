@@ -72,28 +72,61 @@ const makeExams = () => [
     id: 'ex-a',
     slug: 'a-vao-10-hn',
     category: 'vao-10',
+    examType: 'chinh-thuc',
     province: { id: 'p-hn', slug: 'ha-noi' },
     year: '2026',
     views: 100,
     _status: 'published',
+    deReady: true,
   },
   {
     id: 'ex-b',
     slug: 'b-thpt-2025',
     category: 'vao-dai-hoc',
+    examType: 'chinh-thuc',
     province: null,
     year: '2025',
     views: 500,
     _status: 'published',
+    deReady: true,
   },
   {
     id: 'ex-c',
     slug: 'c-vao-10-tphcm',
     category: 'vao-10',
+    examType: 'thi-thu',
     province: { id: 'p-hcm', slug: 'tphcm' },
     year: '2026',
     views: 200,
     _status: 'published',
+    deReady: false,
+  },
+]
+
+// Extended fixture for examType + yearMax filter tests (covers thi-thu + older years).
+const makeExamsExtended = () => [
+  ...makeExams(),
+  {
+    id: 'ex-d',
+    slug: 'd-vao-10-thi-thu-2022',
+    category: 'vao-10',
+    examType: 'thi-thu',
+    province: { id: 'p-hn', slug: 'ha-noi' },
+    year: '2022',
+    views: 50,
+    _status: 'published',
+    deReady: true,
+  },
+  {
+    id: 'ex-e',
+    slug: 'e-vao-10-chinh-thuc-2020',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    province: { id: 'p-hn', slug: 'ha-noi' },
+    year: '2020',
+    views: 10,
+    _status: 'published',
+    deReady: true,
   },
 ]
 
@@ -120,9 +153,16 @@ const makePayload = (exams = makeExams()) => {
       const w = args.where || {}
       if (w._status?.equals) rows = rows.filter((e) => e._status === w._status.equals)
       if (w.category?.equals) rows = rows.filter((e) => e.category === w.category.equals)
+      if (w.examType?.equals) rows = rows.filter((e) => e.examType === w.examType.equals)
       if (w.year?.equals) rows = rows.filter((e) => e.year === w.year.equals)
+      if (w.year?.less_than_equal != null) {
+        rows = rows.filter((e) => Number(e.year) <= Number(w.year.less_than_equal))
+      }
       if (w.province?.equals) {
         rows = rows.filter((e) => e.province?.id === w.province.equals)
+      }
+      if (w.deReady?.equals != null) {
+        rows = rows.filter((e) => (e as any).deReady === w.deReady.equals)
       }
       const sort: string = args.sort || '-createdAt'
       if (sort === '-views') rows.sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
@@ -226,5 +266,76 @@ describe('search-exams extended (GET /api/search-exams)', () => {
       (c: any[]) => c[0].collection === 'exams',
     )
     expect(examsCall[0].sort).toBe('-createdAt')
+  })
+
+  it('GET filter theo examType', async () => {
+    const payload = makePayload(makeExamsExtended())
+    req = buildGetReq('/api/search-exams?cat=vao-10&examType=thi-thu&limit=50', payload)
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => d.examType === 'thi-thu')).toBe(true)
+  })
+
+  it('GET filter theo yearMax (year <= X)', async () => {
+    const payload = makePayload(makeExamsExtended())
+    req = buildGetReq('/api/search-exams?cat=vao-10&yearMax=2022&limit=50', payload)
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => Number(d.year) <= 2022)).toBe(true)
+  })
+
+  it('GET reject yearMax invalid', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&yearMax=abc')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('không hợp lệ')
+  })
+
+  it('GET reject examType invalid', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&examType=foo')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('không hợp lệ')
+  })
+
+  it('GET reject year + yearMax combined', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&year=2024&yearMax=2022')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Không thể dùng đồng thời')
+  })
+
+  it('GET filter deReady=true returns only ready exams', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&deReady=true&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => d.deReady === true)).toBe(true)
+  })
+
+  it('GET filter deReady=false returns only waiting exams', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&deReady=false&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => d.deReady === false)).toBe(true)
+  })
+
+  it('GET no deReady param returns both ready + waiting', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    const states = new Set(json.items.map((d: any) => d.deReady))
+    expect(states.size).toBeGreaterThanOrEqual(2) // both true + false present
   })
 })
