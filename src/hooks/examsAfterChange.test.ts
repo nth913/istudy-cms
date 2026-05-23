@@ -84,3 +84,54 @@ describe('examsAfterChange — revalidate webhook', () => {
     expect(result).toMatchObject({ _status: 'published', slug: 'a', title: 'A' })
   })
 })
+
+describe('examsAfterChange — deReady transition Slack', () => {
+  const originalUrl = process.env.FE_URL
+  const originalSecret = process.env.REVALIDATE_SECRET
+  const originalSlack = process.env.SLACK_WEBHOOK_URL
+
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    process.env.FE_URL = 'http://web.test'
+    process.env.SLACK_WEBHOOK_URL = 'http://slack.test'
+    process.env.REVALIDATE_SECRET = 'test-secret'
+  })
+
+  afterEach(() => {
+    process.env.FE_URL = originalUrl
+    process.env.REVALIDATE_SECRET = originalSecret
+    if (originalSlack === undefined) delete process.env.SLACK_WEBHOOK_URL
+    else process.env.SLACK_WEBHOOK_URL = originalSlack
+  })
+
+  it('Slack notify when previousDoc.deReady=false → doc.deReady=true', async () => {
+    const fetchMock = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
+    await examsAfterChange({
+      doc: { _status: 'published', slug: 'x', title: 'X exam', deReady: true },
+      previousDoc: { _status: 'published', deReady: false },
+      operation: 'update',
+    } as any)
+    await new Promise((r) => setTimeout(r, 10))
+    const slackCalls = fetchMock.mock.calls.filter((c) => String(c[0]).includes('slack.test'))
+    expect(slackCalls.length).toBeGreaterThan(0)
+    const body = JSON.parse(String((slackCalls[0][1] as any).body))
+    expect(String(body.text)).toContain('đã có file')
+    expect(String(body.text)).toContain('X exam')
+  })
+
+  it('no Slack notify when deReady stays true', async () => {
+    const fetchMock = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
+    await examsAfterChange({
+      doc: { _status: 'published', slug: 'x', title: 'X', deReady: true },
+      previousDoc: { _status: 'published', deReady: true },
+      operation: 'update',
+    } as any)
+    await new Promise((r) => setTimeout(r, 10))
+    const slackCalls = fetchMock.mock.calls.filter((c) => String(c[0]).includes('slack.test'))
+    expect(slackCalls.length).toBe(0)
+  })
+})

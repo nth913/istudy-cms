@@ -40,6 +40,18 @@ export const examsAfterChange: CollectionAfterChangeHook = async ({ doc, previou
     await notifySlack(`📢 *Đề thi*: «${title}» đã publish → ${feUrl.replace(/\/+$/, '')}/de-thi-chi-tiet/${slug}`)
   }
 
+  // deReady transition false → true: Slack notify "đề đã có file"
+  if (
+    operation === 'update' &&
+    previousDoc?.deReady === false &&
+    doc?.deReady === true
+  ) {
+    const feUrl = process.env.FE_URL || 'https://aistudy.com.vn'
+    const slug = typeof doc?.slug === 'string' ? doc.slug : ''
+    const title = typeof doc?.title === 'string' ? doc.title : ''
+    await notifySlack(`📄 *Đề*: «${title}» đã có file → ${feUrl.replace(/\/+$/, '')}/de-thi-chi-tiet/${slug}`)
+  }
+
   // Fire-and-forget mega menu revalidate (every change, so editor edits to a
   // published exam also refresh slot data on FE).
   void revalidateMegaMenu()
