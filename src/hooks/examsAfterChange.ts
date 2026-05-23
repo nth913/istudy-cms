@@ -5,14 +5,15 @@ const REVALIDATE_TAG = 'mega-menu-kho-de'
 const REVALIDATE_TIMEOUT_MS = 3000
 
 async function revalidateMegaMenu(): Promise<void> {
-  const webhookUrl = process.env.WEB_REVALIDATE_URL
+  const feUrl = process.env.FE_URL
   const secret = process.env.REVALIDATE_SECRET
-  if (!webhookUrl || !secret) return
+  if (!feUrl || !secret) return
+  const webhookUrl = `${feUrl.replace(/\/+$/, '')}/api/revalidate?tag=${REVALIDATE_TAG}`
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REVALIDATE_TIMEOUT_MS)
     try {
-      await fetch(`${webhookUrl}?tag=${REVALIDATE_TAG}`, {
+      await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'x-secret': secret, 'content-type': 'application/json' },
         body: '{}',

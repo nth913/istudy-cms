@@ -4,19 +4,19 @@ import { examsAfterChange } from './examsAfterChange'
 // Mute Slack network call: notifySlack only fires when SLACK_WEBHOOK_URL set,
 // but we still spy on global.fetch to inspect revalidate webhook calls.
 describe('examsAfterChange — revalidate webhook', () => {
-  const originalUrl = process.env.WEB_REVALIDATE_URL
+  const originalUrl = process.env.FE_URL
   const originalSecret = process.env.REVALIDATE_SECRET
   const originalSlack = process.env.SLACK_WEBHOOK_URL
 
   beforeEach(() => {
     vi.restoreAllMocks()
-    process.env.WEB_REVALIDATE_URL = 'http://web.test/api/revalidate'
+    process.env.FE_URL = 'http://web.test'
     process.env.REVALIDATE_SECRET = 'test-secret'
     delete process.env.SLACK_WEBHOOK_URL
   })
 
   afterEach(() => {
-    process.env.WEB_REVALIDATE_URL = originalUrl
+    process.env.FE_URL = originalUrl
     process.env.REVALIDATE_SECRET = originalSecret
     if (originalSlack === undefined) delete process.env.SLACK_WEBHOOK_URL
     else process.env.SLACK_WEBHOOK_URL = originalSlack
@@ -58,7 +58,7 @@ describe('examsAfterChange — revalidate webhook', () => {
   })
 
   it('skip webhook when env missing', async () => {
-    delete process.env.WEB_REVALIDATE_URL
+    delete process.env.FE_URL
     const fetchMock = vi
       .spyOn(global, 'fetch')
       .mockResolvedValue(new Response(null, { status: 200 }))
