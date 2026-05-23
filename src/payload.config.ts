@@ -77,11 +77,13 @@ export default buildConfig({
   ],
   cors: [
     'http://localhost:3000',
+    'https://www.aistudy.com.vn',
     'https://aistudy.com.vn',
   ],
   csrf: [
     'http://localhost:3000',
     'http://localhost:3131',
+    'https://www.aistudy.com.vn',
     'https://aistudy.com.vn',
     'https://h913.aistudy.com.vn',
   ],
