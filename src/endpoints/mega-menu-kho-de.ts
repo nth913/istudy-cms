@@ -1,4 +1,5 @@
 import type { Endpoint, Payload, PayloadRequest } from 'payload'
+import type { Exam } from '../payload-types'
 
 type ExamItem = { slug: string; title: string; year: string; isHot: boolean }
 type TabSlots = {
@@ -36,7 +37,7 @@ async function resolveLatestYears(
     pagination: false,
   })
   const counts = new Map<string, number>()
-  for (const d of res.docs as any[]) {
+  for (const d of res.docs as Exam[]) {
     if (d?.year == null) continue
     const y = String(d.year)
     counts.set(y, (counts.get(y) ?? 0) + 1)
@@ -59,18 +60,19 @@ async function resolveHotNewMix(
       category: { equals: category },
       examType: { equals: examType },
       _status: { equals: 'published' },
+      // Dotted key not narrowable by Payload Where<Exam> type — cast preserves filter.
       'tags.hot.enabled': { equals: true },
     } as any,
     sort: '-views',
     limit: 3,
   })
-  const hot: ExamItem[] = (hotRes.docs as any[])
+  const hot: ExamItem[] = (hotRes.docs as Exam[])
     .filter((d) => {
       const exp = d?.tags?.hot?.expiresAt
       return !exp || new Date(exp) > now
     })
     .map((d) => ({
-      slug: d.slug,
+      slug: d.slug ?? '',
       title: d.title,
       year: String(d.year ?? ''),
       isHot: true,
@@ -88,8 +90,8 @@ async function resolveHotNewMix(
     sort: '-createdAt',
     limit: 3,
   })
-  const newer: ExamItem[] = (newRes.docs as any[]).map((d) => ({
-    slug: d.slug,
+  const newer: ExamItem[] = (newRes.docs as Exam[]).map((d) => ({
+    slug: d.slug ?? '',
     title: d.title,
     year: String(d.year ?? ''),
     isHot: false,
