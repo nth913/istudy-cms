@@ -18,10 +18,11 @@ const __dirname = path.dirname(__filename)
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') })
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
-import { getPayload } from 'payload'
-import config from '../../src/payload.config'
-
 async function migrate(): Promise<void> {
+  // Defer payload imports until AFTER dotenv loads env vars.
+  const { getPayload } = await import('payload')
+  const { default: config } = await import('../../src/payload.config')
+
   const payload = await getPayload({ config })
   console.log('[migration] Loading exams...')
   const all = await payload.find({
@@ -42,11 +43,29 @@ async function migrate(): Promise<void> {
     if (e.dapAnReady !== newDapAnReady) updates.dapAnReady = newDapAnReady
 
     if (Object.keys(updates).length > 0) {
-      await payload.update({
-        collection: 'exams',
-        id: e.id,
-        data: updates,
-      })
+      let lastErr: unknown
+      let success = false
+      for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+          await payload.update({
+            collection: 'exams',
+            id: e.id,
+            data: updates,
+          })
+          success = true
+          break
+        } catch (err: any) {
+          lastErr = err
+          if (err?.code === 112 || err?.codeName === 'WriteConflict') {
+            const backoff = 500 * attempt
+            console.warn(`[migration] WriteConflict on ${e.slug}, retry ${attempt}/5 after ${backoff}ms`)
+            await new Promise((r) => setTimeout(r, backoff))
+            continue
+          }
+          throw err
+        }
+      }
+      if (!success) throw lastErr
       migrated++
       console.log(`[migration] ${e.slug}: ${JSON.stringify(updates)}`)
     } else {
