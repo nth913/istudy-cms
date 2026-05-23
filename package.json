@@ -24,6 +24,7 @@
     "seed:event-2026-05-24": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" tsx scripts/seed/event-2026-05-24.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "migrate:exam-3-state": "tsx scripts/migrations/2026-05-23-exam-3-state.ts",
     "watch:imports": "tsx scripts/folder-watch/index.ts",
     "docker:build": "docker build -f deploy/Dockerfile -t istudy-cms:local .",
     "docker:run": "docker run --rm -p 3000:3000 --env-file .env.local istudy-cms:local"
