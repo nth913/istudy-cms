@@ -22,7 +22,7 @@ describe('examsAfterChange — revalidate webhook', () => {
     else process.env.SLACK_WEBHOOK_URL = originalSlack
   })
 
-  it('fire POST webhook with secret header on update', async () => {
+  it('fire POST webhook with combined tags+paths body on update', async () => {
     const fetchMock = vi
       .spyOn(global, 'fetch')
       .mockResolvedValue(new Response(null, { status: 200 }))
@@ -31,13 +31,36 @@ describe('examsAfterChange — revalidate webhook', () => {
       previousDoc: { _status: 'published' },
       operation: 'update',
     } as any)
-    // Wait microtask for void fire-and-forget to dispatch
     await new Promise((r) => setTimeout(r, 10))
     expect(fetchMock).toHaveBeenCalled()
     const [url, init] = fetchMock.mock.calls[0]
-    expect(String(url)).toContain('tag=mega-menu-kho-de')
+    expect(String(url)).toBe('http://web.test/api/revalidate')
     expect((init as any)?.headers?.['x-secret']).toBe('test-secret')
     expect((init as any)?.method).toBe('POST')
+    const body = JSON.parse(String((init as any)?.body))
+    expect(body.tags).toContain('mega-menu-kho-de')
+    expect(body.tags).toContain('exams-list')
+    expect(body.tags).toContain('exams-sidebar-facets')
+    expect(body.tags).toContain('exam:a')
+    expect(body.paths).toContain('/kho-de-thi')
+    expect(body.paths).toContain('/de-thi-chi-tiet/a')
+  })
+
+  it('omit slug-scoped tag + path when slug missing', async () => {
+    const fetchMock = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
+    await examsAfterChange({
+      doc: { _status: 'published', title: 'no-slug' },
+      previousDoc: { _status: 'published' },
+      operation: 'update',
+    } as any)
+    await new Promise((r) => setTimeout(r, 10))
+    const [, init] = fetchMock.mock.calls[0]
+    const body = JSON.parse(String((init as any)?.body))
+    expect(body.tags).toContain('mega-menu-kho-de')
+    expect(body.tags.find((t: string) => t.startsWith('exam:'))).toBeUndefined()
+    expect(body.paths).toEqual(['/kho-de-thi'])
   })
 
   it('fire webhook on draft → published transition (alongside Slack notify)', async () => {
