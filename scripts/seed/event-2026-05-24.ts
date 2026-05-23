@@ -36,8 +36,13 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
     where: { slug: { equals: 'da-nang' } },
     limit: 1,
   })
-  if (!provNB.docs[0] || !provDN.docs[0]) {
-    throw new Error('Provinces ninh-binh + da-nang phải được seed trước')
+  const provHN = await payload.find({
+    collection: 'provinces' as any,
+    where: { slug: { equals: 'ha-noi' } },
+    limit: 1,
+  })
+  if (!provNB.docs[0] || !provDN.docs[0] || !provHN.docs[0]) {
+    throw new Error('Provinces ninh-binh + da-nang + ha-noi phải được seed trước')
   }
 
   const examNB = await findOrCreate<{ id: string }>(payload, 'exams', 'exam-vao-10-ninh-binh-2026', {
@@ -56,6 +61,16 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
     year: '2026',
     province: (provDN.docs[0] as any).id,
     views: 94,
+    _status: 'draft',
+  })
+  const examKHTN = await findOrCreate<{ id: string }>(payload, 'exams', 'exam-chuyen-anh-khtn-2026', {
+    title: 'Đề chuyên Tiếng Anh vào THPT Chuyên KHTN 2026',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    year: '2026',
+    province: (provHN.docs[0] as any).id,
+    school: 'THPT Chuyên Khoa học Tự nhiên',
+    views: 47,
     _status: 'draft',
   })
 
@@ -91,6 +106,23 @@ export async function seedEvent20260524(payload: Payload): Promise<void> {
     leadDays: 7,
     surfaces: ['header-mega', 'homepage-hero', 'cho-de'],
   })
+  await findOrCreate(payload, 'events', 'event-chuyen-anh-khtn-2026', {
+    title: 'Thi chuyên Tiếng Anh vào THPT Chuyên KHTN 2026',
+    short: 'Chuyên Anh KHTN',
+    kind: 'live-exam',
+    submenu: 'vao-10',
+    startAt: '2026-05-23T07:30:00+07:00',
+    endAt: '2026-05-24T00:00:00+07:00',
+    examEndTime: '2026-05-23T10:00:00+07:00',
+    heroEyebrow: 'Tuyển sinh chuyên KHTN 2026',
+    examRef: examKHTN.id,
+    deReady: false,
+    dapAnReady: false,
+    priority: 9,
+    leadDays: 7,
+    surfaces: ['header-mega', 'homepage-hero', 'cho-de'],
+    _status: 'published',
+  })
 
   await (payload as any).updateGlobal({
     slug: 'kho_de_sidebar_config',
@@ -114,7 +146,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const config = (await import('../../src/payload.config')).default
     const payload = await getPayload({ config })
     await seedEvent20260524(payload)
-    console.log('✅ Seeded 2 events + 2 exam drafts + sidebar config')
+    console.log('✅ Seeded 3 events + 3 exam drafts + sidebar config')
     process.exit(0)
   })().catch((err) => {
     console.error('Seed failed:', err)
