@@ -77,6 +77,7 @@ const makeExams = () => [
     year: '2026',
     views: 100,
     _status: 'published',
+    deReady: true,
   },
   {
     id: 'ex-b',
@@ -87,6 +88,7 @@ const makeExams = () => [
     year: '2025',
     views: 500,
     _status: 'published',
+    deReady: true,
   },
   {
     id: 'ex-c',
@@ -97,6 +99,7 @@ const makeExams = () => [
     year: '2026',
     views: 200,
     _status: 'published',
+    deReady: false,
   },
 ]
 
@@ -155,6 +158,9 @@ const makePayload = (exams = makeExams()) => {
       }
       if (w.province?.equals) {
         rows = rows.filter((e) => e.province?.id === w.province.equals)
+      }
+      if (w.deReady?.equals != null) {
+        rows = rows.filter((e) => (e as any).deReady === w.deReady.equals)
       }
       const sort: string = args.sort || '-createdAt'
       if (sort === '-views') rows.sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
@@ -302,5 +308,32 @@ describe('search-exams extended (GET /api/search-exams)', () => {
     expect(res.status).toBe(400)
     const body = await res.json()
     expect(body.error).toContain('Không thể dùng đồng thời')
+  })
+
+  it('GET filter deReady=true returns only ready exams', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&deReady=true&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => d.deReady === true)).toBe(true)
+  })
+
+  it('GET filter deReady=false returns only waiting exams', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&deReady=false&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.items.length).toBeGreaterThan(0)
+    expect(json.items.every((d: any) => d.deReady === false)).toBe(true)
+  })
+
+  it('GET no deReady param returns both ready + waiting', async () => {
+    req = buildGetReq('/api/search-exams?cat=vao-10&limit=50')
+    const res = (await searchExamsGetEndpoint.handler!(req)) as Response
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    const states = new Set(json.items.map((d: any) => d.deReady))
+    expect(states.size).toBeGreaterThanOrEqual(2) // both true + false present
   })
 })

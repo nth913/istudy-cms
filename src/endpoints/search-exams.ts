@@ -118,6 +118,7 @@ export const searchExamsGetEndpoint: Endpoint = {
     const year = q.get('year') || undefined
     const examType = q.get('examType') || undefined
     const yearMax = q.get('yearMax') || undefined
+    const deReadyParam = q.get('deReady')
     const sortKey = q.get('sort') || 'latest'
 
     const rawLimit = Number(q.get('limit') ?? 20)
@@ -160,6 +161,13 @@ export const searchExamsGetEndpoint: Endpoint = {
         where.province = { equals: provId }
       }
       // province slug not found → silent no-filter (per spec)
+    }
+
+    // deReady filter: true → ready only, false → waiting only, undefined → no filter
+    if (deReadyParam === 'true') {
+      where.deReady = { equals: true }
+    } else if (deReadyParam === 'false') {
+      where.deReady = { equals: false }
     }
 
     const sort = SORT_MAP[sortKey] || SORT_MAP.latest
