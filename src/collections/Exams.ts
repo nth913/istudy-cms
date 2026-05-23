@@ -115,6 +115,13 @@ export const Exams: CollectionConfig = {
       },
     },
     {
+      name: 'showOnlineOption', type: 'checkbox', defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Cho phép làm bài online. Tick → hiện pill "Làm online" + nút "Làm bài" trên FE.',
+      },
+    },
+    {
       name: 'tags', type: 'group',
       fields: [
         {
