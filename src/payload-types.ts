@@ -281,6 +281,10 @@ export interface Exam {
    * File đáp án (PDF hoặc image)
    */
   answerFile?: (string | null) | Media;
+  /**
+   * Cho phép làm bài online. Tick → hiện pill "Làm online" + nút "Làm bài" trên FE.
+   */
+  testOnline?: boolean | null;
   tags?: {
     hot?: {
       enabled?: boolean | null;
@@ -875,6 +879,7 @@ export interface ExamsSelect<T extends boolean = true> {
   notesForReviewer?: T;
   pdfFile?: T;
   answerFile?: T;
+  testOnline?: T;
   tags?:
     | T
     | {
