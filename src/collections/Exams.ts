@@ -138,6 +138,24 @@ export const Exams: CollectionConfig = {
       ],
     },
     {
+      name: 'deReady', type: 'checkbox', defaultValue: false,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Đề đã có file PDF. Tự động set từ pdfFile (read-only).',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'dapAnReady', type: 'checkbox', defaultValue: false,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Đáp án đã có file. Tự động set từ answerFile (read-only).',
+        readOnly: true,
+      },
+    },
+    {
       name: 'views', type: 'number', defaultValue: 0, min: 0,
       admin: {
         position: 'sidebar',

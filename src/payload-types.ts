@@ -296,6 +296,14 @@ export interface Exam {
     hay?: boolean | null;
   };
   /**
+   * Đề đã có file PDF. Tự động set từ pdfFile (read-only).
+   */
+  deReady?: boolean | null;
+  /**
+   * Đáp án đã có file. Tự động set từ answerFile (read-only).
+   */
+  dapAnReady?: boolean | null;
+  /**
    * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
    */
   views?: number | null;
@@ -891,6 +899,8 @@ export interface ExamsSelect<T extends boolean = true> {
             };
         hay?: T;
       };
+  deReady?: T;
+  dapAnReady?: T;
   views?: T;
   searchKey?: T;
   updatedAt?: T;
