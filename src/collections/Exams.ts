@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
+import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
 import { examsPdfRequiredWhenPublished } from '../hooks/examsPdfRequiredWhenPublished'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
@@ -21,7 +22,7 @@ export const Exams: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [normalizeSlug, examsPdfRequiredWhenPublished],
-    beforeChange: [computeSearchKey],
+    beforeChange: [examsAutoReadyFlags, computeSearchKey],
     afterChange: [examsAfterChange],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
