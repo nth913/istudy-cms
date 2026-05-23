@@ -19,6 +19,8 @@ import { Interactions } from './collections/Interactions'
 import { Books } from './collections/Books'
 import { AffiliateClicks } from './collections/AffiliateClicks'
 
+import { KhoDeSidebarConfig } from './globals/KhoDeSidebarConfig'
+
 import { notifyEndpoint } from './endpoints/notify'
 import { eventsV1Endpoint } from './endpoints/events-v1'
 import { newsletterSubscribeEndpoint } from './endpoints/newsletter-subscribe'
@@ -35,6 +37,8 @@ import {
 import { sitemapDataEndpoint } from './endpoints/sitemap-data'
 import { importExamsCsvEndpoint } from './endpoints/import-exams-csv'
 import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
+import { searchExamsGetEndpoint } from './endpoints/search-exams'
+import { megaMenuKhoDeEndpoint } from './endpoints/mega-menu-kho-de'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -50,6 +54,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
+  globals: [KhoDeSidebarConfig],
   endpoints: [
     notifyEndpoint,
     eventsV1Endpoint,
@@ -67,6 +72,8 @@ export default buildConfig({
     sitemapDataEndpoint,
     importExamsCsvEndpoint,
     importExamsBulkPdfEndpoint,
+    searchExamsGetEndpoint,
+    megaMenuKhoDeEndpoint,
   ],
   cors: [
     'http://localhost:3000',
@@ -74,7 +81,9 @@ export default buildConfig({
   ],
   csrf: [
     'http://localhost:3000',
+    'http://localhost:3131',
     'https://aistudy.com.vn',
+    'https://h913.aistudy.com.vn',
   ],
   cookiePrefix: 'istudy',
   editor: lexicalEditor(),

@@ -1,6 +1,6 @@
 # Deploy — istudy-cms
 
-VPS bootstrap + deploy procedure cho `cms.aistudy.com.vn`.
+VPS bootstrap + deploy procedure cho `h913.aistudy.com.vn`.
 
 ## VPS spec
 
@@ -106,14 +106,14 @@ echo <PAT> | docker login ghcr.io -u nth913 --password-stdin
 ### 7. Cloudflare DNS
 
 Vào Cloudflare dashboard:
-- A record `cms.aistudy.com.vn` → `<VPS_IP>`
+- A record `h913.aistudy.com.vn` → `<VPS_IP>`
 - **Proxy status: DNS only (orange-cloud OFF)** — WebSocket admin sẽ vỡ nếu bật
 
 ### 8. TLS Let's Encrypt
 
 ```bash
 sudo apt install -y certbot
-sudo certbot certonly --standalone -d cms.aistudy.com.vn \
+sudo certbot certonly --standalone -d h913.aistudy.com.vn \
   --email <admin-email> --agree-tos --no-eff-email
 
 # Auto-renew cron
@@ -133,14 +133,14 @@ cd /opt/istudy-cms
 docker compose pull
 docker compose up -d
 docker compose logs -f cms  # check
-curl -fsS https://cms.aistudy.com.vn/api/health  # verify
+curl -fsS https://h913.aistudy.com.vn/api/health  # verify
 ```
 
 ## GitHub Secrets (anh add Repository → Settings → Secrets)
 
 | Secret | Value |
 |---|---|
-| `VPS_HOST` | `<VPS_IP>` hoặc `cms.aistudy.com.vn` |
+| `VPS_HOST` | `<VPS_IP>` hoặc `h913.aistudy.com.vn` |
 | `VPS_USER` | `deploy` |
 | `SSH_PRIVATE_KEY` | Private key tương ứng với public key authorized_keys của user deploy |
 | `GHCR_PULL_TOKEN` | Same PAT đã dùng `docker login ghcr.io` (read:packages) |
@@ -158,5 +158,5 @@ ssh deploy@<VPS_IP>
 cd /opt/istudy-cms
 docker image ls ghcr.io/nth913/istudy-cms  # list available tags
 VERSION=sha-<previous-7char> docker compose up -d cms --wait
-curl -fsS https://cms.aistudy.com.vn/api/health
+curl -fsS https://h913.aistudy.com.vn/api/health
 ```

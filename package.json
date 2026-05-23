@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev -p 3131",
+    "dev:watch": "nodemon --watch src/collections --watch src/globals --watch src/endpoints --watch src/hooks --watch src/access --watch src/blocks --watch src/payload.config.ts --watch src/seed --ext ts,tsx --signal SIGTERM --delay 800ms --exec 'cross-env NODE_OPTIONS=--no-deprecation next dev -p 3131'",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev -p 3131",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p 3131",
@@ -20,8 +21,10 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "seed": "tsx scripts/seed/index.ts",
+    "seed:event-2026-05-24": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" tsx scripts/seed/event-2026-05-24.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "migrate:exam-3-state": "tsx scripts/migrations/2026-05-23-exam-3-state.ts",
     "watch:imports": "tsx scripts/folder-watch/index.ts",
     "docker:build": "docker build -f deploy/Dockerfile -t istudy-cms:local .",
     "docker:run": "docker run --rm -p 3000:3000 --env-file .env.local istudy-cms:local"
@@ -59,6 +62,7 @@
     "eslint": "^9.16.0",
     "eslint-config-next": "^15.0.0",
     "jsdom": "^25.0.0",
+    "nodemon": "^3.1.14",
     "prettier": "^3.4.2",
     "tsx": "^4.19.0",
     "typescript": "5.5.3",
