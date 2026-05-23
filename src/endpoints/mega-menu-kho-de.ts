@@ -60,6 +60,7 @@ async function resolveHotNewMix(
       category: { equals: category },
       examType: { equals: examType },
       _status: { equals: 'published' },
+      deReady: { equals: true },
       // Dotted key not narrowable by Payload Where<Exam> type — cast preserves filter.
       'tags.hot.enabled': { equals: true },
     } as any,
@@ -85,6 +86,7 @@ async function resolveHotNewMix(
       category: { equals: category },
       examType: { equals: examType },
       _status: { equals: 'published' },
+      deReady: { equals: true },
       ...(hotSlugs.length ? { slug: { not_in: hotSlugs } } : {}),
     },
     sort: '-createdAt',

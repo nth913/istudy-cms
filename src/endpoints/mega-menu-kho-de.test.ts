@@ -16,6 +16,7 @@ type ExamFixture = {
   views?: number
   _status: string
   createdAt?: string
+  deReady?: boolean
   tags?: {
     hot?: { enabled?: boolean; expiresAt?: string | null }
   }
@@ -97,6 +98,7 @@ const makeExams = (): ExamFixture[] => [
     examType: 'thi-thu',
     views: 500,
     _status: 'published',
+    deReady: true,
     createdAt: '2026-05-01T00:00:00Z',
     tags: { hot: { enabled: true, expiresAt: futureDate } },
   },
@@ -109,6 +111,7 @@ const makeExams = (): ExamFixture[] => [
     examType: 'thi-thu',
     views: 50,
     _status: 'published',
+    deReady: true,
     createdAt: '2026-05-15T00:00:00Z',
   },
 ]
@@ -125,6 +128,9 @@ const makePayload = (exams: ExamFixture[] = makeExams()) => {
       rows = rows.filter(
         (e) => Boolean(e.tags?.hot?.enabled) === Boolean(w['tags.hot.enabled'].equals),
       )
+    }
+    if (w.deReady?.equals !== undefined) {
+      rows = rows.filter((e) => Boolean(e.deReady) === Boolean(w.deReady.equals))
     }
     if (Array.isArray(w.slug?.not_in)) {
       const excl = new Set<string>(w.slug.not_in)
@@ -220,6 +226,73 @@ describe('mega-menu-kho-de endpoint', () => {
     expect(callsAfterSecond).toBe(callsAfterFirst)
   })
 
+  it('latest-years includes waiting exams (no deReady filter)', async () => {
+    const exams: ExamFixture[] = [
+      {
+        id: 'ready-2026',
+        slug: 'ready-2026',
+        title: 'Ready 2026',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'chinh-thuc',
+        _status: 'published',
+        deReady: true,
+        createdAt: '2026-06-01T00:00:00Z',
+      },
+      {
+        id: 'waiting-2025',
+        slug: 'waiting-2025',
+        title: 'Waiting 2025',
+        year: '2025',
+        category: 'vao-10',
+        examType: 'chinh-thuc',
+        _status: 'published',
+        deReady: false,
+        createdAt: '2025-06-01T00:00:00Z',
+      },
+    ]
+    const payload = makePayload(exams)
+    const { body } = await callEndpoint(payload)
+    const years = body.vao10.chinhThuc.years.map((y: any) => y.year)
+    expect(years).toContain('2026')
+    expect(years).toContain('2025')
+  })
+
+  it('hot-new-mix excludes waiting exams (deReady filter)', async () => {
+    const exams: ExamFixture[] = [
+      {
+        id: 'ready-hot',
+        slug: 'ready-hot',
+        title: 'Ready Hot',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'thi-thu',
+        views: 500,
+        _status: 'published',
+        deReady: true,
+        createdAt: '2026-05-01T00:00:00Z',
+        tags: { hot: { enabled: true, expiresAt: futureDate } },
+      },
+      {
+        id: 'waiting-tt',
+        slug: 'waiting-tt',
+        title: 'Waiting TT',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'thi-thu',
+        _status: 'published',
+        deReady: false,
+        createdAt: '2026-05-15T00:00:00Z',
+      },
+    ]
+    const payload = makePayload(exams)
+    const { body } = await callEndpoint(payload)
+    const hotSlugs = body.vao10.thiThu.hot.map((e: any) => e.slug)
+    const newSlugs = body.vao10.thiThu.new.map((e: any) => e.slug)
+    expect(hotSlugs).toContain('ready-hot')
+    expect(newSlugs).not.toContain('waiting-tt')
+  })
+
   it('filters out expired hot exams', async () => {
     const exams: ExamFixture[] = [
       {
@@ -231,6 +304,7 @@ describe('mega-menu-kho-de endpoint', () => {
         examType: 'thi-thu',
         views: 999,
         _status: 'published',
+        deReady: true,
         createdAt: '2026-05-01T00:00:00Z',
         tags: { hot: { enabled: true, expiresAt: pastDate } },
       },
