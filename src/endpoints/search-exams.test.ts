@@ -115,6 +115,7 @@ const makeExamsExtended = () => [
     year: '2022',
     views: 50,
     _status: 'published',
+    deReady: true,
   },
   {
     id: 'ex-e',
@@ -125,6 +126,7 @@ const makeExamsExtended = () => [
     year: '2020',
     views: 10,
     _status: 'published',
+    deReady: true,
   },
 ]
 
