@@ -81,7 +81,9 @@ export default buildConfig({
   ],
   csrf: [
     'http://localhost:3000',
+    'http://localhost:3131',
     'https://aistudy.com.vn',
+    'https://h913.aistudy.com.vn',
   ],
   cookiePrefix: 'istudy',
   editor: lexicalEditor(),
