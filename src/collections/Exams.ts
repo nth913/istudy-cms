@@ -3,7 +3,6 @@ import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
 import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
-import { examsPdfRequiredWhenPublished } from '../hooks/examsPdfRequiredWhenPublished'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -21,7 +20,7 @@ export const Exams: CollectionConfig = {
     defaultColumns: ['title', 'category', 'examType', 'year', '_status'],
   },
   hooks: {
-    beforeValidate: [normalizeSlug, examsPdfRequiredWhenPublished],
+    beforeValidate: [normalizeSlug],
     beforeChange: [examsAutoReadyFlags, computeSearchKey],
     afterChange: [examsAfterChange],
   },
