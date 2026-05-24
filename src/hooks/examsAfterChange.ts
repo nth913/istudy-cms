@@ -11,7 +11,10 @@ async function revalidateForExam(slug: string): Promise<void> {
   const tags = ['mega-menu-kho-de', 'exams-list', 'exams-sidebar-facets']
   if (slug) tags.push(`exam:${slug}`)
   const paths = ['/kho-de-thi']
-  if (slug) paths.push(`/de-thi-chi-tiet/${slug}`)
+  if (slug) {
+    paths.push(`/de-thi-chi-tiet/${slug}`)
+    paths.push(`/dap-an/${slug}`)
+  }
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REVALIDATE_TIMEOUT_MS)
