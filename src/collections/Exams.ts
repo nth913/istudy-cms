@@ -163,6 +163,15 @@ export const Exams: CollectionConfig = {
       },
     },
     {
+      name: 'allowDownload',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Cho phép tải PDF/đáp án về máy. Tắt → ẩn các nút Tải trên FE (đề thi + đáp án + mobile CTA).',
+      },
+    },
+    {
       name: 'searchKey', type: 'text', index: true,
       admin: { hidden: true, readOnly: true },
     },

@@ -307,6 +307,10 @@ export interface Exam {
    * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
    */
   views?: number | null;
+  /**
+   * Cho phép tải PDF/đáp án về máy. Tắt → ẩn các nút Tải trên FE (đề thi + đáp án + mobile CTA).
+   */
+  allowDownload?: boolean | null;
   searchKey?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -902,6 +906,7 @@ export interface ExamsSelect<T extends boolean = true> {
   deReady?: T;
   dapAnReady?: T;
   views?: T;
+  allowDownload?: T;
   searchKey?: T;
   updatedAt?: T;
   createdAt?: T;
