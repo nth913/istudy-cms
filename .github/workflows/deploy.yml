@@ -65,9 +65,15 @@ jobs:
           cd /opt/istudy-cms
           PREV_IMAGE=\$(docker compose ps -q cms | xargs -r docker inspect -f '{{.Config.Image}}' || echo "")
           echo "Previous image: \$PREV_IMAGE"
+          # Pull latest repo so nginx.conf + docker-compose.yml track main.
+          git fetch origin main
+          git reset --hard origin/main
           export VERSION=${VERSION}
           docker compose pull cms
           docker compose up -d cms --wait --wait-timeout 60
+          # Reload nginx (config is mounted from filesystem, needs explicit reload).
+          docker compose exec -T nginx nginx -t
+          docker compose exec -T nginx nginx -s reload
           sleep 10
           if ! curl -fsS https://h913.aistudy.com.vn/api/health > /dev/null; then
             echo "Healthcheck FAILED, rolling back"
