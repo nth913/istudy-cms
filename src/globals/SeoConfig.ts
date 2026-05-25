@@ -4,7 +4,6 @@ const ogImageField = {
   name: 'ogImage',
   type: 'upload' as const,
   relationTo: 'media' as const,
-  filterOptions: { purpose: { equals: 'og_image' } },
 }
 
 export const SeoConfig: GlobalConfig = {

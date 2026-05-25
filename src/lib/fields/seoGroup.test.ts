@@ -24,11 +24,11 @@ describe('seoGroup field config', () => {
     expect(desc.maxLength).toBe(200)
   })
 
-  it('field ogImage upload tới media, filter purpose=og_image', () => {
+  it('field ogImage upload tới media (không filter, cho phép mọi ảnh)', () => {
     const og = seoGroup.fields.find((f: any) => f.name === 'ogImage') as any
     expect(og.type).toBe('upload')
     expect(og.relationTo).toBe('media')
-    expect(og.filterOptions).toEqual({ purpose: { equals: 'og_image' } })
+    expect(og.filterOptions).toBeUndefined()
   })
 
   it('field ogTitle text maxLength 95', () => {
