@@ -3,6 +3,7 @@ import { booksBeforeValidate } from '../hooks/booksBeforeValidate'
 import { booksListEndpoint } from '../endpoints/books-list'
 import { booksDetailEndpoint } from '../endpoints/books-detail'
 import { bookClickEndpoint } from '../endpoints/book-click'
+import { seoGroup } from '../lib/fields/seoGroup'
 
 export const Books: CollectionConfig = {
   slug: 'books',
@@ -97,7 +98,6 @@ export const Books: CollectionConfig = {
       defaultValue: 0,
       admin: { readOnly: true },
     },
-    { name: 'seoTitle', type: 'text', maxLength: 70 },
-    { name: 'seoDescription', type: 'textarea', maxLength: 200 },
+    seoGroup,
   ],
 }

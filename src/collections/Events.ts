@@ -5,6 +5,7 @@ import { eventsActiveEndpoint } from '../endpoints/events-active'
 import { eventsDetailEndpoint } from '../endpoints/events-detail'
 import { eventPublishDeEndpoint } from '../endpoints/event-publish-de'
 import { eventPublishDapAnEndpoint } from '../endpoints/event-publish-dapan'
+import { seoGroup } from '../lib/fields/seoGroup'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -252,5 +253,6 @@ export const Events: CollectionConfig = {
         { name: 'popup', type: 'checkbox', defaultValue: false },
       ],
     },
+    seoGroup,
   ],
 }

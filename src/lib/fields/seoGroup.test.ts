@@ -1,0 +1,45 @@
+import { describe, it, expect } from 'vitest'
+import { seoGroup } from './seoGroup'
+
+describe('seoGroup field config', () => {
+  it('là group field tên `seo`', () => {
+    expect(seoGroup.type).toBe('group')
+    expect(seoGroup.name).toBe('seo')
+  })
+
+  it('có 5 sub-field: title, description, ogImage, ogTitle, ogDescription', () => {
+    const fieldNames = seoGroup.fields.map((f: any) => f.name)
+    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription'])
+  })
+
+  it('field title text maxLength 70', () => {
+    const title = seoGroup.fields.find((f: any) => f.name === 'title') as any
+    expect(title.type).toBe('text')
+    expect(title.maxLength).toBe(70)
+  })
+
+  it('field description textarea maxLength 200', () => {
+    const desc = seoGroup.fields.find((f: any) => f.name === 'description') as any
+    expect(desc.type).toBe('textarea')
+    expect(desc.maxLength).toBe(200)
+  })
+
+  it('field ogImage upload tới media, filter purpose=og_image', () => {
+    const og = seoGroup.fields.find((f: any) => f.name === 'ogImage') as any
+    expect(og.type).toBe('upload')
+    expect(og.relationTo).toBe('media')
+    expect(og.filterOptions).toEqual({ purpose: { equals: 'og_image' } })
+  })
+
+  it('field ogTitle text maxLength 95', () => {
+    const og = seoGroup.fields.find((f: any) => f.name === 'ogTitle') as any
+    expect(og.type).toBe('text')
+    expect(og.maxLength).toBe(95)
+  })
+
+  it('field ogDescription textarea maxLength 200', () => {
+    const og = seoGroup.fields.find((f: any) => f.name === 'ogDescription') as any
+    expect(og.type).toBe('textarea')
+    expect(og.maxLength).toBe(200)
+  })
+})

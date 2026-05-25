@@ -111,9 +111,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     kho_de_sidebar_config: KhoDeSidebarConfig;
+    'seo-config': SeoConfig;
   };
   globalsSelect: {
     kho_de_sidebar_config: KhoDeSidebarConfigSelect<false> | KhoDeSidebarConfigSelect<true>;
+    'seo-config': SeoConfigSelect<false> | SeoConfigSelect<true>;
   };
   locale: null;
   widgets: {
@@ -307,7 +309,24 @@ export interface Exam {
    * Lượt xem khởi điểm (seed). Sẽ cộng dồn lượt xem thật sau.
    */
   views?: number | null;
+  /**
+   * Cho phép tải PDF/đáp án về máy. Tắt → ẩn các nút Tải trên FE (đề thi + đáp án + mobile CTA).
+   */
+  allowDownload?: boolean | null;
   searchKey?: string | null;
+  /**
+   * SEO + Open Graph. Để trống = dùng fallback collection/global.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Tỉ lệ 1200×630 khuyến nghị.
+     */
+    ogImage?: (string | null) | Media;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -349,9 +368,19 @@ export interface Post {
   likeCount?: number | null;
   relatedPosts?: (string | Post)[] | null;
   relatedExams?: (string | Exam)[] | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  ogImage?: (string | null) | Media;
+  /**
+   * SEO + Open Graph. Để trống = dùng fallback collection/global.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Tỉ lệ 1200×630 khuyến nghị.
+     */
+    ogImage?: (string | null) | Media;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -467,6 +496,19 @@ export interface Event {
     hero?: boolean | null;
     popup?: boolean | null;
   };
+  /**
+   * SEO + Open Graph. Để trống = dùng fallback collection/global.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Tỉ lệ 1200×630 khuyến nghị.
+     */
+    ogImage?: (string | null) | Media;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -560,8 +602,19 @@ export interface Book {
   relatedExams?: (string | Exam)[] | null;
   relatedPosts?: (string | Post)[] | null;
   clickCount?: number | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
+  /**
+   * SEO + Open Graph. Để trống = dùng fallback collection/global.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Tỉ lệ 1200×630 khuyến nghị.
+     */
+    ogImage?: (string | null) | Media;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -902,7 +955,17 @@ export interface ExamsSelect<T extends boolean = true> {
   deReady?: T;
   dapAnReady?: T;
   views?: T;
+  allowDownload?: T;
   searchKey?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -926,9 +989,15 @@ export interface PostsSelect<T extends boolean = true> {
   likeCount?: T;
   relatedPosts?: T;
   relatedExams?: T;
-  seoTitle?: T;
-  seoDescription?: T;
-  ogImage?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -970,6 +1039,15 @@ export interface EventsSelect<T extends boolean = true> {
     | {
         hero?: T;
         popup?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+        ogTitle?: T;
+        ogDescription?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1040,8 +1118,15 @@ export interface BooksSelect<T extends boolean = true> {
   relatedExams?: T;
   relatedPosts?: T;
   clickCount?: T;
-  seoTitle?: T;
-  seoDescription?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1164,6 +1249,35 @@ export interface KhoDeSidebarConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-config".
+ */
+export interface SeoConfig {
+  id: string;
+  siteName?: string | null;
+  twitterHandle?: string | null;
+  defaultTitle?: string | null;
+  defaultTitleSuffix?: string | null;
+  defaultDescription?: string | null;
+  defaultOgImage?: (string | null) | Media;
+  collectionDefaults?: {
+    posts?: {
+      ogImage?: (string | null) | Media;
+    };
+    exams?: {
+      ogImage?: (string | null) | Media;
+    };
+    events?: {
+      ogImage?: (string | null) | Media;
+    };
+    books?: {
+      ogImage?: (string | null) | Media;
+    };
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "kho_de_sidebar_config_select".
  */
 export interface KhoDeSidebarConfigSelect<T extends boolean = true> {
@@ -1180,6 +1294,45 @@ export interface KhoDeSidebarConfigSelect<T extends boolean = true> {
               id?: T;
             };
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-config_select".
+ */
+export interface SeoConfigSelect<T extends boolean = true> {
+  siteName?: T;
+  twitterHandle?: T;
+  defaultTitle?: T;
+  defaultTitleSuffix?: T;
+  defaultDescription?: T;
+  defaultOgImage?: T;
+  collectionDefaults?:
+    | T
+    | {
+        posts?:
+          | T
+          | {
+              ogImage?: T;
+            };
+        exams?:
+          | T
+          | {
+              ogImage?: T;
+            };
+        events?:
+          | T
+          | {
+              ogImage?: T;
+            };
+        books?:
+          | T
+          | {
+              ogImage?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
