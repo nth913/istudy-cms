@@ -77,7 +77,7 @@ const makeExams = (): ExamFixture[] => [
     _status: 'published',
     createdAt: '2023-06-01T00:00:00Z',
   },
-  // vao-10 chinh-thuc HOT (views, hot.enabled, expiresAt future, deReady)
+  // vao-10 chinh-thuc HOT + NEW fixtures (HOT: views=1200, hot.enabled=true; NEW: no hot tag)
   {
     id: 'v10-ct-hot',
     slug: 'v10-ct-hot',
@@ -217,15 +217,15 @@ describe('mega-menu-kho-de endpoint', () => {
     const ct = body.vao10.chinhThuc
     expect(Array.isArray(ct.hot)).toBe(true)
     expect(Array.isArray(ct.new)).toBe(true)
-    expect(ct.hot.length).toBeLessThanOrEqual(3)
-    expect(ct.new.length).toBeLessThanOrEqual(3)
+    expect(ct.hot).toHaveLength(1)
+    expect(ct.new).toHaveLength(1)
     expect(ct.hot.map((e: any) => e.slug)).toContain('v10-ct-hot')
     expect(ct.hot[0]).toMatchObject({ slug: 'v10-ct-hot', isHot: true })
     expect(ct.new.map((e: any) => e.slug)).not.toContain('v10-ct-hot')
-    expect(ct.new[0]?.slug).toBe('v10-ct-new')
+    expect(ct.new[0].slug).toBe('v10-ct-new')
   })
 
-  it('chinhThuc.hot excludes waiting exams (deReady filter)', async () => {
+  it('chinhThuc.hot and chinhThuc.new exclude waiting exams (deReady filter)', async () => {
     const exams: ExamFixture[] = [
       {
         id: 'ready-ct-hot',
