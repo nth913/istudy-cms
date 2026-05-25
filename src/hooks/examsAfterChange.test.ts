@@ -63,6 +63,48 @@ describe('examsAfterChange — revalidate webhook', () => {
     expect(body.paths).toEqual(['/kho-de-thi'])
   })
 
+  it('ping every URL when FE_URL is comma-separated', async () => {
+    process.env.FE_URL = 'http://localhost:3000, https://aistudy.com.vn ,'
+    const fetchMock = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
+    await examsAfterChange({
+      doc: { _status: 'published', slug: 'multi', title: 'M' },
+      previousDoc: { _status: 'published' },
+      operation: 'update',
+    } as any)
+    await new Promise((r) => setTimeout(r, 10))
+    const targets = fetchMock.mock.calls
+      .map((c) => String(c[0]))
+      .filter((u) => u.includes('/api/revalidate'))
+    expect(targets).toEqual(
+      expect.arrayContaining([
+        'http://localhost:3000/api/revalidate',
+        'https://aistudy.com.vn/api/revalidate',
+      ]),
+    )
+    // Empty trailing entry must be discarded — exactly 2 hits, no third.
+    expect(targets.length).toBe(2)
+  })
+
+  it('strip trailing slashes per URL before joining /api/revalidate', async () => {
+    process.env.FE_URL = 'http://localhost:3000/,https://aistudy.com.vn///'
+    const fetchMock = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response(null, { status: 200 }))
+    await examsAfterChange({
+      doc: { _status: 'published', slug: 'trail', title: 'T' },
+      previousDoc: { _status: 'published' },
+      operation: 'update',
+    } as any)
+    await new Promise((r) => setTimeout(r, 10))
+    const targets = fetchMock.mock.calls.map((c) => String(c[0]))
+    expect(targets).toContain('http://localhost:3000/api/revalidate')
+    expect(targets).toContain('https://aistudy.com.vn/api/revalidate')
+    // No double slash leaked.
+    expect(targets.some((u) => u.includes('//api/revalidate'))).toBe(false)
+  })
+
   it('fire webhook on draft → published transition (alongside Slack notify)', async () => {
     const fetchMock = vi
       .spyOn(global, 'fetch')
