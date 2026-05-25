@@ -13,7 +13,6 @@ export const seoGroup: NamedGroupField = {
       name: 'ogImage',
       type: 'upload',
       relationTo: 'media',
-      filterOptions: { purpose: { equals: 'og_image' } },
       admin: { description: 'Tỉ lệ 1200×630 khuyến nghị.' },
     },
     { name: 'ogTitle',       type: 'text',     maxLength: 95  },

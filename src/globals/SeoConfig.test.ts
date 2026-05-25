@@ -34,13 +34,13 @@ describe('SeoConfig global', () => {
     expect(subNames).toEqual(['posts', 'exams', 'events', 'books'])
   })
 
-  it('mỗi collection default group có field ogImage upload media filter purpose=og_image', () => {
+  it('mỗi collection default group có field ogImage upload media (không filter)', () => {
     const cd = SeoConfig.fields.find((f: any) => f.name === 'collectionDefaults') as any
     for (const sub of cd.fields) {
       const og = sub.fields.find((f: any) => f.name === 'ogImage') as any
       expect(og.type).toBe('upload')
       expect(og.relationTo).toBe('media')
-      expect(og.filterOptions).toEqual({ purpose: { equals: 'og_image' } })
+      expect(og.filterOptions).toBeUndefined()
     }
   })
 })
