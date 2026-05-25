@@ -2,19 +2,23 @@ import type { CollectionAfterChangeHook } from 'payload'
 import { notifySlack } from '../lib/slack'
 
 const REVALIDATE_TIMEOUT_MS = 3000
+const DEFAULT_PROD_URL = 'https://aistudy.com.vn'
 
-async function revalidateForExam(slug: string): Promise<void> {
-  const feUrl = process.env.FE_URL
-  const secret = process.env.REVALIDATE_SECRET
-  if (!feUrl || !secret) return
-  const webhookUrl = `${feUrl.replace(/\/+$/, '')}/api/revalidate`
-  const tags = ['mega-menu-kho-de', 'exams-list', 'exams-sidebar-facets']
-  if (slug) tags.push(`exam:${slug}`)
-  const paths = ['/kho-de-thi']
-  if (slug) {
-    paths.push(`/de-thi-chi-tiet/${slug}`)
-    paths.push(`/dap-an/${slug}`)
-  }
+function parseFeUrls(): string[] {
+  const raw = process.env.FE_URL
+  if (!raw) return []
+  return raw
+    .split(',')
+    .map((s) => s.trim().replace(/\/+$/, ''))
+    .filter(Boolean)
+}
+
+function firstFeUrl(): string {
+  return parseFeUrls()[0] || DEFAULT_PROD_URL
+}
+
+async function pingRevalidate(baseUrl: string, secret: string, body: string): Promise<void> {
+  const webhookUrl = `${baseUrl}/api/revalidate`
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), REVALIDATE_TIMEOUT_MS)
@@ -22,15 +26,30 @@ async function revalidateForExam(slug: string): Promise<void> {
       await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'x-secret': secret, 'content-type': 'application/json' },
-        body: JSON.stringify({ tags, paths }),
+        body,
         signal: controller.signal,
       })
     } finally {
       clearTimeout(timeoutId)
     }
   } catch {
-    // fire-and-forget — silent fail (network error, abort, etc.)
+    // fire-and-forget per URL
   }
+}
+
+async function revalidateForExam(slug: string): Promise<void> {
+  const feUrls = parseFeUrls()
+  const secret = process.env.REVALIDATE_SECRET
+  if (feUrls.length === 0 || !secret) return
+  const tags = ['mega-menu-kho-de', 'exams-list', 'exams-sidebar-facets']
+  if (slug) tags.push(`exam:${slug}`)
+  const paths = ['/kho-de-thi']
+  if (slug) {
+    paths.push(`/de-thi-chi-tiet/${slug}`)
+    paths.push(`/dap-an/${slug}`)
+  }
+  const body = JSON.stringify({ tags, paths })
+  await Promise.allSettled(feUrls.map((url) => pingRevalidate(url, secret, body)))
 }
 
 export const examsAfterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, operation }) => {
@@ -40,10 +59,10 @@ export const examsAfterChange: CollectionAfterChangeHook = async ({ doc, previou
     previousDoc?._status === 'draft' &&
     doc?._status === 'published'
   ) {
-    const feUrl = process.env.FE_URL || 'https://aistudy.com.vn'
+    const feUrl = firstFeUrl()
     const slug = typeof doc?.slug === 'string' ? doc.slug : ''
     const title = typeof doc?.title === 'string' ? doc.title : ''
-    await notifySlack(`📢 *Đề thi*: «${title}» đã publish → ${feUrl.replace(/\/+$/, '')}/de-thi-chi-tiet/${slug}`)
+    await notifySlack(`📢 *Đề thi*: «${title}» đã publish → ${feUrl}/de-thi-chi-tiet/${slug}`)
   }
 
   // deReady transition false → true: Slack notify "đề đã có file"
@@ -52,15 +71,15 @@ export const examsAfterChange: CollectionAfterChangeHook = async ({ doc, previou
     previousDoc?.deReady === false &&
     doc?.deReady === true
   ) {
-    const feUrl = process.env.FE_URL || 'https://aistudy.com.vn'
+    const feUrl = firstFeUrl()
     const slug = typeof doc?.slug === 'string' ? doc.slug : ''
     const title = typeof doc?.title === 'string' ? doc.title : ''
-    await notifySlack(`📄 *Đề*: «${title}» đã có file → ${feUrl.replace(/\/+$/, '')}/de-thi-chi-tiet/${slug}`)
+    await notifySlack(`📄 *Đề*: «${title}» đã có file → ${feUrl}/de-thi-chi-tiet/${slug}`)
   }
 
-  // Fire-and-forget combined revalidate: mega menu chips + list + facets +
-  // single exam detail page + tag scoped to this exam's slug. Editor edits
-  // propagate to FE within the next request cycle (no 60s ISR wait).
+  // Fire-and-forget combined revalidate. Supports comma-separated FE_URL so
+  // dev workflow can ping both localhost web + prod web from a single CMS
+  // local instance (e.g. FE_URL="http://localhost:3000,https://aistudy.com.vn").
   const slug = typeof doc?.slug === 'string' ? doc.slug : ''
   void revalidateForExam(slug)
 
