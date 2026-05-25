@@ -71,6 +71,7 @@ Definitions: `.claude/agents/<name>.md`. Catalog: `.claude/agents/README.md`.
 - **R2 bucket routing:** original (chưa burn watermark) luôn `istudy-media-private`. Watermarked output → `istudy-media-public`. Backups → `istudy-backups`
 - **PDF watermark:** KHÔNG burn server-side. FE overlay (PDF.js + canvas) only
 - **Memory refs:** KHÔNG dùng anchor `#update-N` cho memory file (Vietnamese heading không slugify được). Dùng text form: `Memory project_X.md — Update lần N (...)`
+- **`FE_URL` trên main luôn single URL:** `examsAfterChange` hook parse `FE_URL` comma-separated để dev fan-out (local + prod cùng lúc). Trên branch `main` (config deploy prod h913), `FE_URL` BẮT BUỘC là 1 URL duy nhất (`https://aistudy.com.vn`). Comma-separated chỉ dùng ở develop / `.env.local`. Nếu lỡ set thành comma list trên main → ping host thừa từ prod → silent fail nhưng waste request + có thể leak secret `x-secret` qua header nếu URL ngoài tầm kiểm soát
 
 ## Docs References
 
