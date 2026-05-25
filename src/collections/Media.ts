@@ -17,6 +17,19 @@ export const Media: CollectionConfig = {
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
     mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    imageSizes: [
+      {
+        name: 'og',
+        width: 1200,
+        height: 630,
+        fit: 'cover',
+        position: 'center',
+        formatOptions: {
+          format: 'jpeg',
+          options: { quality: 85 },
+        },
+      },
+    ],
   },
   fields: [
     { name: 'alt', type: 'text' },
