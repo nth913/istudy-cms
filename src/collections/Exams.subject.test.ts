@@ -59,3 +59,20 @@ describe('Exams collection — subject relation', () => {
     expect((field as any).access.update({ req: { user: null } })).toBeFalsy()
   })
 })
+
+describe('Exams collection — allowOpenInNewTab field', () => {
+  it('declares allowOpenInNewTab checkbox in sidebar', () => {
+    const f = Exams.fields.find((x: any) => x.name === 'allowOpenInNewTab')
+    expect(f).toBeDefined()
+    expect((f as any).type).toBe('checkbox')
+    expect((f as any).defaultValue).toBe(false)
+    expect((f as any).admin?.position).toBe('sidebar')
+  })
+
+  it('has Vietnamese description explaining watermark bypass', () => {
+    const f = Exams.fields.find((x: any) => x.name === 'allowOpenInNewTab')
+    const desc = (f as any).admin?.description ?? ''
+    expect(desc).toContain('Mở tab mới')
+    expect(desc).toContain('watermark')
+  })
+})

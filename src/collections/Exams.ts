@@ -173,6 +173,15 @@ export const Exams: CollectionConfig = {
       },
     },
     {
+      name: 'allowOpenInNewTab',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Cho phép mở PDF trong tab mới (raw URL, KHÔNG có watermark FE). Tắt → ẩn nút "Mở tab mới" trên trang xem đề. Mặc định tắt vì lý do bảo vệ nội dung.',
+      },
+    },
+    {
       name: 'searchKey', type: 'text', index: true,
       admin: { hidden: true, readOnly: true },
     },

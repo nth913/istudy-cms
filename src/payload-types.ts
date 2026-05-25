@@ -323,6 +323,10 @@ export interface Exam {
    * Cho phép tải PDF/đáp án về máy. Tắt → ẩn các nút Tải trên FE (đề thi + đáp án + mobile CTA).
    */
   allowDownload?: boolean | null;
+  /**
+   * Cho phép mở PDF trong tab mới (raw URL, KHÔNG có watermark FE). Tắt → ẩn nút "Mở tab mới" trên trang xem đề. Mặc định tắt vì lý do bảo vệ nội dung.
+   */
+  allowOpenInNewTab?: boolean | null;
   searchKey?: string | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
@@ -980,6 +984,7 @@ export interface ExamsSelect<T extends boolean = true> {
   dapAnReady?: T;
   views?: T;
   allowDownload?: T;
+  allowOpenInNewTab?: T;
   searchKey?: T;
   seo?:
     | T
