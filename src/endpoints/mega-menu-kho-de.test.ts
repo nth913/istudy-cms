@@ -77,6 +77,32 @@ const makeExams = (): ExamFixture[] => [
     _status: 'published',
     createdAt: '2023-06-01T00:00:00Z',
   },
+  // vao-10 chinh-thuc HOT + NEW fixtures (HOT: views=1200, hot.enabled=true; NEW: no hot tag)
+  {
+    id: 'v10-ct-hot',
+    slug: 'v10-ct-hot',
+    title: 'Vào 10 Hà Nội 2026 — đề thi nóng',
+    year: '2026',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    views: 1200,
+    _status: 'published',
+    deReady: true,
+    createdAt: '2026-06-10T00:00:00Z',
+    tags: { hot: { enabled: true, expiresAt: futureDate } },
+  },
+  {
+    id: 'v10-ct-new',
+    slug: 'v10-ct-new',
+    title: 'Vào 10 TP.HCM 2025 — mới cập nhật',
+    year: '2025',
+    category: 'vao-10',
+    examType: 'chinh-thuc',
+    views: 80,
+    _status: 'published',
+    deReady: true,
+    createdAt: '2026-06-15T00:00:00Z',
+  },
   // Draft — should NOT be counted
   {
     id: 'v10-ct-2027-draft',
@@ -168,8 +194,8 @@ describe('mega-menu-kho-de endpoint', () => {
     const years = body.vao10.chinhThuc.years
     expect(years.map((y: any) => y.year)).toEqual(['2026', '2025', '2024'])
     // 2026 has 2 docs, 2025 has 1, 2024 has 1
-    expect(years[0]).toEqual({ year: '2026', count: 2 })
-    expect(years[1]).toEqual({ year: '2025', count: 1 })
+    expect(years[0]).toEqual({ year: '2026', count: 3 })
+    expect(years[1]).toEqual({ year: '2025', count: 2 })
     expect(years[2]).toEqual({ year: '2024', count: 1 })
   })
 
@@ -185,10 +211,73 @@ describe('mega-menu-kho-de endpoint', () => {
     expect(tt.new[0]).toMatchObject({ slug: 'v10-tt-new', isHot: false })
   })
 
+  it('returns chinhThuc.hot and chinhThuc.new for vao-10 (top 3 each), HOT not in NEW', async () => {
+    const payload = makePayload()
+    const { body } = await callEndpoint(payload)
+    const ct = body.vao10.chinhThuc
+    expect(Array.isArray(ct.hot)).toBe(true)
+    expect(Array.isArray(ct.new)).toBe(true)
+    expect(ct.hot).toHaveLength(1)
+    expect(ct.new).toHaveLength(1)
+    expect(ct.hot.map((e: any) => e.slug)).toContain('v10-ct-hot')
+    expect(ct.hot[0]).toMatchObject({ slug: 'v10-ct-hot', isHot: true })
+    expect(ct.new.map((e: any) => e.slug)).not.toContain('v10-ct-hot')
+    expect(ct.new[0].slug).toBe('v10-ct-new')
+  })
+
+  it('chinhThuc.hot and chinhThuc.new exclude waiting exams (deReady filter)', async () => {
+    const exams: ExamFixture[] = [
+      {
+        id: 'ready-ct-hot',
+        slug: 'ready-ct-hot',
+        title: 'Ready CT Hot',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'chinh-thuc',
+        views: 500,
+        _status: 'published',
+        deReady: true,
+        createdAt: '2026-05-01T00:00:00Z',
+        tags: { hot: { enabled: true, expiresAt: futureDate } },
+      },
+      {
+        id: 'waiting-ct',
+        slug: 'waiting-ct',
+        title: 'Waiting CT',
+        year: '2026',
+        category: 'vao-10',
+        examType: 'chinh-thuc',
+        _status: 'published',
+        deReady: false,
+        createdAt: '2026-05-15T00:00:00Z',
+      },
+    ]
+    const payload = makePayload(exams)
+    const { body } = await callEndpoint(payload)
+    expect(body.vao10.chinhThuc.hot.map((e: any) => e.slug)).toContain('ready-ct-hot')
+    expect(body.vao10.chinhThuc.new.map((e: any) => e.slug)).not.toContain('waiting-ct')
+  })
+
+  it('chinhThuc fallback empty hot/new when payload.find throws', async () => {
+    const payload = {
+      find: vi.fn(async () => {
+        throw new Error('mongo down')
+      }),
+      logger: { error: vi.fn() },
+    }
+    const { body } = await callEndpoint(payload)
+    expect(body.vao10.chinhThuc.hot).toEqual([])
+    expect(body.vao10.chinhThuc.new).toEqual([])
+    expect(body.thptQg.chinhThuc.hot).toEqual([])
+    expect(body.thptQg.chinhThuc.new).toEqual([])
+  })
+
   it('returns empty arrays when category has no data (thpt-qg / vao-dai-hoc)', async () => {
     const payload = makePayload()
     const { body } = await callEndpoint(payload)
     expect(body.thptQg.chinhThuc.years).toEqual([])
+    expect(body.thptQg.chinhThuc.hot).toEqual([])
+    expect(body.thptQg.chinhThuc.new).toEqual([])
     expect(body.thptQg.thiThu.hot).toEqual([])
     expect(body.thptQg.thiThu.new).toEqual([])
     expect(body.thptQg.minhHoa.hot).toEqual([])
@@ -205,12 +294,12 @@ describe('mega-menu-kho-de endpoint', () => {
     const { status, body } = await callEndpoint(payload)
     expect(status).toBe(200)
     expect(body.vao10).toEqual({
-      chinhThuc: { years: [] },
+      chinhThuc: { years: [], hot: [], new: [] },
       thiThu: { hot: [], new: [] },
       minhHoa: { hot: [], new: [] },
     })
     expect(body.thptQg).toEqual({
-      chinhThuc: { years: [] },
+      chinhThuc: { years: [], hot: [], new: [] },
       thiThu: { hot: [], new: [] },
       minhHoa: { hot: [], new: [] },
     })
