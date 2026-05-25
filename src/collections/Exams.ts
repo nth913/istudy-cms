@@ -7,6 +7,7 @@ import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
 import { examsSidebarFacetsEndpoint } from '../endpoints/exams-sidebar-facets'
+import { seoGroup } from '../lib/fields/seoGroup'
 
 const YEAR_OPTIONS = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'].map(y => ({
   label: y, value: y,
@@ -175,5 +176,6 @@ export const Exams: CollectionConfig = {
       name: 'searchKey', type: 'text', index: true,
       admin: { hidden: true, readOnly: true },
     },
+    seoGroup,
   ],
 }

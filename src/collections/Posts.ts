@@ -4,6 +4,7 @@ import { postsAfterChange } from '../hooks/postsAfterChange'
 import { postsListEndpoint } from '../endpoints/posts-list'
 import { postsDetailEndpoint } from '../endpoints/posts-detail'
 import { postsFeaturedEndpoint } from '../endpoints/posts-featured'
+import { seoGroup } from '../lib/fields/seoGroup'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -80,8 +81,6 @@ export const Posts: CollectionConfig = {
       hasMany: true,
       maxRows: 6,
     },
-    { name: 'seoTitle', type: 'text', maxLength: 70 },
-    { name: 'seoDescription', type: 'textarea', maxLength: 200 },
-    { name: 'ogImage', type: 'upload', relationTo: 'media' },
+    seoGroup,
   ],
 }
