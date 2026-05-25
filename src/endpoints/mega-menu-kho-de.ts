@@ -3,7 +3,11 @@ import type { Exam } from '../payload-types'
 
 type ExamItem = { slug: string; title: string; year: string; isHot: boolean }
 type TabSlots = {
-  chinhThuc: { years: Array<{ year: string; count: number }> }
+  chinhThuc: {
+    years: Array<{ year: string; count: number }>
+    hot: ExamItem[]
+    new: ExamItem[]
+  }
   thiThu: { hot: ExamItem[]; new: ExamItem[] }
   minhHoa: { hot: ExamItem[]; new: ExamItem[] }
 }
@@ -17,7 +21,7 @@ const CACHE_TTL_MS = 60_000
 let cache: { at: number; data: MegaMenuKhoDeResponse } | null = null
 
 const emptyTab = (): TabSlots => ({
-  chinhThuc: { years: [] },
+  chinhThuc: { years: [], hot: [], new: [] },
   thiThu: { hot: [], new: [] },
   minhHoa: { hot: [], new: [] },
 })
@@ -103,17 +107,30 @@ async function resolveHotNewMix(
 }
 
 async function buildResponse(payload: Payload): Promise<MegaMenuKhoDeResponse> {
-  const [v10Years, v10TT, v10MH, thptYears, thptTT, thptMH] = await Promise.all([
+  const [
+    v10Years, v10CT, v10TT, v10MH,
+    thptYears, thptCT, thptTT, thptMH,
+  ] = await Promise.all([
     resolveLatestYears(payload, 'vao-10'),
+    resolveHotNewMix(payload, 'vao-10', 'chinh-thuc'),
     resolveHotNewMix(payload, 'vao-10', 'thi-thu'),
     resolveHotNewMix(payload, 'vao-10', 'minh-hoa'),
     resolveLatestYears(payload, 'vao-dai-hoc'),
+    resolveHotNewMix(payload, 'vao-dai-hoc', 'chinh-thuc'),
     resolveHotNewMix(payload, 'vao-dai-hoc', 'thi-thu'),
     resolveHotNewMix(payload, 'vao-dai-hoc', 'minh-hoa'),
   ])
   return {
-    vao10: { chinhThuc: { years: v10Years }, thiThu: v10TT, minhHoa: v10MH },
-    thptQg: { chinhThuc: { years: thptYears }, thiThu: thptTT, minhHoa: thptMH },
+    vao10: {
+      chinhThuc: { years: v10Years, hot: v10CT.hot, new: v10CT.new },
+      thiThu: v10TT,
+      minhHoa: v10MH,
+    },
+    thptQg: {
+      chinhThuc: { years: thptYears, hot: thptCT.hot, new: thptCT.new },
+      thiThu: thptTT,
+      minhHoa: thptMH,
+    },
   }
 }
 
