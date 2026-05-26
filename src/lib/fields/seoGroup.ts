@@ -13,7 +13,9 @@ export const seoGroup: NamedGroupField = {
       name: 'ogImage',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Tỉ lệ 1200×630 khuyến nghị.' },
+      admin: {
+        description: 'Tỉ lệ 1200×630 khuyến nghị. Để trống → web tự pick 1 trong 4 ảnh brand iStudy (random theo URL).',
+      },
     },
     { name: 'ogTitle',       type: 'text',     maxLength: 95  },
     { name: 'ogDescription', type: 'textarea', maxLength: 200 },
