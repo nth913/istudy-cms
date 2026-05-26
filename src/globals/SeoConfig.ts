@@ -23,7 +23,7 @@ export const SeoConfig: GlobalConfig = {
       ...ogImageField,
       name: 'defaultOgImage',
       admin: {
-        description: 'Để trống = web dùng 4 ảnh brand mặc định (random theo URL). Set nếu muốn cố định 1 ảnh cho toàn site.',
+        description: 'Để trống → web dùng 4 ảnh brand mặc định (random theo URL). Set nếu muốn cố định 1 ảnh cho toàn site.',
       },
     },
     {
