@@ -43,6 +43,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
+    "lru-cache": "^11.0.0",
     "next": "^15.5.0",
     "papaparse": "^5.5.3",
     "payload": "^3.84.1",
