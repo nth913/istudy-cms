@@ -61,6 +61,19 @@ Decision tree (dispatch via `Agent` tool, `subagent_type=<name>`):
 
 Definitions: `.claude/agents/<name>.md`. Catalog: `.claude/agents/README.md`.
 
+### Model per agent
+
+| Agent | Model |
+|---|---|
+| `payload-builder` | sonnet |
+| `devops` | sonnet |
+| `r2-media-handler` | sonnet |
+| `type-sdk-syncer` | sonnet |
+| `exam-importer` | sonnet |
+| `Plan` / `Explore` (built-in) | opus |
+
+Dispatch ví dụ: `Agent(subagent_type='payload-builder', model='sonnet', …)`. Override Opus khi task heavy schema/ACL judgment. Khi thêm agent mới, update bảng này.
+
 ## Critical Rules
 
 - **Draft mode default:** mọi collection content (`exams`, `posts`, `questions`, `mega_menus` khi áp dụng) phải có `versions: { drafts: true, maxPerDoc: 20 }`. Record mới luôn `_status='draft'`, reviewer publish thủ công qua admin. KHÔNG bao giờ set `_status='published'` programmatically.
