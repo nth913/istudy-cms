@@ -335,7 +335,7 @@ export interface Exam {
     title?: string | null;
     description?: string | null;
     /**
-     * Tỉ lệ 1200×630 khuyến nghị.
+     * Tỉ lệ 1200×630 khuyến nghị. Để trống → web tự pick 1 trong 4 ảnh brand iStudy (random theo URL).
      */
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
@@ -389,7 +389,7 @@ export interface Post {
     title?: string | null;
     description?: string | null;
     /**
-     * Tỉ lệ 1200×630 khuyến nghị.
+     * Tỉ lệ 1200×630 khuyến nghị. Để trống → web tự pick 1 trong 4 ảnh brand iStudy (random theo URL).
      */
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
@@ -510,6 +510,7 @@ export interface Event {
     hero?: boolean | null;
     popup?: boolean | null;
   };
+  views?: number | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
    */
@@ -517,7 +518,7 @@ export interface Event {
     title?: string | null;
     description?: string | null;
     /**
-     * Tỉ lệ 1200×630 khuyến nghị.
+     * Tỉ lệ 1200×630 khuyến nghị. Để trống → web tự pick 1 trong 4 ảnh brand iStudy (random theo URL).
      */
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
@@ -616,6 +617,7 @@ export interface Book {
   relatedExams?: (string | Exam)[] | null;
   relatedPosts?: (string | Post)[] | null;
   clickCount?: number | null;
+  views?: number | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
    */
@@ -623,7 +625,7 @@ export interface Book {
     title?: string | null;
     description?: string | null;
     /**
-     * Tỉ lệ 1200×630 khuyến nghị.
+     * Tỉ lệ 1200×630 khuyến nghị. Để trống → web tự pick 1 trong 4 ảnh brand iStudy (random theo URL).
      */
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
@@ -1069,6 +1071,7 @@ export interface EventsSelect<T extends boolean = true> {
         hero?: T;
         popup?: T;
       };
+  views?: T;
   seo?:
     | T
     | {
@@ -1147,6 +1150,7 @@ export interface BooksSelect<T extends boolean = true> {
   relatedExams?: T;
   relatedPosts?: T;
   clickCount?: T;
+  views?: T;
   seo?:
     | T
     | {
@@ -1287,6 +1291,9 @@ export interface SeoConfig {
   defaultTitle?: string | null;
   defaultTitleSuffix?: string | null;
   defaultDescription?: string | null;
+  /**
+   * Để trống → web dùng 4 ảnh brand mặc định (random theo URL). Set nếu muốn cố định 1 ảnh cho toàn site.
+   */
   defaultOgImage?: (string | null) | Media;
   collectionDefaults?: {
     posts?: {

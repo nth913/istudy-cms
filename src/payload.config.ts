@@ -40,6 +40,7 @@ import { importExamsCsvEndpoint } from './endpoints/import-exams-csv'
 import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 import { searchExamsGetEndpoint } from './endpoints/search-exams'
 import { megaMenuKhoDeEndpoint } from './endpoints/mega-menu-kho-de'
+import { trackViewEndpoint } from './endpoints/track-view'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -75,11 +76,15 @@ export default buildConfig({
     importExamsBulkPdfEndpoint,
     searchExamsGetEndpoint,
     megaMenuKhoDeEndpoint,
+    trackViewEndpoint,
   ],
   cors: [
-    'http://localhost:3000',
-    'https://www.aistudy.com.vn',
     'https://aistudy.com.vn',
+    'https://www.aistudy.com.vn',
+    'https://h913.aistudy.com.vn',
+    ...(process.env.NODE_ENV !== 'production'
+      ? ['http://localhost:3000', 'http://localhost:3001']
+      : []),
   ],
   csrf: [
     'http://localhost:3000',

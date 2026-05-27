@@ -2,7 +2,7 @@ import type { CollectionSlug, Endpoint, PayloadRequest } from 'payload'
 
 const POSTS_COLLECTION = 'posts' as CollectionSlug
 
-type PostDoc = { id: string | number; viewCount?: number; [key: string]: unknown }
+type PostDoc = { id: string | number; [key: string]: unknown }
 
 export const postsDetailEndpoint: Endpoint = {
   path: '/by-slug/:slug',
@@ -29,19 +29,6 @@ export const postsDetailEndpoint: Endpoint = {
     if (!post) {
       return Response.json({ error: 'Không tìm thấy bài viết' }, { status: 404 })
     }
-
-    const nextViewCount = (typeof post.viewCount === 'number' ? post.viewCount : 0) + 1
-    void req.payload
-      .update({
-        collection: POSTS_COLLECTION,
-        id: post.id,
-        data: { viewCount: nextViewCount } as Record<string, unknown>,
-        depth: 0,
-        overrideAccess: true,
-      })
-      .catch((err: unknown) => {
-        console.error('[posts.byslug] viewCount increment failed:', err)
-      })
 
     return Response.json(post)
   },
