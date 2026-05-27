@@ -19,7 +19,13 @@ export const SeoConfig: GlobalConfig = {
     { name: 'defaultTitle',       type: 'text',     maxLength: 70 },
     { name: 'defaultTitleSuffix', type: 'text',     defaultValue: ' — istudy' },
     { name: 'defaultDescription', type: 'textarea', maxLength: 200 },
-    { ...ogImageField, name: 'defaultOgImage' },
+    {
+      ...ogImageField,
+      name: 'defaultOgImage',
+      admin: {
+        description: 'Để trống → web dùng 4 ảnh brand mặc định (random theo URL). Set nếu muốn cố định 1 ảnh cho toàn site.',
+      },
+    },
     {
       name: 'collectionDefaults',
       type: 'group',
