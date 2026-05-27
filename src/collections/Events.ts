@@ -253,6 +253,14 @@ export const Events: CollectionConfig = {
         { name: 'popup', type: 'checkbox', defaultValue: false },
       ],
     },
+    {
+      name: 'views',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      admin: { readOnly: true, position: 'sidebar' },
+      index: true,
+    },
     seoGroup,
   ],
 }
