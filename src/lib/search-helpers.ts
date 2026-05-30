@@ -17,8 +17,10 @@ export function extractRichText(node: any): string {
   return children.map(extractRichText).join('')
 }
 
+const CHARS_PER_MINUTE = 1000
+
 export function minutesRead(richText: any): number {
   const text = extractRichText(richText)
   const chars = text.length
-  return Math.max(1, Math.ceil(chars / 1000))
+  return Math.max(1, Math.ceil(chars / CHARS_PER_MINUTE))
 }

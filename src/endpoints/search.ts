@@ -12,6 +12,10 @@ interface SearchResult {
   meta: string[]
 }
 
+const MAX_QUERY_LEN = 100
+const MAX_LIMIT = 20
+const DEFAULT_LIMIT = 8
+
 const EXAM_TYPE_LABEL: Record<string, string> = {
   'chinh-thuc': 'Đề chính thức',
   'thi-thu': 'Đề thi thử',
@@ -81,10 +85,10 @@ export const searchEndpoint: Endpoint = {
     if (!q) {
       return Response.json({ error: 'Thiếu tham số q' }, { status: 400 })
     }
-    if (q.length > 100) {
+    if (q.length > MAX_QUERY_LEN) {
       return Response.json({ error: 'Truy vấn quá dài' }, { status: 400 })
     }
-    const limit = Math.min(20, Math.max(1, Number(url.searchParams.get('limit') ?? 8) || 8))
+    const limit = Math.min(MAX_LIMIT, Math.max(1, Number(url.searchParams.get('limit') ?? DEFAULT_LIMIT) || DEFAULT_LIMIT))
     const qNorm = removeVietnameseDiacritics(q).toLowerCase()
     const start = Date.now()
 
@@ -115,6 +119,7 @@ export const searchEndpoint: Endpoint = {
       }),
     ])
 
+    // Guard: keep only the queried category. Redundant in prod (DB where filters), but the test mock ignores where; also future-proofs if a 3rd exam category is added.
     const thpt = thptRes.docs.map(examToResult).filter((r) => r.cat === 'thpt')
     const l10 = l10Res.docs.map(examToResult).filter((r) => r.cat === 'l10')
     const hsa = hsaRes.docs.map(eventToResult)
