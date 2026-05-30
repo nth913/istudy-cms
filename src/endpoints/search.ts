@@ -1,79 +1,31 @@
 // istudy-cms/src/endpoints/search.ts
 import type { Endpoint, PayloadRequest } from 'payload'
 import { removeVietnameseDiacritics } from '../lib/vietnamese-slugify'
-import { formatVN, minutesRead } from '../lib/search-helpers'
-
-type CatId = 'thpt' | 'l10' | 'hsa' | 'blog'
-interface SearchResult {
-  id: string
-  cat: CatId
-  href: string
-  title: string
-  meta: string[]
-}
+import {
+  examToResult,
+  eventToResult,
+  postToResult,
+  queryIndex,
+  type SearchBuckets,
+} from '../lib/search-index'
 
 const MAX_QUERY_LEN = 100
 const MAX_LIMIT = 20
 const DEFAULT_LIMIT = 8
 
-const EXAM_TYPE_LABEL: Record<string, string> = {
-  'chinh-thuc': 'Đề chính thức',
-  'thi-thu': 'Đề thi thử',
-  'minh-hoa': 'Đề minh hoạ',
-}
-
-const POST_CAT_LABEL: Record<string, string> = {
-  'tu-vung': 'Từ vựng',
-  'ngu-phap': 'Ngữ pháp',
-  'meo': 'Mẹo',
-  'tin-tuc': 'Tin tức',
-}
-
-function examToResult(doc: any): SearchResult {
-  const cat: CatId = doc.category === 'vao-10' ? 'l10' : 'thpt'
-  const meta = [
-    EXAM_TYPE_LABEL[doc.examType] || null,
-    doc.year ? `Năm ${doc.year}` : null,
-    doc.province?.name || doc.school || null,
-    doc.dapAnReady ? 'Có đáp án' : null,
-  ].filter(Boolean) as string[]
-  return {
-    id: String(doc.id),
-    cat,
-    href: `/de-thi-chi-tiet/${doc.slug}`,
-    title: doc.title,
-    meta,
-  }
-}
-
-function eventToResult(doc: any): SearchResult {
-  const meta = [
-    'HSA · ĐGNL',
-    formatVN(doc.startAt) ? `Đợt ${formatVN(doc.startAt)}` : null,
-    doc.registeredCount ? `${doc.registeredCount} đăng ký` : null,
-  ].filter(Boolean) as string[]
-  return {
-    id: String(doc.id),
-    cat: 'hsa',
-    href: `/kho-de-thi?event=${doc.slug}`,
-    title: doc.title,
-    meta,
-  }
-}
-
-function postToResult(doc: any): SearchResult {
-  const meta = [
-    POST_CAT_LABEL[doc.category] || null,
-    doc.author?.name || null,
-    doc.publishedAt ? `${minutesRead(doc.body)} phút đọc` : null,
-  ].filter(Boolean) as string[]
-  return {
-    id: String(doc.id),
-    cat: 'blog',
-    href: `/bai-viet-chi-tiet/${doc.slug}`,
-    title: doc.title,
-    meta,
-  }
+async function regexFallback(req: PayloadRequest, qNorm: string, limit: number): Promise<SearchBuckets> {
+  const [thptRes, l10Res, hsaRes, blogRes] = await Promise.all([
+    req.payload.find({ collection: 'exams', where: { _status: { equals: 'published' }, category: { equals: 'vao-dai-hoc' }, searchKey: { contains: qNorm } }, limit, depth: 1 }),
+    req.payload.find({ collection: 'exams', where: { _status: { equals: 'published' }, category: { equals: 'vao-10' }, searchKey: { contains: qNorm } }, limit, depth: 1 }),
+    req.payload.find({ collection: 'events', where: { _status: { equals: 'published' }, submenu: { in: ['dgnl', 'dgnl-thu'] }, searchKeyEvent: { contains: qNorm } }, limit, depth: 1 }),
+    req.payload.find({ collection: 'posts', where: { _status: { equals: 'published' }, searchKeyPost: { contains: qNorm } }, limit, depth: 1 }),
+  ])
+  // Guard: keep only the queried category (redundant in prod; test mock ignores where).
+  const thpt = thptRes.docs.map(examToResult).filter((r) => r.cat === 'thpt')
+  const l10 = l10Res.docs.map(examToResult).filter((r) => r.cat === 'l10')
+  const hsa = hsaRes.docs.map(eventToResult)
+  const blog = blogRes.docs.map(postToResult)
+  return { thpt, l10, hsa, blog, total: thpt.length + l10.length + hsa.length + blog.length }
 }
 
 export const searchEndpoint: Endpoint = {
@@ -89,46 +41,18 @@ export const searchEndpoint: Endpoint = {
       return Response.json({ error: 'Truy vấn quá dài' }, { status: 400 })
     }
     const limit = Math.min(MAX_LIMIT, Math.max(1, Number(url.searchParams.get('limit') ?? DEFAULT_LIMIT) || DEFAULT_LIMIT))
-    const qNorm = removeVietnameseDiacritics(q).toLowerCase()
     const start = Date.now()
 
-    const [thptRes, l10Res, hsaRes, blogRes] = await Promise.all([
-      req.payload.find({
-        collection: 'exams',
-        where: { _status: { equals: 'published' }, category: { equals: 'vao-dai-hoc' }, searchKey: { contains: qNorm } },
-        limit,
-        depth: 1,
-      }),
-      req.payload.find({
-        collection: 'exams',
-        where: { _status: { equals: 'published' }, category: { equals: 'vao-10' }, searchKey: { contains: qNorm } },
-        limit,
-        depth: 1,
-      }),
-      req.payload.find({
-        collection: 'events',
-        where: { _status: { equals: 'published' }, submenu: { in: ['dgnl', 'dgnl-thu'] }, searchKeyEvent: { contains: qNorm } },
-        limit,
-        depth: 1,
-      }),
-      req.payload.find({
-        collection: 'posts',
-        where: { _status: { equals: 'published' }, searchKeyPost: { contains: qNorm } },
-        limit,
-        depth: 1,
-      }),
-    ])
+    let buckets: SearchBuckets
+    try {
+      buckets = await queryIndex(req.payload, q, limit)
+    } catch (err) {
+      req.payload?.logger?.error?.({ err }, 'search index failed; falling back to regex')
+      const qNorm = removeVietnameseDiacritics(q).toLowerCase()
+      buckets = await regexFallback(req, qNorm, limit)
+    }
 
-    // Guard: keep only the queried category. Redundant in prod (DB where filters), but the test mock ignores where; also future-proofs if a 3rd exam category is added.
-    const thpt = thptRes.docs.map(examToResult).filter((r) => r.cat === 'thpt')
-    const l10 = l10Res.docs.map(examToResult).filter((r) => r.cat === 'l10')
-    const hsa = hsaRes.docs.map(eventToResult)
-    const blog = blogRes.docs.map(postToResult)
-    const total = thpt.length + l10.length + hsa.length + blog.length
-
-    return Response.json({
-      thpt, l10, hsa, blog, total, tookMs: Date.now() - start,
-    })
+    return Response.json({ ...buckets, tookMs: Date.now() - start })
   },
 }
 
