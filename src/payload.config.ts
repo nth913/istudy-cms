@@ -21,6 +21,7 @@ import { AffiliateClicks } from './collections/AffiliateClicks'
 
 import { KhoDeSidebarConfig } from './globals/KhoDeSidebarConfig'
 import { SeoConfig } from './globals/SeoConfig'
+import { SearchConfig } from './globals/SearchConfig'
 
 import { notifyEndpoint } from './endpoints/notify'
 import { eventsV1Endpoint } from './endpoints/events-v1'
@@ -56,7 +57,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
-  globals: [KhoDeSidebarConfig, SeoConfig],
+  globals: [KhoDeSidebarConfig, SeoConfig, SearchConfig],
   endpoints: [
     notifyEndpoint,
     eventsV1Endpoint,

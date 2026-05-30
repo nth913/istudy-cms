@@ -112,10 +112,12 @@ export interface Config {
   globals: {
     kho_de_sidebar_config: KhoDeSidebarConfig;
     'seo-config': SeoConfig;
+    'search-config': SearchConfig;
   };
   globalsSelect: {
     kho_de_sidebar_config: KhoDeSidebarConfigSelect<false> | KhoDeSidebarConfigSelect<true>;
     'seo-config': SeoConfigSelect<false> | SeoConfigSelect<true>;
+    'search-config': SearchConfigSelect<false> | SearchConfigSelect<true>;
   };
   locale: null;
   widgets: {
@@ -382,6 +384,7 @@ export interface Post {
   likeCount?: number | null;
   relatedPosts?: (string | Post)[] | null;
   relatedExams?: (string | Exam)[] | null;
+  searchKeyPost?: string | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
    */
@@ -511,6 +514,7 @@ export interface Event {
     popup?: boolean | null;
   };
   views?: number | null;
+  searchKeyEvent?: string | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
    */
@@ -1020,6 +1024,7 @@ export interface PostsSelect<T extends boolean = true> {
   likeCount?: T;
   relatedPosts?: T;
   relatedExams?: T;
+  searchKeyPost?: T;
   seo?:
     | T
     | {
@@ -1072,6 +1077,7 @@ export interface EventsSelect<T extends boolean = true> {
         popup?: T;
       };
   views?: T;
+  searchKeyEvent?: T;
   seo?:
     | T
     | {
@@ -1314,6 +1320,35 @@ export interface SeoConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search-config".
+ */
+export interface SearchConfig {
+  id: string;
+  popularTags?:
+    | {
+        id: string;
+        label: string;
+        hot?: boolean | null;
+      }[]
+    | null;
+  provinces?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  trendingItems?:
+    | {
+        label: string;
+        delta?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "kho_de_sidebar_config_select".
  */
 export interface KhoDeSidebarConfigSelect<T extends boolean = true> {
@@ -1369,6 +1404,35 @@ export interface SeoConfigSelect<T extends boolean = true> {
           | {
               ogImage?: T;
             };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search-config_select".
+ */
+export interface SearchConfigSelect<T extends boolean = true> {
+  popularTags?:
+    | T
+    | {
+        id?: T;
+        label?: T;
+        hot?: T;
+      };
+  provinces?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  trendingItems?:
+    | T
+    | {
+        label?: T;
+        delta?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
