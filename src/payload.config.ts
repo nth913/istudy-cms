@@ -21,6 +21,7 @@ import { AffiliateClicks } from './collections/AffiliateClicks'
 
 import { KhoDeSidebarConfig } from './globals/KhoDeSidebarConfig'
 import { SeoConfig } from './globals/SeoConfig'
+import { SearchConfig } from './globals/SearchConfig'
 
 import { notifyEndpoint } from './endpoints/notify'
 import { eventsV1Endpoint } from './endpoints/events-v1'
@@ -41,6 +42,7 @@ import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 import { searchExamsGetEndpoint } from './endpoints/search-exams'
 import { megaMenuKhoDeEndpoint } from './endpoints/mega-menu-kho-de'
 import { trackViewEndpoint } from './endpoints/track-view'
+import { searchEndpoint, searchMetaEndpoint } from './endpoints/search'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,7 +58,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
-  globals: [KhoDeSidebarConfig, SeoConfig],
+  globals: [KhoDeSidebarConfig, SeoConfig, SearchConfig],
   endpoints: [
     notifyEndpoint,
     eventsV1Endpoint,
@@ -77,6 +79,8 @@ export default buildConfig({
     searchExamsGetEndpoint,
     megaMenuKhoDeEndpoint,
     trackViewEndpoint,
+    searchEndpoint,
+    searchMetaEndpoint,
   ],
   cors: [
     'https://aistudy.com.vn',
