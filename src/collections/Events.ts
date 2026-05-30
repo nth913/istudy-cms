@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { eventsBeforeValidate } from '../hooks/eventsBeforeValidate'
 import { eventsAfterChange } from '../hooks/eventsAfterChange'
+import { computeSearchKeyEvent } from '../hooks/computeSearchKeyEvent'
 import { eventsActiveEndpoint } from '../endpoints/events-active'
 import { eventsDetailEndpoint } from '../endpoints/events-detail'
 import { eventPublishDeEndpoint } from '../endpoints/event-publish-de'
@@ -33,6 +34,7 @@ export const Events: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [eventsBeforeValidate],
+    beforeChange: [computeSearchKeyEvent],
     afterChange: [eventsAfterChange],
   },
   endpoints: [
@@ -260,6 +262,12 @@ export const Events: CollectionConfig = {
       min: 0,
       admin: { readOnly: true, position: 'sidebar' },
       index: true,
+    },
+    {
+      name: 'searchKeyEvent',
+      type: 'text',
+      index: true,
+      admin: { hidden: true, readOnly: true },
     },
     seoGroup,
   ],
