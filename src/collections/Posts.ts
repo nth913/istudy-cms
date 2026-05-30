@@ -1,6 +1,7 @@
 import type { CollectionConfig, CollectionSlug } from 'payload'
 import { postsBeforeValidate } from '../hooks/postsBeforeValidate'
 import { postsAfterChange } from '../hooks/postsAfterChange'
+import { computeSearchKeyPost } from '../hooks/computeSearchKeyPost'
 import { postsListEndpoint } from '../endpoints/posts-list'
 import { postsDetailEndpoint } from '../endpoints/posts-detail'
 import { postsFeaturedEndpoint } from '../endpoints/posts-featured'
@@ -25,6 +26,7 @@ export const Posts: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [postsBeforeValidate],
+    beforeChange: [computeSearchKeyPost],
     afterChange: [postsAfterChange],
   },
   endpoints: [postsListEndpoint, postsDetailEndpoint, postsFeaturedEndpoint],
@@ -80,6 +82,12 @@ export const Posts: CollectionConfig = {
       relationTo: 'exams',
       hasMany: true,
       maxRows: 6,
+    },
+    {
+      name: 'searchKeyPost',
+      type: 'text',
+      index: true,
+      admin: { hidden: true, readOnly: true },
     },
     seoGroup,
   ],
