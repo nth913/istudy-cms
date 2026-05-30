@@ -73,6 +73,7 @@ interface IndexDoc {
 }
 
 const TTL_MS = 5 * 60 * 1000
+// BUILD_LIMIT is a safety cap to avoid memory blow-up; revisit at larger scale.
 const BUILD_LIMIT = 5000
 const SEARCH_OPTS = { fuzzy: 0.2, prefix: true, boost: { title: 3, searchText: 1 } } as const
 
@@ -95,6 +96,9 @@ async function loadIndexDocs(payload: Payload): Promise<IndexDoc[]> {
     payload.find({ collection: 'events', where: { _status: { equals: 'published' }, submenu: { in: ['dgnl', 'dgnl-thu'] } }, limit: BUILD_LIMIT, depth: 1 }),
     payload.find({ collection: 'posts', where: { _status: { equals: 'published' } }, limit: BUILD_LIMIT, depth: 1 }),
   ])
+  if (exams.totalDocs > BUILD_LIMIT) payload.logger?.warn?.(`[search-index] exams truncated: ${exams.totalDocs} > ${BUILD_LIMIT}`)
+  if (events.totalDocs > BUILD_LIMIT) payload.logger?.warn?.(`[search-index] events truncated: ${events.totalDocs} > ${BUILD_LIMIT}`)
+  if (posts.totalDocs > BUILD_LIMIT) payload.logger?.warn?.(`[search-index] posts truncated: ${posts.totalDocs} > ${BUILD_LIMIT}`)
   const docs: IndexDoc[] = []
   for (const d of exams.docs as any[]) {
     docs.push({ id: `exam_${d.id}`, cat: d.category === 'vao-10' ? 'l10' : 'thpt', title: d.title ?? '', searchText: d.searchKey ?? '', dto: examToResult(d) })
@@ -109,12 +113,13 @@ async function loadIndexDocs(payload: Payload): Promise<IndexDoc[]> {
 }
 
 export async function buildSearchIndex(payload: Payload): Promise<MiniSearch<IndexDoc>> {
+  // Clear dirty at start: a markSearchDirty() during the in-flight build re-sets it → next query rebuilds (no lost invalidation).
+  state.dirty = false
   const docs = await loadIndexDocs(payload)
   const idx = newIndex()
   idx.addAll(docs)
   state.index = idx
   state.builtAt = Date.now()
-  state.dirty = false
   return idx
 }
 
@@ -147,6 +152,7 @@ export async function queryIndex(payload: Payload, q: string, limit: number): Pr
   const orHits = idx.search(q, { ...SEARCH_OPTS, combineWith: 'OR' as const })
   const seen = new Set<string>()
   const buckets: SearchBuckets = { thpt: [], l10: [], hsa: [], blog: [], total: 0 }
+  // AND hits iterated first → claim bucket slots before any OR-only hit; AND-first relevance is intentional, do not unify-resort.
   for (const hit of [...andHits, ...orHits]) {
     const id = hit.id as string
     if (seen.has(id)) continue

@@ -86,4 +86,31 @@ describe('markSearchDirty', () => {
     await queryIndex(payload, 'tham khao', 8)
     expect(payload.find.mock.calls.length).toBeGreaterThan(callsBefore)
   })
+
+  it('race: markSearchDirty during in-flight build is not lost → next query rebuilds', async () => {
+    // The mock's first `find` call (for exams) also fires markSearchDirty() to simulate
+    // an invalidation arriving mid-build. After the first queryIndex completes the state
+    // must still be dirty, causing the second queryIndex to trigger another build.
+    let firstCall = true
+    const basePayload = mockPayload({ exams: [EXAMS[0]], events: [], posts: [] })
+    const racingPayload = {
+      ...basePayload,
+      find: vi.fn(async (args: any) => {
+        if (firstCall) {
+          firstCall = false
+          // Simulate an invalidation arriving while the build is in flight.
+          markSearchDirty()
+        }
+        return basePayload.find(args)
+      }),
+    } as any
+
+    // First query — build starts; markSearchDirty fires mid-build; dirty flag should survive.
+    await queryIndex(racingPayload, 'tham khao', 8)
+    const callsAfterFirst = racingPayload.find.mock.calls.length
+
+    // Second query — because dirty was re-set during the build, another rebuild must happen.
+    await queryIndex(racingPayload, 'tham khao', 8)
+    expect(racingPayload.find.mock.calls.length).toBeGreaterThan(callsAfterFirst)
+  })
 })
