@@ -42,6 +42,7 @@ import { importExamsBulkPdfEndpoint } from './endpoints/import-exams-bulk-pdf'
 import { searchExamsGetEndpoint } from './endpoints/search-exams'
 import { megaMenuKhoDeEndpoint } from './endpoints/mega-menu-kho-de'
 import { trackViewEndpoint } from './endpoints/track-view'
+import { searchEndpoint, searchMetaEndpoint } from './endpoints/search'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -78,6 +79,8 @@ export default buildConfig({
     searchExamsGetEndpoint,
     megaMenuKhoDeEndpoint,
     trackViewEndpoint,
+    searchEndpoint,
+    searchMetaEndpoint,
   ],
   cors: [
     'https://aistudy.com.vn',

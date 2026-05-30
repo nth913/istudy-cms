@@ -53,6 +53,36 @@ async function seed() {
   const { seedEvents } = await import('../../src/seed/events')
   await seedEvents(payload)
 
+  console.log('Seeding SearchConfig defaults...')
+  await payload.updateGlobal({
+    slug: 'search-config',
+    data: {
+      popularTags: [
+        { id: 'tk25', label: 'Đề tham khảo 2025', hot: true },
+        { id: 'mh', label: 'Đề minh hoạ Bộ GD', hot: true },
+        { id: 'hsa', label: 'HSA Đợt 1 — 2026', hot: true },
+        { id: 'wf', label: 'Word formation', hot: false },
+        { id: 'rc', label: 'Reading comprehension', hot: false },
+        { id: 'st', label: 'Sentence transformation', hot: false },
+        { id: 'cond', label: 'Câu điều kiện', hot: false },
+        { id: 'pron', label: 'Pronunciation & Stress', hot: false },
+      ],
+      provinces: [
+        { name: 'Hà Nội' }, { name: 'TP. Hồ Chí Minh' }, { name: 'Đà Nẵng' },
+        { name: 'Hải Phòng' }, { name: 'Cần Thơ' }, { name: 'Nghệ An' },
+        { name: 'Thanh Hoá' }, { name: 'Quảng Ninh' }, { name: 'Nam Định' }, { name: 'Bắc Ninh' },
+      ],
+      trendingItems: [
+        { label: 'Đề tham khảo THPT 2026', delta: '+184%' },
+        { label: 'HSA Đợt 1 — 2026', delta: '+92%' },
+        { label: 'Đề vào 10 Hà Nội 2025', delta: '+41%' },
+        { label: 'Sentence transformation', delta: '+12%' },
+        { label: 'Word formation', delta: '' },
+      ],
+    },
+  })
+  console.log('✓ SearchConfig seeded')
+
   console.log('Seed complete.')
   process.exit(0)
 }
