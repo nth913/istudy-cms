@@ -78,6 +78,17 @@ describe('searchEndpoint via index', () => {
     expect(body.thpt[0].href).toBe('/de-thi-chi-tiet/de-thpt-2025')
     expect(body.total).toBeGreaterThanOrEqual(1)
   })
+
+  it('exposes order array from index path', async () => {
+    const exams = [
+      { id: 'e1', title: 'Đề tham khảo THPT 2025', slug: 'de-thpt-2025', category: 'vao-dai-hoc', examType: 'chinh-thuc', year: '2025', searchKey: 'de tham khao thpt 2025' },
+    ]
+    const res = await searchEndpoint.handler!(mockReq({ q: 'tham khao' }, { exams, events: [], posts: [] }))
+    const body = await res.json()
+    expect(Array.isArray(body.order)).toBe(true)
+    expect(body.order).toHaveLength(4)
+    expect(body.order[0]).toBe('thpt')   // chỉ thpt match → đứng đầu
+  })
 })
 
 describe('searchEndpoint fallback', () => {
@@ -90,6 +101,17 @@ describe('searchEndpoint fallback', () => {
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.thpt).toHaveLength(1)
+    spy.mockRestore()
+  })
+
+  it('regex fallback returns canonical order', async () => {
+    const spy = vi.spyOn(searchIndexModule, 'queryIndex').mockRejectedValueOnce(new Error('index boom'))
+    const exams = [
+      { id: 'e1', title: 'Đề THPT', slug: 'de-thpt', category: 'vao-dai-hoc', examType: 'chinh-thuc', year: '2025', searchKey: 'de thpt' },
+    ]
+    const res = await searchEndpoint.handler!(mockReq({ q: 'de' }, { exams, events: [], posts: [] }))
+    const body = await res.json()
+    expect(body.order).toEqual(['thpt', 'l10', 'hsa', 'blog'])
     spy.mockRestore()
   })
 })
