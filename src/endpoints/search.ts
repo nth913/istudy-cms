@@ -25,7 +25,7 @@ async function regexFallback(req: PayloadRequest, qNorm: string, limit: number):
   const l10 = l10Res.docs.map(examToResult).filter((r) => r.cat === 'l10')
   const hsa = hsaRes.docs.map(eventToResult)
   const blog = blogRes.docs.map(postToResult)
-  return { thpt, l10, hsa, blog, total: thpt.length + l10.length + hsa.length + blog.length }
+  return { thpt, l10, hsa, blog, order: ['thpt', 'l10', 'hsa', 'blog'], total: thpt.length + l10.length + hsa.length + blog.length }
 }
 
 export const searchEndpoint: Endpoint = {

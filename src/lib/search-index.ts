@@ -19,6 +19,7 @@ export interface SearchBuckets {
   l10: SearchResult[]
   hsa: SearchResult[]
   blog: SearchResult[]
+  order: CatId[]
   total: number
 }
 
@@ -151,15 +152,22 @@ export async function queryIndex(payload: Payload, q: string, limit: number): Pr
   const andHits = idx.search(q, { ...SEARCH_OPTS, combineWith: 'AND' as const })
   const orHits = idx.search(q, { ...SEARCH_OPTS, combineWith: 'OR' as const })
   const seen = new Set<string>()
-  const buckets: SearchBuckets = { thpt: [], l10: [], hsa: [], blog: [], total: 0 }
+  const buckets: SearchBuckets = { thpt: [], l10: [], hsa: [], blog: [], order: [], total: 0 }
+  const maxScore: Record<CatId, number> = { thpt: 0, l10: 0, hsa: 0, blog: 0 }
   // AND hits iterated first → claim bucket slots before any OR-only hit; AND-first relevance is intentional, do not unify-resort.
   for (const hit of [...andHits, ...orHits]) {
     const id = hit.id as string
     if (seen.has(id)) continue
     seen.add(id)
     const dto = (hit as any).dto as SearchResult
-    if (buckets[dto.cat].length < limit) buckets[dto.cat].push(dto)
+    if (buckets[dto.cat].length < limit) {
+      buckets[dto.cat].push(dto)
+      const s = (hit as any).score as number
+      if (s > maxScore[dto.cat]) maxScore[dto.cat] = s
+    }
   }
+  // Section order = max relevance giảm dần; Array.sort ổn định (Node) → tie giữ canonical.
+  buckets.order = (['thpt', 'l10', 'hsa', 'blog'] as CatId[]).sort((a, b) => maxScore[b] - maxScore[a])
   buckets.total = buckets.thpt.length + buckets.l10.length + buckets.hsa.length + buckets.blog.length
   return buckets
 }
