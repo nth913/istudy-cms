@@ -75,6 +75,27 @@ describe('queryIndex', () => {
     expect(res.total).toBe(0)
     expect(res.thpt).toEqual([])
   })
+
+  it('order: section có match mạnh nhất (max score) đứng đầu, KHÔNG theo canonical', async () => {
+    // Post khớp cả 3 token ở title (boost 3) → score cao. Exam chỉ khớp "cau" ở searchText (boost 1) → score thấp.
+    const exams = [
+      { id: 'e1', title: 'Đề THPT 2025', slug: 'de-thpt-2025', category: 'vao-dai-hoc', examType: 'chinh-thuc', year: '2025', searchKey: 'cau hoi de thpt 2025' },
+    ]
+    const posts = [
+      { id: 'p1', title: 'Câu điều kiện nâng cao', slug: 'cau-dieu-kien', category: 'ngu-phap', publishedAt: '2026-05-01', body: { root: { children: [] } }, searchKeyPost: 'cau dieu kien nang cao' },
+    ]
+    const payload = mockPayload({ exams, events: [], posts })
+    const res = await queryIndex(payload, 'cau dieu kien', 8)
+    expect(res.order[0]).toBe('blog')        // canonical sẽ để blog cuối → chứng minh đã reorder
+    expect(res.order).toHaveLength(4)
+    expect(new Set(res.order).size).toBe(4)  // đủ 4 cat distinct
+  })
+
+  it('order: tất cả không match (tie ở 0) → giữ canonical thpt→l10→hsa→blog', async () => {
+    const payload = mockPayload({ exams: EXAMS, events: EVENTS, posts: POSTS })
+    const res = await queryIndex(payload, 'zzzkhongtontai', 8)
+    expect(res.order).toEqual(['thpt', 'l10', 'hsa', 'blog'])
+  })
 })
 
 describe('markSearchDirty', () => {
