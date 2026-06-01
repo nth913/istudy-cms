@@ -1396,6 +1396,14 @@ export interface SearchConfig {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Số tag phổ biến tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
+   */
+  maxTagsSuggest?: number | null;
+  /**
+   * Số tỉnh/thành tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
+   */
+  maxProvincesSuggest?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1486,6 +1494,8 @@ export interface SearchConfigSelect<T extends boolean = true> {
         delta?: T;
         id?: T;
       };
+  maxTagsSuggest?: T;
+  maxProvincesSuggest?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
