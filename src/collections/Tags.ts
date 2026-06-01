@@ -15,7 +15,9 @@ export const Tags: CollectionConfig = {
       ({ data }) => {
         if (!data) return data
         const src = typeof data.slug === 'string' && data.slug.length > 0 ? data.slug : (data.name ?? '')
-        data.slug = vietnameseSlugify(String(src))
+        const slug = vietnameseSlugify(String(src))
+        if (!slug) throw new Error('Tên tag không hợp lệ')
+        data.slug = slug
         return data
       },
     ],

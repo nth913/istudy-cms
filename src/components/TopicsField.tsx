@@ -1,6 +1,7 @@
 'use client'
 import * as React from 'react'
 import { useField } from '@payloadcms/ui'
+import { vietnameseSlugify } from '../lib/vietnamese-slugify'
 
 type TagOpt = { id: string; name: string }
 
@@ -68,19 +69,40 @@ export const TopicsField: React.FC<{ path: string; field?: any }> = ({ path, fie
   const remove = (id: string) => setValue(ids.filter((x) => x !== id))
 
   const createNew = async (name: string) => {
-    try {
-      const res = await fetch(api('/tags'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name }),
-      })
-      const d = await res.json()
-      const doc = d?.doc ?? d
-      if (doc?.id) add(String(doc.id), doc.name ?? name)
-    } catch {
-      // silently ignore network errors
+    const slug = vietnameseSlugify(name)
+    if (!slug) {
+      setQ('')
+      setOpts([])
+      return
     }
+    // Check for existing tag with same slug (diacritic-insensitive dedup per spec D2)
+    const checkRes = await fetch(
+      api(`/tags?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=0`),
+      { credentials: 'include' },
+    ).catch((err) => { console.warn('[TopicsField] tag lookup failed', err); return null })
+    if (checkRes?.ok) {
+      const checkData = await checkRes.json().catch(() => null)
+      const existing = checkData?.docs?.[0]
+      if (existing?.id) {
+        add(String(existing.id), existing.name ?? name)
+        return
+      }
+    }
+    // No existing tag — create new
+    const res = await fetch(api('/tags'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name }),
+    }).catch((err) => { console.warn('[TopicsField] tag create failed', err); return null })
+    if (!res) return
+    if (!res.ok) {
+      console.warn('[TopicsField] POST /api/tags returned', res.status)
+      return
+    }
+    const d = await res.json().catch(() => null)
+    const doc = d?.doc ?? d
+    if (doc?.id) add(String(doc.id), doc.name ?? name)
   }
 
   const onKeyDown = async (e: React.KeyboardEvent) => {

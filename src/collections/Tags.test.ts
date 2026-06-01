@@ -23,4 +23,8 @@ describe('Tags collection', () => {
     const out = runBeforeValidate({ name: 'Word Formation', slug: '' })
     expect(out.slug).toBe('word-formation')
   })
+
+  it('throws Vietnamese error when name slugifies to empty string', () => {
+    expect(() => runBeforeValidate({ name: '!!!', slug: '' })).toThrow('Tên tag không hợp lệ')
+  })
 })
