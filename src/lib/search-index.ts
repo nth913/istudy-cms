@@ -12,6 +12,7 @@ export interface SearchResult {
   href: string
   title: string
   meta: string[]
+  year?: string
 }
 
 export interface SearchBuckets {
@@ -44,7 +45,7 @@ export function examToResult(doc: any): SearchResult {
     doc.province?.name || doc.school || null,
     doc.dapAnReady ? 'Có đáp án' : null,
   ].filter(Boolean) as string[]
-  return { id: String(doc.id), cat, href: `/de-thi-chi-tiet/${doc.slug}`, title: doc.title, meta }
+  return { id: String(doc.id), cat, href: `/de-thi-chi-tiet/${doc.slug}`, title: doc.title, meta, year: doc.year ? String(doc.year) : undefined }
 }
 
 export function eventToResult(doc: any): SearchResult {
