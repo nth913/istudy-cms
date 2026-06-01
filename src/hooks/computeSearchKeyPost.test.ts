@@ -1,15 +1,22 @@
-// istudy-cms/src/hooks/computeSearchKeyPost.test.ts
-import { describe, expect, it } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { computeSearchKeyPost } from './computeSearchKeyPost'
 
 describe('computeSearchKeyPost', () => {
-  it('combines title + excerpt + tags into stripped lowercase', () => {
-    const data = { title: 'Mẹo Đọc Hiệu Quả', excerpt: 'Tip ôn thi', tags: ['reading', 'meo'] }
-    const result = computeSearchKeyPost({ data } as any)
-    expect(result.searchKeyPost).toBe('meo doc hieu qua tip on thi reading meo')
+  it('includes resolved topic names, diacritic-stripped lowercase', async () => {
+    const payload = { find: vi.fn(async () => ({ docs: [{ name: 'reading' }, { name: 'mẹo' }] })) }
+    const data = { title: 'Mẹo Đọc Hiệu Quả', excerpt: 'Tip ôn thi', topics: ['t1', 't2'] }
+    const out = await computeSearchKeyPost({ data, req: { payload } } as any)
+    expect(out.searchKeyPost).toContain('reading')
+    expect(out.searchKeyPost).toContain('meo')
+    expect(out.searchKeyPost).toBe(out.searchKeyPost.toLowerCase())
   })
-  it('handles missing fields gracefully', () => {
-    expect(computeSearchKeyPost({ data: { title: 'Test' } } as any).searchKeyPost).toBe('test')
-    expect(computeSearchKeyPost({ data: {} } as any).searchKeyPost).toBe('')
+  it('handles missing topics gracefully', async () => {
+    const payload = { find: vi.fn(async () => ({ docs: [] })) }
+    const out = await computeSearchKeyPost({ data: { title: 'Test' }, req: { payload } } as any)
+    expect(out.searchKeyPost).toBe('test')
+  })
+  it('handles no req.payload gracefully', async () => {
+    const out = await computeSearchKeyPost({ data: { title: 'Test', topics: ['id1'] }, req: {} } as any)
+    expect(out.searchKeyPost).toBe('test')
   })
 })

@@ -1,9 +1,10 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, CollectionSlug } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
 import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
 import { markSearchDirty } from '../lib/search-index'
+import { recomputeTagsAfterChange, recomputeTagsAfterDelete } from '../hooks/recomputeTagsForDoc'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -24,8 +25,8 @@ export const Exams: CollectionConfig = {
   hooks: {
     beforeValidate: [normalizeSlug],
     beforeChange: [examsAutoReadyFlags, computeSearchKey],
-    afterChange: [examsAfterChange, markSearchDirty],
-    afterDelete: [markSearchDirty],
+    afterChange: [examsAfterChange, markSearchDirty, recomputeTagsAfterChange],
+    afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
   access: {
@@ -71,6 +72,16 @@ export const Exams: CollectionConfig = {
       name: 'subject', type: 'relationship', relationTo: 'subjects',
       admin: { description: 'Môn học (tuỳ chọn, dùng cho hub /mon-hoc/<slug>)' },
       index: true,
+    },
+    {
+      name: 'topics',
+      type: 'relationship',
+      relationTo: 'tags' as CollectionSlug,
+      hasMany: true,
+      admin: {
+        description: 'Chủ đề / Tag (gõ để tìm, gõ mới để tạo)',
+        components: { Field: '/components/TopicsField#TopicsField' },
+      },
     },
     {
       name: 'assignedReviewer', type: 'relationship', relationTo: 'users',
