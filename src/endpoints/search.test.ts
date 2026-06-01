@@ -15,6 +15,7 @@ function mockReq(query: Record<string, string>, finders: Record<string, any[]>) 
         totalDocs: (finders[collection] ?? []).length,
       })),
       findGlobal: vi.fn(async () => finders.searchConfig?.[0] ?? {}),
+      count: vi.fn(async () => ({ totalDocs: 0 })),
     },
   } as any
 }
@@ -137,5 +138,22 @@ describe('searchMetaEndpoint', () => {
     const res = await searchMetaEndpoint.handler!(req)
     const body = await res.json()
     expect(body.featured).toBeNull()
+  })
+})
+
+describe('searchEndpoint counts', () => {
+  it('response includes per-cat counts (uncapped, via payload.count)', async () => {
+    const exams = [
+      { id: 'e1', title: 'Đề THPT 2025', slug: 'de-thpt-2025', category: 'vao-dai-hoc', examType: 'chinh-thuc', year: '2025', searchKey: 'de thpt 2025' },
+    ]
+    const req = mockReq({ q: 'de' }, { exams, events: [], posts: [] })
+    req.payload.count = vi.fn()
+      .mockResolvedValueOnce({ totalDocs: 12 }) // thpt
+      .mockResolvedValueOnce({ totalDocs: 9 })  // l10
+      .mockResolvedValueOnce({ totalDocs: 0 })  // hsa
+      .mockResolvedValueOnce({ totalDocs: 2 })  // blog
+    const res = await searchEndpoint.handler!(req as any)
+    const body = await res.json()
+    expect(body.counts).toEqual({ thpt: 12, l10: 9, hsa: 0, blog: 2 })
   })
 })
