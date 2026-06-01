@@ -3,6 +3,7 @@ import { postsBeforeValidate } from '../hooks/postsBeforeValidate'
 import { postsAfterChange } from '../hooks/postsAfterChange'
 import { computeSearchKeyPost } from '../hooks/computeSearchKeyPost'
 import { markSearchDirty } from '../lib/search-index'
+import { recomputeTagsAfterChange, recomputeTagsAfterDelete } from '../hooks/recomputeTagsForDoc'
 import { postsListEndpoint } from '../endpoints/posts-list'
 import { postsDetailEndpoint } from '../endpoints/posts-detail'
 import { postsFeaturedEndpoint } from '../endpoints/posts-featured'
@@ -28,8 +29,8 @@ export const Posts: CollectionConfig = {
   hooks: {
     beforeValidate: [postsBeforeValidate],
     beforeChange: [computeSearchKeyPost],
-    afterChange: [postsAfterChange, markSearchDirty],
-    afterDelete: [markSearchDirty],
+    afterChange: [postsAfterChange, markSearchDirty, recomputeTagsAfterChange],
+    afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
   endpoints: [postsListEndpoint, postsDetailEndpoint, postsFeaturedEndpoint],
   fields: [

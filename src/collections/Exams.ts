@@ -4,6 +4,7 @@ import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
 import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
 import { markSearchDirty } from '../lib/search-index'
+import { recomputeTagsAfterChange, recomputeTagsAfterDelete } from '../hooks/recomputeTagsForDoc'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -24,8 +25,8 @@ export const Exams: CollectionConfig = {
   hooks: {
     beforeValidate: [normalizeSlug],
     beforeChange: [examsAutoReadyFlags, computeSearchKey],
-    afterChange: [examsAfterChange, markSearchDirty],
-    afterDelete: [markSearchDirty],
+    afterChange: [examsAfterChange, markSearchDirty, recomputeTagsAfterChange],
+    afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
   access: {
