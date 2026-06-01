@@ -1,4 +1,5 @@
 import type { CollectionSlug, Endpoint, PayloadRequest } from 'payload'
+import { topicNames } from '../lib/topic-names'
 
 const POSTS_COLLECTION = 'posts' as CollectionSlug
 
@@ -30,6 +31,6 @@ export const postsDetailEndpoint: Endpoint = {
       return Response.json({ error: 'Không tìm thấy bài viết' }, { status: 404 })
     }
 
-    return Response.json(post)
+    return Response.json({ ...post, tags: topicNames((post as any).topics) })
   },
 }

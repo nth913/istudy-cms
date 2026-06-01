@@ -7,6 +7,7 @@ import {
   type SearchBuckets,
 } from '../lib/search-index'
 import { CAT_SOURCES, buildCatWhere } from '../lib/search-collections'
+import { computePopularTags, computeTopProvinces } from './search-meta-helpers'
 
 const MAX_QUERY_LEN = 100
 const MAX_LIMIT = 20
@@ -64,8 +65,12 @@ export const searchMetaEndpoint: Endpoint = {
   method: 'get',
   handler: async (req: PayloadRequest) => {
     const cfg = await req.payload.findGlobal({ slug: 'search-config' })
-    const popularTags = (cfg as any)?.popularTags?.map((t: any) => ({ id: t.id, label: t.label, hot: !!t.hot })) ?? []
-    const provinces = (cfg as any)?.provinces?.map((p: any) => p.name) ?? []
+    const maxTags = Number((cfg as any)?.maxTagsSuggest) || 3
+    const maxProv = Number((cfg as any)?.maxProvincesSuggest) || 3
+    const [popularTags, provinces] = await Promise.all([
+      computePopularTags(req.payload, maxTags),
+      computeTopProvinces(req.payload, maxProv),
+    ])
     const trending = ((cfg as any)?.trendingItems ?? []).map((t: any, i: number) => ({
       rank: i + 1,
       label: t.label,

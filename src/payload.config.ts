@@ -10,6 +10,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Subjects } from './collections/Subjects'
 import { Provinces } from './collections/Provinces'
+import { Tags } from './collections/Tags'
 import { Exams } from './collections/Exams'
 import { Posts } from './collections/Posts'
 import { Events } from './collections/Events'
@@ -58,7 +59,7 @@ export default buildConfig({
       afterNavLinks: ['/components/SignOutLink#SignOutLink'],
     },
   },
-  collections: [Users, Media, Subjects, Provinces, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
+  collections: [Users, Media, Subjects, Provinces, Tags, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
   globals: [KhoDeSidebarConfig, SeoConfig, SearchConfig],
   endpoints: [
     notifyEndpoint,

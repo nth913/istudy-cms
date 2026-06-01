@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     subjects: Subject;
     provinces: Province;
+    tags: Tag;
     exams: Exam;
     posts: Post;
     events: Event;
@@ -91,6 +92,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
     provinces: ProvincesSelect<false> | ProvincesSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     exams: ExamsSelect<false> | ExamsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
@@ -261,6 +263,29 @@ export interface Province {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  slug?: string | null;
+  /**
+   * Hiện badge HOT trong popup search
+   */
+  hot?: boolean | null;
+  /**
+   * Số đề + bài viết published gắn tag (auto)
+   */
+  usageCount?: number | null;
+  /**
+   * usageCount + trọng số views (auto)
+   */
+  popularScore?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "exams".
  */
 export interface Exam {
@@ -291,6 +316,10 @@ export interface Exam {
    * Môn học (tuỳ chọn, dùng cho hub /mon-hoc/<slug>)
    */
   subject?: (string | null) | Subject;
+  /**
+   * Chủ đề / Tag (gõ để tìm, gõ mới để tạo)
+   */
+  topics?: (string | Tag)[] | null;
   /**
    * Reviewer được giao kiểm duyệt (admin/editor pick)
    */
@@ -389,6 +418,10 @@ export interface Post {
   cover?: (string | null) | Media;
   author?: (string | null) | User;
   tags?: string[] | null;
+  /**
+   * Chủ đề / Tag (gõ để tìm, gõ mới để tạo)
+   */
+  topics?: (string | Tag)[] | null;
   category: 'tu-vung' | 'ngu-phap' | 'meo' | 'tin-tuc';
   publishedAt?: string | null;
   isFeatured?: boolean | null;
@@ -801,6 +834,10 @@ export interface PayloadLockedDocument {
         value: string | Province;
       } | null)
     | ({
+        relationTo: 'tags';
+        value: string | Tag;
+      } | null)
+    | ({
         relationTo: 'exams';
         value: string | Exam;
       } | null)
@@ -971,6 +1008,19 @@ export interface ProvincesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  hot?: T;
+  usageCount?: T;
+  popularScore?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "exams_select".
  */
 export interface ExamsSelect<T extends boolean = true> {
@@ -985,6 +1035,7 @@ export interface ExamsSelect<T extends boolean = true> {
   school?: T;
   province?: T;
   subject?: T;
+  topics?: T;
   assignedReviewer?: T;
   notesForReviewer?: T;
   pdfFile?: T;
@@ -1032,6 +1083,7 @@ export interface PostsSelect<T extends boolean = true> {
   cover?: T;
   author?: T;
   tags?: T;
+  topics?: T;
   category?: T;
   publishedAt?: T;
   isFeatured?: T;
@@ -1359,6 +1411,14 @@ export interface SearchConfig {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Số tag phổ biến tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
+   */
+  maxTagsSuggest?: number | null;
+  /**
+   * Số tỉnh/thành tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
+   */
+  maxProvincesSuggest?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1449,6 +1509,8 @@ export interface SearchConfigSelect<T extends boolean = true> {
         delta?: T;
         id?: T;
       };
+  maxTagsSuggest?: T;
+  maxProvincesSuggest?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
