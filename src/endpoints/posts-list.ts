@@ -1,4 +1,5 @@
 import type { CollectionSlug, Endpoint, PayloadRequest, Where } from 'payload'
+import { topicNames } from '../lib/topic-names'
 
 const POSTS_COLLECTION = 'posts' as CollectionSlug
 
@@ -8,7 +9,7 @@ const SELECT_FIELDS = {
   excerpt: true,
   cover: true,
   category: true,
-  tags: true,
+  topics: true,
   publishedAt: true,
   isFeatured: true,
   likeCount: true,
@@ -35,7 +36,7 @@ export const postsListEndpoint: Endpoint = {
       _status: { equals: 'published' },
     }
     if (category) where.category = { equals: category }
-    if (tag) where.tags = { contains: tag }
+    if (tag) where['topics.slug'] = { equals: tag }
 
     const result = await req.payload.find({
       collection: POSTS_COLLECTION,
@@ -47,6 +48,7 @@ export const postsListEndpoint: Endpoint = {
       select: SELECT_FIELDS,
     })
 
-    return Response.json(result)
+    const docs = result.docs.map((d: any) => ({ ...d, tags: topicNames(d.topics) }))
+    return Response.json({ ...result, docs })
   },
 }
