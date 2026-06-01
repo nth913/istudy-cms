@@ -338,4 +338,13 @@ describe('search-exams extended (GET /api/search-exams)', () => {
     const states = new Set(json.items.map((d: any) => d.deReady))
     expect(states.size).toBeGreaterThanOrEqual(2) // both true + false present
   })
+
+  it('GET applies q via normalized searchKey.contains', async () => {
+    const payload = makePayload()
+    req = buildGetReq('/api/search-exams?cat=vao-10&q=H%C3%A0%20N%E1%BB%99i', payload)
+    await searchExamsGetEndpoint.handler!(req as any)
+    expect(payload.find).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ searchKey: { contains: 'ha noi' } }),
+    }))
+  })
 })
