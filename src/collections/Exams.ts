@@ -78,7 +78,10 @@ export const Exams: CollectionConfig = {
       type: 'relationship',
       relationTo: 'tags' as CollectionSlug,
       hasMany: true,
-      admin: { description: 'Chủ đề / Tag (gõ để tìm, gõ mới để tạo)' },
+      admin: {
+        description: 'Chủ đề / Tag (gõ để tìm, gõ mới để tạo)',
+        components: { Field: '/components/TopicsField#TopicsField' },
+      },
     },
     {
       name: 'assignedReviewer', type: 'relationship', relationTo: 'users',
