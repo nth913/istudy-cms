@@ -119,22 +119,38 @@ describe('searchEndpoint fallback', () => {
 
 describe('searchMetaEndpoint', () => {
   it('returns shape + cache header', async () => {
+    // Now popularTags comes from the `tags` collection (computed), provinces from exams aggregate.
+    // mockReq routes find({collection}) to finders[collection].
     const req = mockReq({}, {
-      searchConfig: [{ popularTags: [{ id: 't1', label: 'X', hot: true }], provinces: [{ name: 'Hà Nội' }], trendingItems: [{ label: 'A', delta: '+10%' }] }],
-      exams: [{ id: 'f1', title: 'Top Đề', slug: 'top', category: 'vao-dai-hoc', year: '2025', views: 9999 }],
+      searchConfig: [{ trendingItems: [{ label: 'A', delta: '+10%' }], maxTagsSuggest: 3, maxProvincesSuggest: 3 }],
+      // tags collection: 1 tag with usageCount>0 (the helper queries where usageCount>0)
+      tags: [{ id: 't1', name: 'X', slug: 'x', hot: true, usageCount: 5, popularScore: 5 }],
+      // exams collection: one vao-10 exam with province, plus a hot exam for featured
+      exams: [
+        { id: 'f1', title: 'Top Đề', slug: 'top', category: 'vao-dai-hoc', year: '2025', views: 9999 },
+        { id: 'e1', province: 'pHN', views: 100, category: 'vao-10' },
+      ],
+      // provinces collection for the aggregate lookup
+      provinces: [{ id: 'pHN', name: 'Hà Nội' }],
     })
     const res = await searchMetaEndpoint.handler!(req)
     expect(res.status).toBe(200)
     expect(res.headers.get('Cache-Control')).toMatch(/max-age=60/)
     const body = await res.json()
     expect(body.popularTags).toHaveLength(1)
+    expect(body.popularTags[0]).toMatchObject({ id: 't1', label: 'X', slug: 'x', hot: true })
     expect(body.provinces).toEqual(['Hà Nội'])
     expect(body.trending[0].rank).toBe(1)
     expect(body.featured).not.toBeNull()
   })
 
   it('featured null when no exam found', async () => {
-    const req = mockReq({}, { searchConfig: [{ popularTags: [], provinces: [], trendingItems: [] }], exams: [] })
+    const req = mockReq({}, {
+      searchConfig: [{ trendingItems: [], maxTagsSuggest: 3, maxProvincesSuggest: 3 }],
+      tags: [],
+      exams: [],
+      provinces: [],
+    })
     const res = await searchMetaEndpoint.handler!(req)
     const body = await res.json()
     expect(body.featured).toBeNull()
