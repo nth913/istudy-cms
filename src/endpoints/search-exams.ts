@@ -163,6 +163,9 @@ export const searchExamsGetEndpoint: Endpoint = {
       // province slug not found → silent no-filter (per spec)
     }
 
+    const qParam = q.get('q')?.trim()
+    if (qParam) where.searchKey = { contains: removeVietnameseDiacritics(qParam).toLowerCase() }
+
     // deReady filter: true → ready only, false → waiting only, undefined → no filter
     if (deReadyParam === 'true') {
       where.deReady = { equals: true }

@@ -1,31 +1,34 @@
 // istudy-cms/src/endpoints/search.ts
 import type { Endpoint, PayloadRequest } from 'payload'
-import { removeVietnameseDiacritics } from '../lib/vietnamese-slugify'
 import {
   examToResult,
-  eventToResult,
-  postToResult,
   queryIndex,
+  type CatId,
   type SearchBuckets,
 } from '../lib/search-index'
+import { CAT_SOURCES, buildCatWhere } from '../lib/search-collections'
 
 const MAX_QUERY_LEN = 100
 const MAX_LIMIT = 20
 const DEFAULT_LIMIT = 8
 
-async function regexFallback(req: PayloadRequest, qNorm: string, limit: number): Promise<SearchBuckets> {
-  const [thptRes, l10Res, hsaRes, blogRes] = await Promise.all([
-    req.payload.find({ collection: 'exams', where: { _status: { equals: 'published' }, category: { equals: 'vao-dai-hoc' }, searchKey: { contains: qNorm } }, limit, depth: 1 }),
-    req.payload.find({ collection: 'exams', where: { _status: { equals: 'published' }, category: { equals: 'vao-10' }, searchKey: { contains: qNorm } }, limit, depth: 1 }),
-    req.payload.find({ collection: 'events', where: { _status: { equals: 'published' }, submenu: { in: ['dgnl', 'dgnl-thu'] }, searchKeyEvent: { contains: qNorm } }, limit, depth: 1 }),
-    req.payload.find({ collection: 'posts', where: { _status: { equals: 'published' }, searchKeyPost: { contains: qNorm } }, limit, depth: 1 }),
-  ])
-  // Guard: keep only the queried category (redundant in prod; test mock ignores where).
-  const thpt = thptRes.docs.map(examToResult).filter((r) => r.cat === 'thpt')
-  const l10 = l10Res.docs.map(examToResult).filter((r) => r.cat === 'l10')
-  const hsa = hsaRes.docs.map(eventToResult)
-  const blog = blogRes.docs.map(postToResult)
-  return { thpt, l10, hsa, blog, order: ['thpt', 'l10', 'hsa', 'blog'], total: thpt.length + l10.length + hsa.length + blog.length }
+const CATS: CatId[] = ['thpt', 'l10', 'hsa', 'blog']
+
+async function regexFallback(req: PayloadRequest, q: string, limit: number): Promise<SearchBuckets> {
+  const res = await Promise.all(CATS.map((c) =>
+    req.payload.find({ collection: CAT_SOURCES[c].collection, where: buildCatWhere(c, { q }), limit, depth: 1 }),
+  ))
+  const buckets: SearchBuckets = { thpt: [], l10: [], hsa: [], blog: [], order: ['thpt', 'l10', 'hsa', 'blog'], total: 0 }
+  CATS.forEach((c, i) => { (buckets as any)[c] = res[i].docs.map(CAT_SOURCES[c].toResult) })
+  buckets.total = CATS.reduce((n, c) => n + (buckets as any)[c].length, 0)
+  return buckets
+}
+
+async function computeCounts(req: PayloadRequest, q: string): Promise<Record<CatId, number>> {
+  const res = await Promise.all(CATS.map((c) =>
+    req.payload.count({ collection: CAT_SOURCES[c].collection, where: buildCatWhere(c, { q }) }),
+  ))
+  return { thpt: res[0].totalDocs, l10: res[1].totalDocs, hsa: res[2].totalDocs, blog: res[3].totalDocs }
 }
 
 export const searchEndpoint: Endpoint = {
@@ -48,11 +51,11 @@ export const searchEndpoint: Endpoint = {
       buckets = await queryIndex(req.payload, q, limit)
     } catch (err) {
       req.payload?.logger?.error?.({ err }, 'search index failed; falling back to regex')
-      const qNorm = removeVietnameseDiacritics(q).toLowerCase()
-      buckets = await regexFallback(req, qNorm, limit)
+      buckets = await regexFallback(req, q, limit)
     }
 
-    return Response.json({ ...buckets, tookMs: Date.now() - start })
+    const counts = await computeCounts(req, q)
+    return Response.json({ ...buckets, counts, tookMs: Date.now() - start })
   },
 }
 
