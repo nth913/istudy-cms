@@ -35,5 +35,13 @@ export const SearchConfig: GlobalConfig = {
         { name: 'delta', type: 'text' },
       ],
     },
+    {
+      name: 'maxTagsSuggest', type: 'number', defaultValue: 3, min: 1, max: 8,
+      admin: { description: 'Số tag phổ biến tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.' },
+    },
+    {
+      name: 'maxProvincesSuggest', type: 'number', defaultValue: 3, min: 1, max: 8,
+      admin: { description: 'Số tỉnh/thành tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.' },
+    },
   ],
 }
