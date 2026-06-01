@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, CollectionSlug } from 'payload'
 import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
@@ -71,6 +71,13 @@ export const Exams: CollectionConfig = {
       name: 'subject', type: 'relationship', relationTo: 'subjects',
       admin: { description: 'Môn học (tuỳ chọn, dùng cho hub /mon-hoc/<slug>)' },
       index: true,
+    },
+    {
+      name: 'topics',
+      type: 'relationship',
+      relationTo: 'tags' as CollectionSlug,
+      hasMany: true,
+      admin: { description: 'Chủ đề / Tag (gõ để tìm, gõ mới để tạo)' },
     },
     {
       name: 'assignedReviewer', type: 'relationship', relationTo: 'users',

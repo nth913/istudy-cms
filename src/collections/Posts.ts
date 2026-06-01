@@ -47,6 +47,13 @@ export const Posts: CollectionConfig = {
     { name: 'author', type: 'relationship', relationTo: 'users' },
     { name: 'tags', type: 'text', hasMany: true },
     {
+      name: 'topics',
+      type: 'relationship',
+      relationTo: 'tags' as CollectionSlug,
+      hasMany: true,
+      admin: { description: 'Chủ đề / Tag (gõ để tìm, gõ mới để tạo)' },
+    },
+    {
       name: 'category',
       type: 'select',
       required: true,
