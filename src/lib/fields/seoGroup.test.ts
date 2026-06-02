@@ -7,9 +7,9 @@ describe('seoGroup field config', () => {
     expect(seoGroup.name).toBe('seo')
   })
 
-  it('có 5 sub-field: title, description, ogImage, ogTitle, ogDescription', () => {
+  it('có 7 sub-field: title, description, ogImage, ogTitle, ogDescription, noindex, canonicalUrl', () => {
     const fieldNames = seoGroup.fields.map((f: any) => f.name)
-    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription'])
+    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription', 'noindex', 'canonicalUrl'])
   })
 
   it('field title text maxLength 70', () => {
@@ -41,5 +41,22 @@ describe('seoGroup field config', () => {
     const og = seoGroup.fields.find((f: any) => f.name === 'ogDescription') as any
     expect(og.type).toBe('textarea')
     expect(og.maxLength).toBe(200)
+  })
+
+  it('has a noindex checkbox defaulting to false', () => {
+    const f = seoGroup.fields.find((x: any) => x.name === 'noindex') as any
+    expect(f).toBeTruthy()
+    expect(f.type).toBe('checkbox')
+    expect(f.defaultValue).toBe(false)
+  })
+
+  it('has a canonicalUrl text field that validates absolute URLs', () => {
+    const f = seoGroup.fields.find((x: any) => x.name === 'canonicalUrl') as any
+    expect(f).toBeTruthy()
+    expect(f.type).toBe('text')
+    expect(f.validate('')).toBe(true)
+    expect(f.validate(undefined)).toBe(true)
+    expect(f.validate('https://x.com/a')).toBe(true)
+    expect(typeof f.validate('notaurl')).toBe('string')
   })
 })
