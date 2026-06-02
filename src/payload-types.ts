@@ -391,6 +391,10 @@ export interface Exam {
      * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
      */
     canonicalUrl?: string | null;
+    /**
+     * Từ khóa chính bạn muốn bài này lên top Google.
+     */
+    focusKeyword?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -458,6 +462,10 @@ export interface Post {
      * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
      */
     canonicalUrl?: string | null;
+    /**
+     * Từ khóa chính bạn muốn bài này lên top Google.
+     */
+    focusKeyword?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -596,6 +604,10 @@ export interface Event {
      * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
      */
     canonicalUrl?: string | null;
+    /**
+     * Từ khóa chính bạn muốn bài này lên top Google.
+     */
+    focusKeyword?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -711,6 +723,10 @@ export interface Book {
      * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
      */
     canonicalUrl?: string | null;
+    /**
+     * Từ khóa chính bạn muốn bài này lên top Google.
+     */
+    focusKeyword?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1100,6 +1116,7 @@ export interface ExamsSelect<T extends boolean = true> {
         ogDescription?: T;
         noindex?: T;
         canonicalUrl?: T;
+        focusKeyword?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1136,6 +1153,7 @@ export interface PostsSelect<T extends boolean = true> {
         ogDescription?: T;
         noindex?: T;
         canonicalUrl?: T;
+        focusKeyword?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1191,6 +1209,7 @@ export interface EventsSelect<T extends boolean = true> {
         ogDescription?: T;
         noindex?: T;
         canonicalUrl?: T;
+        focusKeyword?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1272,6 +1291,7 @@ export interface BooksSelect<T extends boolean = true> {
         ogDescription?: T;
         noindex?: T;
         canonicalUrl?: T;
+        focusKeyword?: T;
       };
   updatedAt?: T;
   createdAt?: T;

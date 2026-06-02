@@ -35,5 +35,15 @@ export const seoGroup: NamedGroupField = {
         return 'Canonical phải là URL đầy đủ (http/https) hoặc để trống'
       },
     },
+    {
+      name: 'focusKeyword',
+      type: 'text',
+      admin: { description: 'Từ khóa chính bạn muốn bài này lên top Google.' },
+    },
+    {
+      name: 'panel',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/SeoPanel.tsx#SeoPanel' } },
+    },
   ],
 }
