@@ -57,29 +57,22 @@ async function seed() {
   await payload.updateGlobal({
     slug: 'search-config',
     data: {
-      popularTags: [
-        { id: 'tk25', label: 'Đề tham khảo 2025', hot: true },
-        { id: 'mh', label: 'Đề minh hoạ Bộ GD', hot: true },
-        { id: 'hsa', label: 'HSA Đợt 1 — 2026', hot: true },
-        { id: 'wf', label: 'Word formation', hot: false },
-        { id: 'rc', label: 'Reading comprehension', hot: false },
-        { id: 'st', label: 'Sentence transformation', hot: false },
-        { id: 'cond', label: 'Câu điều kiện', hot: false },
-        { id: 'pron', label: 'Pronunciation & Stress', hot: false },
+      defaultTags: [
+        { id: 'thpt', label: 'THPT', hot: false },
+        { id: 'vao10', label: 'Vào 10', hot: false },
       ],
-      provinces: [
-        { name: 'Hà Nội' }, { name: 'TP. Hồ Chí Minh' }, { name: 'Đà Nẵng' },
-        { name: 'Hải Phòng' }, { name: 'Cần Thơ' }, { name: 'Nghệ An' },
-        { name: 'Thanh Hoá' }, { name: 'Quảng Ninh' }, { name: 'Nam Định' }, { name: 'Bắc Ninh' },
+      defaultProvinces: [
+        { name: 'Hà Nội' },
+        { name: 'Hồ Chí Minh' },
       ],
-      trendingItems: [
-        { label: 'Đề tham khảo THPT 2026', delta: '+184%' },
-        { label: 'HSA Đợt 1 — 2026', delta: '+92%' },
-        { label: 'Đề vào 10 Hà Nội 2025', delta: '+41%' },
-        { label: 'Sentence transformation', delta: '+12%' },
-        { label: 'Word formation', delta: '' },
+      defaultTrending: [
+        { label: 'Đề thi thử 2026 — Nghệ An lần 3', href: '/de-thi-chi-tiet/exam-thi-thu-2026-nghe-an-lan-3', delta: null },
       ],
-    },
+      maxTagsSuggest: 3,
+      maxProvincesSuggest: 3,
+      maxTrendingSuggest: 3,
+      loadingTimeoutMs: 13000,
+    } as any,
   })
   console.log('✓ SearchConfig seeded')
 
