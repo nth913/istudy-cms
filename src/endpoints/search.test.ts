@@ -157,6 +157,22 @@ describe('searchMetaEndpoint', () => {
   })
 })
 
+describe('searchMetaEndpoint trending cap', () => {
+  it('meta caps trending to maxTrendingSuggest', async () => {
+    const { searchMetaEndpoint } = await import('./search')
+    const req = mockReq({}, {
+      searchConfig: [{ maxTrendingSuggest: 2, trendingItems: [
+        { label: 'A', delta: '+1%' }, { label: 'B', delta: null }, { label: 'C', delta: null },
+      ] }],
+      tags: [], exams: [], provinces: [],
+    })
+    const res = await searchMetaEndpoint.handler!(req)
+    const body = await res.json()
+    expect(body.trending).toHaveLength(2)
+    expect(body.trending.map((t: any) => t.label)).toEqual(['A', 'B'])
+  })
+})
+
 describe('searchEndpoint counts', () => {
   it('response includes per-cat counts (uncapped, via payload.count)', async () => {
     const exams = [
