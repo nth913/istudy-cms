@@ -7,9 +7,9 @@ describe('seoGroup field config', () => {
     expect(seoGroup.name).toBe('seo')
   })
 
-  it('có 9 sub-field: title, description, ogImage, ogTitle, ogDescription, noindex, canonicalUrl, focusKeyword, panel', () => {
+  it('có 10 sub-field: title, description, ogImage, ogTitle, ogDescription, noindex, canonicalUrl, focusKeyword, panel, suggest', () => {
     const fieldNames = seoGroup.fields.map((f: any) => f.name)
-    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription', 'noindex', 'canonicalUrl', 'focusKeyword', 'panel'])
+    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription', 'noindex', 'canonicalUrl', 'focusKeyword', 'panel', 'suggest'])
   })
 
   it('field title text maxLength 70', () => {
@@ -67,5 +67,10 @@ describe('seoGroup field config', () => {
     const f = seoGroup.fields.find((x: any) => x.name === 'panel') as any
     expect(f?.type).toBe('ui')
     expect(f?.admin?.components?.Field).toContain('SeoPanel')
+  })
+  it('has a ui suggest field wired to SeoSuggest', () => {
+    const f = seoGroup.fields.find((x: any) => x.name === 'suggest') as any
+    expect(f?.type).toBe('ui')
+    expect(f?.admin?.components?.Field).toContain('SeoSuggest')
   })
 })
