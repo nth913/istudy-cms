@@ -46,6 +46,7 @@ import { trackViewEndpoint } from './endpoints/track-view'
 import { searchEndpoint, searchMetaEndpoint } from './endpoints/search'
 import { searchDrilldownEndpoint } from './endpoints/search-drilldown'
 import { searchConfigEndpoint } from './endpoints/search-config'
+import { seoSuggestEndpoint } from './endpoints/seo-suggest'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -86,6 +87,7 @@ export default buildConfig({
     searchMetaEndpoint,
     searchConfigEndpoint,
     searchDrilldownEndpoint,
+    seoSuggestEndpoint,
   ],
   cors: [
     'https://aistudy.com.vn',
