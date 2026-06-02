@@ -66,6 +66,17 @@ describe('exams-sidebar-facets endpoint (dynamic)', () => {
     }
   })
 
+  // ----- Group ordering ----------------------------------------------------
+  it('orders groups: Phân loại, then Năm thi, then Tỉnh / Thành phố', async () => {
+    const payload = makePayload({
+      examDocs: [{ category: 'vao-10', year: '2024', province: 'p1' }],
+      provinceDocs: [{ id: 'p1', name: 'Hà Nội', slug: 'ha-noi' }],
+    })
+    const { body } = await callEndpoint(payload)
+    const titles = body.groups.map((g: any) => g.title)
+    expect(titles).toEqual(['Phân loại', 'Năm thi', 'Tỉnh / Thành phố'])
+  })
+
   // ----- Category group ----------------------------------------------------
   it('counts categories correctly and uses correct labels', async () => {
     const payload = makePayload({

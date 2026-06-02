@@ -72,6 +72,18 @@ export const examsSidebarFacetsEndpoint: Endpoint = {
       groups.push({ title: 'Phân loại', items: catItems })
     }
 
+    // --- Năm thi (years) --- (shown above provinces per sidebar ordering)
+    const yearItems = [...yearCounts.entries()]
+      .map(([year, count]) => ({
+        label: `Năm ${year}`,
+        filterQuery: `?year=${year}`,
+        count,
+      }))
+      .sort((a, b) => Number(b.filterQuery.slice(6)) - Number(a.filterQuery.slice(6)))
+    if (yearItems.length > 0) {
+      groups.push({ title: 'Năm thi', items: yearItems })
+    }
+
     // --- Tỉnh / Thành phố (provinces) ---
     const provItems = [...provinceCounts.entries()]
       .filter(([id]) => provinceById.has(id))
@@ -85,18 +97,6 @@ export const examsSidebarFacetsEndpoint: Endpoint = {
       })
     if (provItems.length > 0) {
       groups.push({ title: 'Tỉnh / Thành phố', items: provItems })
-    }
-
-    // --- Năm thi (years) ---
-    const yearItems = [...yearCounts.entries()]
-      .map(([year, count]) => ({
-        label: `Năm ${year}`,
-        filterQuery: `?year=${year}`,
-        count,
-      }))
-      .sort((a, b) => Number(b.filterQuery.slice(6)) - Number(a.filterQuery.slice(6)))
-    if (yearItems.length > 0) {
-      groups.push({ title: 'Năm thi', items: yearItems })
     }
 
     return Response.json({ groups })
