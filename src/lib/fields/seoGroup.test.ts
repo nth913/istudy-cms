@@ -7,9 +7,9 @@ describe('seoGroup field config', () => {
     expect(seoGroup.name).toBe('seo')
   })
 
-  it('có 7 sub-field: title, description, ogImage, ogTitle, ogDescription, noindex, canonicalUrl', () => {
+  it('có 9 sub-field: title, description, ogImage, ogTitle, ogDescription, noindex, canonicalUrl, focusKeyword, panel', () => {
     const fieldNames = seoGroup.fields.map((f: any) => f.name)
-    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription', 'noindex', 'canonicalUrl'])
+    expect(fieldNames).toEqual(['title', 'description', 'ogImage', 'ogTitle', 'ogDescription', 'noindex', 'canonicalUrl', 'focusKeyword', 'panel'])
   })
 
   it('field title text maxLength 70', () => {
@@ -58,5 +58,14 @@ describe('seoGroup field config', () => {
     expect(f.validate(undefined)).toBe(true)
     expect(f.validate('https://x.com/a')).toBe(true)
     expect(typeof f.validate('notaurl')).toBe('string')
+  })
+  it('has a focusKeyword text field', () => {
+    const f = seoGroup.fields.find((x: any) => x.name === 'focusKeyword') as any
+    expect(f?.type).toBe('text')
+  })
+  it('has a ui panel field wired to SeoPanel', () => {
+    const f = seoGroup.fields.find((x: any) => x.name === 'panel') as any
+    expect(f?.type).toBe('ui')
+    expect(f?.admin?.components?.Field).toContain('SeoPanel')
   })
 })
