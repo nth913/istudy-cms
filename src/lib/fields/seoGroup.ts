@@ -45,5 +45,10 @@ export const seoGroup: NamedGroupField = {
       type: 'ui',
       admin: { components: { Field: '/components/admin/SeoPanel.tsx#SeoPanel' } },
     },
+    {
+      name: 'suggest',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/SeoSuggest.tsx#SeoSuggest' } },
+    },
   ],
 }
