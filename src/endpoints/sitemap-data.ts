@@ -25,21 +25,21 @@ export const sitemapDataEndpoint: Endpoint = {
     const [exams, posts, books, provinces, subjects] = await Promise.all([
       req.payload.find({
         collection: EXAMS,
-        where: { _status: { equals: 'published' } },
+        where: { _status: { equals: 'published' }, 'seo.noindex': { not_equals: true } },
         limit: 5000,
         depth: 0,
         select: { slug: true, updatedAt: true },
       }),
       req.payload.find({
         collection: POSTS,
-        where: { _status: { equals: 'published' } },
+        where: { _status: { equals: 'published' }, 'seo.noindex': { not_equals: true } },
         limit: 5000,
         depth: 0,
         select: { slug: true, updatedAt: true },
       }),
       req.payload.find({
         collection: BOOKS,
-        where: { _status: { equals: 'published' } },
+        where: { _status: { equals: 'published' }, 'seo.noindex': { not_equals: true } },
         limit: 5000,
         depth: 0,
         select: { slug: true, updatedAt: true },

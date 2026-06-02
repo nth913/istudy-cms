@@ -383,6 +383,14 @@ export interface Exam {
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
     ogDescription?: string | null;
+    /**
+     * Ẩn trang này khỏi Google (noindex) và loại khỏi sitemap.
+     */
+    noindex?: boolean | null;
+    /**
+     * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
+     */
+    canonicalUrl?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -442,6 +450,14 @@ export interface Post {
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
     ogDescription?: string | null;
+    /**
+     * Ẩn trang này khỏi Google (noindex) và loại khỏi sitemap.
+     */
+    noindex?: boolean | null;
+    /**
+     * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
+     */
+    canonicalUrl?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -572,6 +588,14 @@ export interface Event {
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
     ogDescription?: string | null;
+    /**
+     * Ẩn trang này khỏi Google (noindex) và loại khỏi sitemap.
+     */
+    noindex?: boolean | null;
+    /**
+     * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
+     */
+    canonicalUrl?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -679,6 +703,14 @@ export interface Book {
     ogImage?: (string | null) | Media;
     ogTitle?: string | null;
     ogDescription?: string | null;
+    /**
+     * Ẩn trang này khỏi Google (noindex) và loại khỏi sitemap.
+     */
+    noindex?: boolean | null;
+    /**
+     * URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.
+     */
+    canonicalUrl?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1066,6 +1098,8 @@ export interface ExamsSelect<T extends boolean = true> {
         ogImage?: T;
         ogTitle?: T;
         ogDescription?: T;
+        noindex?: T;
+        canonicalUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1100,6 +1134,8 @@ export interface PostsSelect<T extends boolean = true> {
         ogImage?: T;
         ogTitle?: T;
         ogDescription?: T;
+        noindex?: T;
+        canonicalUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1153,6 +1189,8 @@ export interface EventsSelect<T extends boolean = true> {
         ogImage?: T;
         ogTitle?: T;
         ogDescription?: T;
+        noindex?: T;
+        canonicalUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1232,6 +1270,8 @@ export interface BooksSelect<T extends boolean = true> {
         ogImage?: T;
         ogTitle?: T;
         ogDescription?: T;
+        noindex?: T;
+        canonicalUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;

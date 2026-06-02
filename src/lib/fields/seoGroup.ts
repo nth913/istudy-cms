@@ -19,5 +19,21 @@ export const seoGroup: NamedGroupField = {
     },
     { name: 'ogTitle',       type: 'text',     maxLength: 95  },
     { name: 'ogDescription', type: 'textarea', maxLength: 200 },
+    {
+      name: 'noindex',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Ẩn trang này khỏi Google (noindex) và loại khỏi sitemap.' },
+    },
+    {
+      name: 'canonicalUrl',
+      type: 'text',
+      admin: { description: 'URL gốc nếu nội dung trùng nơi khác. Để trống = tự dùng URL trang này.' },
+      validate: (value: string | null | undefined) => {
+        if (value === undefined || value === null || value === '') return true
+        if (typeof value === 'string' && /^https?:\/\/.+/.test(value)) return true
+        return 'Canonical phải là URL đầy đủ (http/https) hoặc để trống'
+      },
+    },
   ],
 }
