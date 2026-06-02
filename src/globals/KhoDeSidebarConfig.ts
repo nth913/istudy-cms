@@ -1,3 +1,4 @@
+// DEPRECATED 2026-06-02: sidebar facets now computed dynamically in endpoints/exams-sidebar-facets.ts. This global is no longer read. Scheduled for removal (requires unregister from payload.config + remove seed + regen types).
 import type { GlobalConfig } from 'payload'
 
 const FILTER_QUERY_REGEX = /^\?[a-z]+=[a-z0-9-,]+(&[a-z]+=[a-z0-9-,]+)*$/

@@ -58,6 +58,21 @@ export const Exams: CollectionConfig = {
       options: YEAR_OPTIONS,
     },
     {
+      name: 'examDate', type: 'date',
+      admin: {
+        date: { pickerAppearance: 'dayOnly', displayFormat: 'dd/MM/yyyy' },
+        description: 'Ngày thi thật (hiển thị "Thi ngày ..." trên trang đề)',
+      },
+    },
+    {
+      name: 'totalQuestions', type: 'number', defaultValue: 40,
+      admin: { description: 'Số câu hỏi' },
+    },
+    {
+      name: 'durationMinutes', type: 'number', defaultValue: 60,
+      admin: { description: 'Thời lượng làm bài (phút)' },
+    },
+    {
       name: 'school', type: 'text',
       admin: {
         condition: (data: any) => data?.category === 'vao-10',

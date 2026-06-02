@@ -296,6 +296,18 @@ export interface Exam {
   examType: 'chinh-thuc' | 'thi-thu' | 'minh-hoa';
   year: '2020' | '2021' | '2022' | '2023' | '2024' | '2025' | '2026';
   /**
+   * Ngày thi thật (hiển thị "Thi ngày ..." trên trang đề)
+   */
+  examDate?: string | null;
+  /**
+   * Số câu hỏi
+   */
+  totalQuestions?: number | null;
+  /**
+   * Thời lượng làm bài (phút)
+   */
+  durationMinutes?: number | null;
+  /**
    * Tên trường THCS (autocomplete từ giá trị đã có)
    */
   school?: string | null;
@@ -1017,6 +1029,9 @@ export interface ExamsSelect<T extends boolean = true> {
   category?: T;
   examType?: T;
   year?: T;
+  examDate?: T;
+  totalQuestions?: T;
+  durationMinutes?: T;
   school?: T;
   province?: T;
   subject?: T;
