@@ -67,11 +67,12 @@ export const searchMetaEndpoint: Endpoint = {
     const cfg = await req.payload.findGlobal({ slug: 'search-config' })
     const maxTags = Number((cfg as any)?.maxTagsSuggest) || 3
     const maxProv = Number((cfg as any)?.maxProvincesSuggest) || 3
+    const maxTrending = Number((cfg as any)?.maxTrendingSuggest) || 3
     const [popularTags, provinces] = await Promise.all([
       computePopularTags(req.payload, maxTags),
       computeTopProvinces(req.payload, maxProv),
     ])
-    const trending = ((cfg as any)?.trendingItems ?? []).map((t: any, i: number) => ({
+    const trending = ((cfg as any)?.trendingItems ?? []).slice(0, maxTrending).map((t: any, i: number) => ({
       rank: i + 1,
       label: t.label,
       delta: t.delta || null,
