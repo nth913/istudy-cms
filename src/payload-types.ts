@@ -1376,22 +1376,45 @@ export interface SeoConfig {
  */
 export interface SearchConfig {
   id: string;
-  popularTags?:
+  /**
+   * Tag mặc định hiện trong popup khi chưa có data thật / timeout.
+   */
+  defaultTags?:
     | {
         id: string;
         label: string;
         hot?: boolean | null;
       }[]
     | null;
-  provinces?:
+  /**
+   * Tỉnh/thành mặc định khi chưa có data thật / timeout.
+   */
+  defaultProvinces?:
     | {
         name: string;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Trending thật (xu hướng tìm kiếm).
+   */
   trendingItems?:
     | {
         label: string;
+        delta?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Trending mặc định khi chưa có data / timeout. Có href → click điều hướng.
+   */
+  defaultTrending?:
+    | {
+        label: string;
+        /**
+         * Đường dẫn (vd /de-thi-chi-tiet/<slug>). Trống = điền vào ô tìm kiếm.
+         */
+        href?: string | null;
         delta?: string | null;
         id?: string | null;
       }[]
@@ -1404,6 +1427,14 @@ export interface SearchConfig {
    * Số tỉnh/thành tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
    */
   maxProvincesSuggest?: number | null;
+  /**
+   * Số trending tối đa hiện trong popup (desktop). FE tự co trên màn nhỏ.
+   */
+  maxTrendingSuggest?: number | null;
+  /**
+   * Chờ data tối đa (mili-giây, 13000 = 13s). Quá hạn → hiện default.
+   */
+  loadingTimeoutMs?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1474,14 +1505,14 @@ export interface SeoConfigSelect<T extends boolean = true> {
  * via the `definition` "search-config_select".
  */
 export interface SearchConfigSelect<T extends boolean = true> {
-  popularTags?:
+  defaultTags?:
     | T
     | {
         id?: T;
         label?: T;
         hot?: T;
       };
-  provinces?:
+  defaultProvinces?:
     | T
     | {
         name?: T;
@@ -1494,8 +1525,18 @@ export interface SearchConfigSelect<T extends boolean = true> {
         delta?: T;
         id?: T;
       };
+  defaultTrending?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        delta?: T;
+        id?: T;
+      };
   maxTagsSuggest?: T;
   maxProvincesSuggest?: T;
+  maxTrendingSuggest?: T;
+  loadingTimeoutMs?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
