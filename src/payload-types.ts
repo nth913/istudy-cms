@@ -190,7 +190,9 @@ export interface User {
 export interface Media {
   id: string;
   alt?: string | null;
-  purpose?: ('exam_content' | 'exam_answer' | 'exam_solution' | 'post_cover' | 'og_image' | 'other') | null;
+  purpose?:
+    | ('exam_content' | 'exam_answer' | 'exam_solution' | 'post_cover' | 'og_image' | 'exam_thumbnail' | 'other')
+    | null;
   visibility?: ('public' | 'private') | null;
   checksum?: string | null;
   derivedMeta?: {
@@ -224,6 +226,14 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -371,6 +381,14 @@ export interface Exam {
    */
   allowOpenInNewTab?: boolean | null;
   searchKey?: string | null;
+  /**
+   * Ảnh thumbnail hiển thị ở Kho đề thi. Chọn ảnh có sẵn hoặc tải lên. Để trống → tự gán 1 ảnh mặc định.
+   */
+  thumbnail?: (string | null) | Media;
+  /**
+   * Thumbnail được hệ thống tự gán (chưa chọn tay). Tự cập nhật khi lưu.
+   */
+  thumbnailAuto?: boolean | null;
   /**
    * SEO + Open Graph. Để trống = dùng fallback collection/global.
    */
@@ -1029,6 +1047,16 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
       };
 }
 /**
@@ -1106,6 +1134,8 @@ export interface ExamsSelect<T extends boolean = true> {
   allowDownload?: T;
   allowOpenInNewTab?: T;
   searchKey?: T;
+  thumbnail?: T;
+  thumbnailAuto?: T;
   seo?:
     | T
     | {

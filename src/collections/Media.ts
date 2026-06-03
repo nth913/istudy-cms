@@ -29,6 +29,17 @@ export const Media: CollectionConfig = {
           options: { quality: 85 },
         },
       },
+      {
+        name: 'card',
+        width: 400,
+        height: 300,
+        fit: 'cover',
+        position: 'center',
+        formatOptions: {
+          format: 'webp',
+          options: { quality: 72 },
+        },
+      },
     ],
   },
   fields: [
@@ -42,6 +53,7 @@ export const Media: CollectionConfig = {
         { label: 'Giải chi tiết', value: 'exam_solution' },
         { label: 'Cover bài viết', value: 'post_cover' },
         { label: 'OG image', value: 'og_image' },
+        { label: 'Thumbnail đề thi', value: 'exam_thumbnail' },
         { label: 'Khác', value: 'other' },
       ],
       defaultValue: 'other',

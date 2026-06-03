@@ -33,4 +33,11 @@ describe('examsAutoReadyFlags', () => {
     expect(result?.title).toBe('X')
     expect(result?.deReady).toBe(true)
   })
+
+  it('leaves flags untouched on a partial update missing pdfFile/answerFile keys', () => {
+    const data = { thumbnail: 'media-x', thumbnailAuto: true } as any
+    const result = examsAutoReadyFlags({ data, operation: 'update' } as any)
+    expect(result?.deReady).toBeUndefined()
+    expect(result?.dapAnReady).toBeUndefined()
+  })
 })

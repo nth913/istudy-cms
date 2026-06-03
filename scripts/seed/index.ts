@@ -76,6 +76,10 @@ async function seed() {
   })
   console.log('✓ SearchConfig seeded')
 
+  console.log('Seeding exam thumbnails...')
+  const { seedExamThumbs } = await import('../../src/seed/exam-thumbs')
+  await seedExamThumbs(payload)
+
   console.log('Seed complete.')
   process.exit(0)
 }
