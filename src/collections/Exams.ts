@@ -3,6 +3,7 @@ import { normalizeSlug } from '../hooks/normalizeSlug'
 import { computeSearchKey } from '../hooks/computeSearchKey'
 import { examsAfterChange } from '../hooks/examsAfterChange'
 import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
+import { assignExamThumbnail } from '../hooks/assignExamThumbnail'
 import { markSearchDirty } from '../lib/search-index'
 import { recomputeTagsAfterChange, recomputeTagsAfterDelete } from '../hooks/recomputeTagsForDoc'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
@@ -24,7 +25,7 @@ export const Exams: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [normalizeSlug],
-    beforeChange: [examsAutoReadyFlags, computeSearchKey],
+    beforeChange: [examsAutoReadyFlags, computeSearchKey, assignExamThumbnail],
     afterChange: [examsAfterChange, markSearchDirty, recomputeTagsAfterChange],
     afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
@@ -212,6 +213,26 @@ export const Exams: CollectionConfig = {
     {
       name: 'searchKey', type: 'text', index: true,
       admin: { hidden: true, readOnly: true },
+    },
+    {
+      name: 'thumbnail',
+      type: 'upload',
+      relationTo: 'media',
+      filterOptions: { purpose: { equals: 'exam_thumbnail' } },
+      admin: {
+        description:
+          'Ảnh thumbnail hiển thị ở Kho đề thi. Chọn ảnh có sẵn hoặc tải lên. Để trống → tự gán 1 ảnh mặc định.',
+      },
+    },
+    {
+      name: 'thumbnailAuto',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Thumbnail được hệ thống tự gán (chưa chọn tay). Tự cập nhật khi lưu.',
+      },
     },
     seoGroup,
   ],
