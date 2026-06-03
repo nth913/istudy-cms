@@ -26,6 +26,7 @@
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "seed:tags": "tsx scripts/seed/bootstrap-tags.ts",
     "seed:exam-thumbs": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed/seed-exam-thumbs.ts",
+    "reset:exam-thumbs": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed/reset-exam-thumbs.ts",
     "migrate:exam-3-state": "tsx scripts/migrations/2026-05-23-exam-3-state.ts",
     "migrate:exam-thumbs": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/migrations/2026-06-03-backfill-exam-thumbs.ts",
     "migrate:seo-flat-to-group": "tsx scripts/migrations/seo-flat-to-group.run.ts",
