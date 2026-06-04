@@ -4,6 +4,7 @@ import { booksListEndpoint } from '../endpoints/books-list'
 import { booksDetailEndpoint } from '../endpoints/books-detail'
 import { bookClickEndpoint } from '../endpoints/book-click'
 import { seoGroup } from '../lib/fields/seoGroup'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 
 export const Books: CollectionConfig = {
   slug: 'books',
@@ -24,6 +25,7 @@ export const Books: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [booksBeforeValidate],
+    afterChange: [makeMediaPurposeTagger('cover', 'book_cover')],
   },
   endpoints: [booksListEndpoint, booksDetailEndpoint, bookClickEndpoint],
   fields: [
@@ -36,7 +38,7 @@ export const Books: CollectionConfig = {
       admin: { description: 'Auto từ title nếu trống' },
     },
     { name: 'author', type: 'text' },
-    { name: 'cover', type: 'upload', relationTo: 'media' },
+    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'book_cover' } } },
     { name: 'shortDescription', type: 'textarea', maxLength: 300 },
     { name: 'fullDescription', type: 'richText' },
     { name: 'externalUrl', type: 'text', required: true, admin: { description: 'URL affiliate tới Shopee/Tiki/Fahasa' } },
