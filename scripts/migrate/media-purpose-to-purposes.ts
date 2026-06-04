@@ -6,32 +6,26 @@ import config from '@payload-config'
 
 async function main() {
   const payload = await getPayload({ config })
-  let page = 1
+  // Access raw MongoDB collection to read legacy 'purpose' field (stripped by Payload schema)
+  const col = (payload.db as any).connection.db.collection('media')
+
+  const cursor = col.find({})
   let migrated = 0
   let skipped = 0
 
   console.log('Starting media purpose → purposes migration...')
 
-  while (true) {
-    const result = await payload.find({ collection: 'media', limit: 100, page })
+  for await (const raw of cursor) {
+    const hasPurposes = Array.isArray(raw.purposes) && raw.purposes.length > 0
+    if (hasPurposes) { skipped++; continue }
 
-    for (const doc of result.docs) {
-      const hasPurposes =
-        Array.isArray((doc as any).purposes) && ((doc as any).purposes as string[]).length > 0
-      if (hasPurposes) {
-        skipped++
-        continue
-      }
-
-      const oldPurpose = (doc as any).purpose as string | undefined
-      const purposes = [oldPurpose && oldPurpose.length > 0 ? oldPurpose : 'other']
-
-      await payload.update({ collection: 'media', id: String(doc.id), data: { purposes } as any })
-      migrated++
-    }
-
-    if (!result.hasNextPage) break
-    page++
+    const oldPurpose = typeof raw.purpose === 'string' && raw.purpose.length > 0 ? raw.purpose : 'other'
+    await payload.update({
+      collection: 'media',
+      id: String(raw._id),
+      data: { purposes: [oldPurpose] } as any,
+    })
+    migrated++
   }
 
   console.log(`Done. Migrated: ${migrated}, Skipped (already set): ${skipped}`)

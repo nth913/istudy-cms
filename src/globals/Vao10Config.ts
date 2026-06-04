@@ -41,7 +41,7 @@ export const Vao10Config: GlobalConfig = {
           name: 'thumbnail',
           type: 'upload',
           relationTo: 'media',
-          filterOptions: { purpose: { equals: 'exam_thumbnail' } },
+          filterOptions: { purposes: { contains: 'exam_thumbnail' } },
           admin: {
             description:
               'Thumbnail tùy chỉnh. Bỏ trống → dùng ảnh mặc định của trang.',

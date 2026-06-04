@@ -50,7 +50,7 @@ async function main() {
     console.log('  id:', pdfDoc.id)
     console.log('  filename:', pdfDoc.filename, '(expect sanitized: de-thi-thu-2026.pdf)')
     console.log('  checksum:', pdfDoc.checksum)
-    console.log('  purpose:', pdfDoc.purpose)
+    console.log('  purposes:', pdfDoc.purposes)
     await new Promise((r) => setTimeout(r, 6000))
     const pdfRefresh = (await payload.findByID({ collection: 'media', id: pdfDoc.id as string })) as unknown as Record<string, unknown>
     const pdfMeta = pdfRefresh.derivedMeta as unknown as Record<string, unknown> | undefined

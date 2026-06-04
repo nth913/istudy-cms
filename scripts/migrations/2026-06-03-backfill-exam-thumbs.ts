@@ -15,7 +15,7 @@ const payload = await getPayload({ config })
 
 const pool = await payload.find({
   collection: 'media' as any,
-  where: { purpose: { equals: 'exam_thumbnail' } },
+  where: { purposes: { contains: 'exam_thumbnail' } },
   sort: 'filename',
   limit: 100,
   depth: 0,
