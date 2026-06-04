@@ -8,6 +8,7 @@ import { eventsDetailEndpoint } from '../endpoints/events-detail'
 import { eventPublishDeEndpoint } from '../endpoints/event-publish-de'
 import { eventPublishDapAnEndpoint } from '../endpoints/event-publish-dapan'
 import { seoGroup } from '../lib/fields/seoGroup'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -36,7 +37,7 @@ export const Events: CollectionConfig = {
   hooks: {
     beforeValidate: [eventsBeforeValidate],
     beforeChange: [computeSearchKeyEvent],
-    afterChange: [eventsAfterChange, markSearchDirty],
+    afterChange: [eventsAfterChange, markSearchDirty, makeMediaPurposeTagger('cover', 'event_cover')],
     afterDelete: [markSearchDirty],
   },
   endpoints: [
@@ -82,7 +83,7 @@ export const Events: CollectionConfig = {
       required: true,
       admin: { date: { pickerAppearance: 'dayAndTime' } },
     },
-    { name: 'cover', type: 'upload', relationTo: 'media' },
+    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'event_cover' } } },
     {
       name: 'surfaces',
       type: 'select',
