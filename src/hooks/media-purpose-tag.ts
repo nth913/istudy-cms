@@ -28,7 +28,11 @@ export function makeMediaPurposeTagger(fieldName: string, purpose: string): Coll
         ? (prevRaw as { id: string }).id
         : (prevRaw as string | null | undefined)
     if (!mediaId || mediaId === prevId) return doc
-    setImmediate(() => void addPurposeTag(req.payload, mediaId, purpose))
+    setImmediate(() =>
+      addPurposeTag(req.payload, mediaId, purpose).catch((err) =>
+        req.payload.logger.error({ err, mediaId, purpose }, '[media-purpose-tag] addPurposeTag failed'),
+      ),
+    )
     return doc
   }
 }
