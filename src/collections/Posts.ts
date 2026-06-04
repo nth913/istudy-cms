@@ -8,6 +8,7 @@ import { postsListEndpoint } from '../endpoints/posts-list'
 import { postsDetailEndpoint } from '../endpoints/posts-detail'
 import { postsFeaturedEndpoint } from '../endpoints/posts-featured'
 import { seoGroup } from '../lib/fields/seoGroup'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -29,7 +30,7 @@ export const Posts: CollectionConfig = {
   hooks: {
     beforeValidate: [postsBeforeValidate],
     beforeChange: [computeSearchKeyPost],
-    afterChange: [postsAfterChange, markSearchDirty, recomputeTagsAfterChange],
+    afterChange: [postsAfterChange, markSearchDirty, recomputeTagsAfterChange, makeMediaPurposeTagger('cover', 'post_cover')],
     afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
   endpoints: [postsListEndpoint, postsDetailEndpoint, postsFeaturedEndpoint],
@@ -44,7 +45,7 @@ export const Posts: CollectionConfig = {
     },
     { name: 'excerpt', type: 'textarea', maxLength: 300 },
     { name: 'body', type: 'richText' },
-    { name: 'cover', type: 'upload', relationTo: 'media' },
+    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'post_cover' } } },
     { name: 'author', type: 'relationship', relationTo: 'users' },
     { name: 'tags', type: 'text', hasMany: true },
     {
