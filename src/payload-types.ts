@@ -115,11 +115,13 @@ export interface Config {
     kho_de_sidebar_config: KhoDeSidebarConfig;
     'seo-config': SeoConfig;
     'search-config': SearchConfig;
+    'vao10-2026-config': Vao102026Config;
   };
   globalsSelect: {
     kho_de_sidebar_config: KhoDeSidebarConfigSelect<false> | KhoDeSidebarConfigSelect<true>;
     'seo-config': SeoConfigSelect<false> | SeoConfigSelect<true>;
     'search-config': SearchConfigSelect<false> | SearchConfigSelect<true>;
+    'vao10-2026-config': Vao102026ConfigSelect<false> | Vao102026ConfigSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1544,6 +1546,37 @@ export interface SearchConfig {
   createdAt?: string | null;
 }
 /**
+ * Overlay dữ liệu cho trang "Đề chính thức vào lớp 10 — 2026". FE hardcode 34 tỉnh; CMS chỉ cung cấp slug đề + thumbnail tùy chỉnh.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vao10-2026-config".
+ */
+export interface Vao102026Config {
+  id: string;
+  /**
+   * Mỗi dòng = 1 tỉnh/thành. Seed tự điền 34 tỉnh; editor chỉ cần chọn đề và thumbnail.
+   */
+  items?:
+    | {
+        /**
+         * Tên tỉnh (không sửa — khớp cấu trúc trang)
+         */
+        provinceName: string;
+        /**
+         * Chọn đề chính thức của tỉnh này. Bỏ trống → trang hiện "Đang cập nhật ^^".
+         */
+        exam?: (string | null) | Exam;
+        /**
+         * Thumbnail tùy chỉnh. Bỏ trống → dùng ảnh mặc định của trang.
+         */
+        thumbnail?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "kho_de_sidebar_config_select".
  */
@@ -1642,6 +1675,23 @@ export interface SearchConfigSelect<T extends boolean = true> {
   maxProvincesSuggest?: T;
   maxTrendingSuggest?: T;
   loadingTimeoutMs?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vao10-2026-config_select".
+ */
+export interface Vao102026ConfigSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        provinceName?: T;
+        exam?: T;
+        thumbnail?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
