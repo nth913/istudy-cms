@@ -80,6 +80,14 @@ async function seed() {
   const { seedExamThumbs } = await import('../../src/seed/exam-thumbs')
   await seedExamThumbs(payload)
 
+  console.log('Seeding Vao10Config (34 provinces)...')
+  const { seedVao102026 } = await import('../../src/seed/vao10')
+  await seedVao102026(payload)
+
+  console.log('Seeding Vao10 post...')
+  const { seedVao10Post } = await import('../../src/seed/posts-vao10')
+  await seedVao10Post(payload)
+
   console.log('Seed complete.')
   process.exit(0)
 }
