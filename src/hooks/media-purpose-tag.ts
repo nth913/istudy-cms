@@ -11,7 +11,7 @@ export async function addPurposeTag(
   await payload.update({
     collection: 'media',
     id: String(mediaId),
-    data: { purposes: [...existing, purpose] },
+    data: { purposes: [...existing, purpose] } as any,
   })
 }
 

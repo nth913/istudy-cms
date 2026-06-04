@@ -39,7 +39,7 @@ async function main() {
     const pdfBuf = readFileSync(pdfPath)
     pdfDoc = (await payload.create({
       collection: 'media',
-      data: { alt: 'MB2 smoke PDF', purpose: 'exam_content' },
+      data: { alt: 'MB2 smoke PDF', purposes: ['exam_content'] },
       file: {
         data: pdfBuf,
         mimetype: 'application/pdf',
@@ -63,7 +63,7 @@ async function main() {
   const imgBuf = await generateSampleImage()
   const imgDoc = (await payload.create({
     collection: 'media',
-    data: { alt: 'MB2 smoke image', purpose: 'exam_content' },
+    data: { alt: 'MB2 smoke image', purposes: ['exam_content'] },
     file: {
       data: imgBuf,
       mimetype: 'image/png',
