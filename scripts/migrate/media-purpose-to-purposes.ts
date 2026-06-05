@@ -16,8 +16,10 @@ async function main() {
   console.log('Starting media purpose → purposes migration...')
 
   for await (const raw of cursor) {
-    const hasPurposes = Array.isArray(raw.purposes) && raw.purposes.length > 0
-    if (hasPurposes) { skipped++; continue }
+    // Skip only if purposes already set to something meaningful (not just the defaultValue ['other'])
+    const purposes: string[] = Array.isArray(raw.purposes) ? raw.purposes : []
+    const alreadyMigrated = purposes.length > 0 && !(purposes.length === 1 && purposes[0] === 'other')
+    if (alreadyMigrated) { skipped++; continue }
 
     const oldPurpose = typeof raw.purpose === 'string' && raw.purpose.length > 0 ? raw.purpose : 'other'
     await payload.update({
