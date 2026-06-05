@@ -27,6 +27,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { EventStateBadge as EventStateBadge_edf93fb9d3ad9ff6ae751f615654afbd } from '../../../components/admin/EventStateBadge.tsx'
 import { EventPublishButtons as EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646 } from '../../../components/admin/EventPublishButtons.tsx'
 import { EventPinConflictWarning as EventPinConflictWarning_0bf7dd20557ea5f5aae9d1db82dbecc9 } from '../../../components/admin/EventPinConflictWarning.tsx'
+import { ProvinceRowLabel as ProvinceRowLabel_e274804fe8ea5abe3b27f6f03516ec08 } from '../../../globals/components/ProvinceRowLabel'
 import { SignOutLink as SignOutLink_69a424f916497a0d8706b2ed297fd050 } from '../../../components/SignOutLink'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -62,6 +63,7 @@ export const importMap = {
   "/components/admin/EventStateBadge.tsx#EventStateBadge": EventStateBadge_edf93fb9d3ad9ff6ae751f615654afbd,
   "/components/admin/EventPublishButtons.tsx#EventPublishButtons": EventPublishButtons_318a2c4048a4ae5458f035a0a57f4646,
   "/components/admin/EventPinConflictWarning.tsx#EventPinConflictWarning": EventPinConflictWarning_0bf7dd20557ea5f5aae9d1db82dbecc9,
+  "/globals/components/ProvinceRowLabel#ProvinceRowLabel": ProvinceRowLabel_e274804fe8ea5abe3b27f6f03516ec08,
   "/components/SignOutLink#SignOutLink": SignOutLink_69a424f916497a0d8706b2ed297fd050,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
