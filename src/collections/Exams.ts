@@ -219,7 +219,6 @@ export const Exams: CollectionConfig = {
       name: 'thumbnail',
       type: 'upload',
       relationTo: 'media',
-      filterOptions: { purposes: { contains: 'exam_thumbnail' } },
       admin: {
         description:
           'Ảnh thumbnail hiển thị ở Kho đề thi. Chọn ảnh có sẵn hoặc tải lên. Để trống → tự gán 1 ảnh mặc định.',

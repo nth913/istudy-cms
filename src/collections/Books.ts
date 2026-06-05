@@ -38,7 +38,7 @@ export const Books: CollectionConfig = {
       admin: { description: 'Auto từ title nếu trống' },
     },
     { name: 'author', type: 'text' },
-    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'book_cover' } } },
+    { name: 'cover', type: 'upload', relationTo: 'media' },
     { name: 'shortDescription', type: 'textarea', maxLength: 300 },
     { name: 'fullDescription', type: 'richText' },
     { name: 'externalUrl', type: 'text', required: true, admin: { description: 'URL affiliate tới Shopee/Tiki/Fahasa' } },

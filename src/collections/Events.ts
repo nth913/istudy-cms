@@ -83,7 +83,7 @@ export const Events: CollectionConfig = {
       required: true,
       admin: { date: { pickerAppearance: 'dayAndTime' } },
     },
-    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'event_cover' } } },
+    { name: 'cover', type: 'upload', relationTo: 'media' },
     {
       name: 'surfaces',
       type: 'select',

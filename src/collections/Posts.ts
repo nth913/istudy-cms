@@ -45,7 +45,7 @@ export const Posts: CollectionConfig = {
     },
     { name: 'excerpt', type: 'textarea', maxLength: 300 },
     { name: 'body', type: 'richText' },
-    { name: 'cover', type: 'upload', relationTo: 'media', filterOptions: { purposes: { contains: 'post_cover' } } },
+    { name: 'cover', type: 'upload', relationTo: 'media' },
     { name: 'author', type: 'relationship', relationTo: 'users' },
     { name: 'tags', type: 'text', hasMany: true },
     {
