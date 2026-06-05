@@ -18,6 +18,10 @@ export const Vao10Config: GlobalConfig = {
       maxRows: 40,
       admin: {
         description: 'Mỗi dòng = 1 tỉnh/thành. Seed tự điền 34 tỉnh; editor chỉ cần chọn đề và thumbnail.',
+        initCollapsed: true,
+        components: {
+          RowLabel: '/globals/components/ProvinceRowLabel#ProvinceRowLabel',
+        },
       },
       fields: [
         {
