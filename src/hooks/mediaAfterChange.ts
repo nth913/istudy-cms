@@ -20,11 +20,11 @@ export const mediaAfterChange: CollectionAfterChangeHook = async ({ doc, req, op
 
   const bufferCopy = Buffer.from(file.data)
   const mimetype = file.mimetype
-  const purpose = (doc.purpose as string) ?? 'other'
+  const purposes = Array.isArray(doc.purposes) ? (doc.purposes as string[]) : []
   const mediaId = doc.id
 
   setImmediate(() => {
-    void runProcessing(req.payload, mediaId, bufferCopy, mimetype, purpose)
+    void runProcessing(req.payload, mediaId, bufferCopy, mimetype, purposes)
   })
 
   return doc
@@ -35,7 +35,7 @@ async function runProcessing(
   mediaId: string | number,
   buffer: Buffer,
   mimetype: string,
-  purpose: string,
+  purposes: string[],
 ) {
   const updates: Record<string, unknown> = {}
   const derivedMeta: Record<string, unknown> = {}
@@ -50,7 +50,7 @@ async function runProcessing(
       const imageMeta = await processImage(buffer, mediaId)
       Object.assign(derivedMeta, imageMeta)
 
-      if (WATERMARK_PURPOSES.has(purpose)) {
+      if (purposes.some(p => WATERMARK_PURPOSES.has(p))) {
         const watermarked = await watermarkImage(buffer)
         const ext = mimetype.split('/')[1] || 'jpg'
         const key = `watermarked/${mediaId}-v1.${ext}`

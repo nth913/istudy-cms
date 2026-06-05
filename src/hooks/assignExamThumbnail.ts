@@ -15,7 +15,7 @@ export const assignExamThumbnail: CollectionBeforeChangeHook = async ({ data, re
 
   const pool = await req.payload.find({
     collection: 'media' as any,
-    where: { purpose: { equals: 'exam_thumbnail' } },
+    where: { purposes: { contains: 'exam_thumbnail' } },
     sort: 'filename',
     limit: 100,
     depth: 0,

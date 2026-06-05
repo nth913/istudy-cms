@@ -8,6 +8,7 @@ import { eventsDetailEndpoint } from '../endpoints/events-detail'
 import { eventPublishDeEndpoint } from '../endpoints/event-publish-de'
 import { eventPublishDapAnEndpoint } from '../endpoints/event-publish-dapan'
 import { seoGroup } from '../lib/fields/seoGroup'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -36,7 +37,7 @@ export const Events: CollectionConfig = {
   hooks: {
     beforeValidate: [eventsBeforeValidate],
     beforeChange: [computeSearchKeyEvent],
-    afterChange: [eventsAfterChange, markSearchDirty],
+    afterChange: [eventsAfterChange, markSearchDirty, makeMediaPurposeTagger('cover', 'event_cover')],
     afterDelete: [markSearchDirty],
   },
   endpoints: [

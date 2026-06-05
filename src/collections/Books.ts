@@ -4,6 +4,7 @@ import { booksListEndpoint } from '../endpoints/books-list'
 import { booksDetailEndpoint } from '../endpoints/books-detail'
 import { bookClickEndpoint } from '../endpoints/book-click'
 import { seoGroup } from '../lib/fields/seoGroup'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 
 export const Books: CollectionConfig = {
   slug: 'books',
@@ -24,6 +25,7 @@ export const Books: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [booksBeforeValidate],
+    afterChange: [makeMediaPurposeTagger('cover', 'book_cover')],
   },
   endpoints: [booksListEndpoint, booksDetailEndpoint, bookClickEndpoint],
   fields: [

@@ -192,8 +192,18 @@ export interface User {
 export interface Media {
   id: string;
   alt?: string | null;
-  purpose?:
-    | ('exam_content' | 'exam_answer' | 'exam_solution' | 'post_cover' | 'og_image' | 'exam_thumbnail' | 'other')
+  purposes?:
+    | (
+        | 'exam_content'
+        | 'exam_answer'
+        | 'exam_solution'
+        | 'post_cover'
+        | 'og_image'
+        | 'exam_thumbnail'
+        | 'event_cover'
+        | 'book_cover'
+        | 'other'
+      )[]
     | null;
   visibility?: ('public' | 'private') | null;
   checksum?: string | null;
@@ -1010,7 +1020,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
-  purpose?: T;
+  purposes?: T;
   visibility?: T;
   checksum?: T;
   derivedMeta?:
