@@ -44,13 +44,11 @@ describe('Vao10Config global', () => {
       expect(rowFields.exam.relationTo).toBe('exams')
     })
 
-    it('row has thumbnail as upload to media with filterOptions purpose=exam_thumbnail', () => {
+    it('row has thumbnail as upload to media', () => {
       expect(rowFields.thumbnail).toBeDefined()
       expect(rowFields.thumbnail.type).toBe('upload')
       expect(rowFields.thumbnail.relationTo).toBe('media')
-      expect(rowFields.thumbnail.filterOptions).toEqual({
-        purpose: { equals: 'exam_thumbnail' },
-      })
+      expect(rowFields.thumbnail.filterOptions).toBeUndefined()
     })
   })
 })

@@ -6,6 +6,7 @@ import { examsAutoReadyFlags } from '../hooks/examsAutoReadyFlags'
 import { assignExamThumbnail } from '../hooks/assignExamThumbnail'
 import { markSearchDirty } from '../lib/search-index'
 import { recomputeTagsAfterChange, recomputeTagsAfterDelete } from '../hooks/recomputeTagsForDoc'
+import { makeMediaPurposeTagger } from '../hooks/media-purpose-tag'
 import { searchExamsEndpoint } from '../endpoints/search-exams'
 import { distinctSchoolsEndpoint } from '../endpoints/distinct-schools'
 import { downloadExamEndpoint } from '../endpoints/download-exam'
@@ -26,7 +27,7 @@ export const Exams: CollectionConfig = {
   hooks: {
     beforeValidate: [normalizeSlug],
     beforeChange: [examsAutoReadyFlags, computeSearchKey, assignExamThumbnail],
-    afterChange: [examsAfterChange, markSearchDirty, recomputeTagsAfterChange],
+    afterChange: [examsAfterChange, markSearchDirty, recomputeTagsAfterChange, makeMediaPurposeTagger('thumbnail', 'exam_thumbnail')],
     afterDelete: [markSearchDirty, recomputeTagsAfterDelete],
   },
   endpoints: [searchExamsEndpoint, distinctSchoolsEndpoint, downloadExamEndpoint, examsSidebarFacetsEndpoint],
@@ -218,7 +219,6 @@ export const Exams: CollectionConfig = {
       name: 'thumbnail',
       type: 'upload',
       relationTo: 'media',
-      filterOptions: { purpose: { equals: 'exam_thumbnail' } },
       admin: {
         description:
           'Ảnh thumbnail hiển thị ở Kho đề thi. Chọn ảnh có sẵn hoặc tải lên. Để trống → tự gán 1 ảnh mặc định.',

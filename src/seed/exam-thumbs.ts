@@ -54,7 +54,7 @@ export async function seedExamThumbs(payload: Payload): Promise<void> {
       data: {
         alt: EXAM_THUMB_ALT[filename] ?? filename.replace(/\.png$/i, ''),
         checksum,
-        purpose: 'exam_thumbnail',
+        purposes: ['exam_thumbnail'],
         visibility: 'public',
       } as any,
       file: { name: filename, mimetype: 'image/png', data, size: data.length } as any,
