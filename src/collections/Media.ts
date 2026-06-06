@@ -9,7 +9,12 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  access: { read: () => true },
+  access: {
+    read: () => true,
+    create: ({ req: { user } }) => !!user,
+    update: ({ req: { user } }) => user?.role === 'admin' || user?.role === 'editor',
+    delete: ({ req: { user } }) => user?.role === 'admin',
+  },
   hooks: {
     beforeValidate: [mediaBeforeValidate],
     afterChange: [mediaAfterChange],
@@ -53,6 +58,7 @@ export const Media: CollectionConfig = {
         { label: 'Đáp án',            value: 'exam_answer' },
         { label: 'Giải chi tiết',     value: 'exam_solution' },
         { label: 'Cover bài viết',    value: 'post_cover' },
+        { label: 'Ảnh trong bài viết', value: 'post_body_image' },
         { label: 'OG image',          value: 'og_image' },
         { label: 'Thumbnail đề thi',  value: 'exam_thumbnail' },
         { label: 'Cover sự kiện',     value: 'event_cover' },

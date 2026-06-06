@@ -1,4 +1,5 @@
 import type { CollectionConfig, CollectionSlug } from 'payload'
+import { lexicalEditor, UploadFeature } from '@payloadcms/richtext-lexical'
 import { postsBeforeValidate } from '../hooks/postsBeforeValidate'
 import { postsAfterChange } from '../hooks/postsAfterChange'
 import { computeSearchKeyPost } from '../hooks/computeSearchKeyPost'
@@ -43,8 +44,33 @@ export const Posts: CollectionConfig = {
       index: true,
       admin: { description: 'Auto từ title nếu trống' },
     },
+    {
+      name: 'isFeatured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        components: { Field: '/components/IsFeaturedField#IsFeaturedField' },
+      },
+    },
     { name: 'excerpt', type: 'textarea', maxLength: 300 },
-    { name: 'body', type: 'richText' },
+    {
+      name: 'body',
+      type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          UploadFeature({
+            collections: {
+              media: {
+                fields: [
+                  { name: 'caption', type: 'text', label: 'Chú thích ảnh' },
+                ],
+              },
+            },
+          }),
+        ],
+      }),
+    },
     { name: 'cover', type: 'upload', relationTo: 'media' },
     { name: 'author', type: 'relationship', relationTo: 'users' },
     { name: 'tags', type: 'text', hasMany: true },
@@ -70,7 +96,6 @@ export const Posts: CollectionConfig = {
       ],
     },
     { name: 'publishedAt', type: 'date' },
-    { name: 'isFeatured', type: 'checkbox', defaultValue: false },
     {
       name: 'viewCount',
       type: 'number',
