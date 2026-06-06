@@ -88,6 +88,10 @@ async function seed() {
   const { seedVao10Post } = await import('../../src/seed/posts-vao10')
   await seedVao10Post(payload)
 
+  console.log('Seeding On Thi Tieng Anh Dai Hoc post...')
+  const { seedOnThiTiengAnhDaiHoc } = await import('../../src/seed/posts-on-thi-tieng-anh-dai-hoc')
+  await seedOnThiTiengAnhDaiHoc(payload)
+
   console.log('Seed complete.')
   process.exit(0)
 }

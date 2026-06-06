@@ -24,6 +24,7 @@ import { KhoDeSidebarConfig } from './globals/KhoDeSidebarConfig'
 import { SeoConfig } from './globals/SeoConfig'
 import { SearchConfig } from './globals/SearchConfig'
 import { Vao10Config } from './globals/Vao10Config'
+import { HeroConfig } from './globals/HeroConfig'
 
 import { notifyEndpoint } from './endpoints/notify'
 import { eventsV1Endpoint } from './endpoints/events-v1'
@@ -64,7 +65,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, Provinces, Tags, Exams, Posts, Events, Subscribers, NotifyIntents, Interactions, Books, AffiliateClicks],
-  globals: [KhoDeSidebarConfig, SeoConfig, SearchConfig, Vao10Config],
+  globals: [KhoDeSidebarConfig, SeoConfig, SearchConfig, Vao10Config, HeroConfig],
   endpoints: [
     notifyEndpoint,
     eventsV1Endpoint,
