@@ -32,11 +32,14 @@ export const postsListEndpoint: Endpoint = {
       Math.max(1, Number.isFinite(limitParam) && limitParam > 0 ? Math.floor(limitParam) : 12),
     )
 
+    const featured = url.searchParams.get('featured') === '1'
+
     const where: Where = {
       _status: { equals: 'published' },
     }
     if (category) where.category = { equals: category }
     if (tag) where['topics.slug'] = { equals: tag }
+    if (featured) where.isFeatured = { equals: true }
 
     const result = await req.payload.find({
       collection: POSTS_COLLECTION,
